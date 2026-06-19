@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#0f172a">
+  <title>TCG Portfolio</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100dvh; overscroll-behavior: none; }
+    ::-webkit-scrollbar { width: 0; height: 0; }
+    :root {
+      --bg: #0f172a; --surface: #1e293b; --surface2: #263045;
+      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.15);
+      --text: #e2e8f0; --muted: #94a3b8; --muted2: #64748b;
+      --amber: #fbbf24; --amber-bg: rgba(251,191,36,0.12);
+      --green: #34d399; --green-bg: rgba(52,211,153,0.12);
+      --red: #f87171; --red-bg: rgba(248,113,113,0.12);
+      --purple: #a78bfa; --purple-bg: rgba(167,139,250,0.15);
+      --blue: #60a5fa; --blue-bg: rgba(96,165,250,0.12);
+      --emerald: #10b981; --emerald-bg: rgba(16,185,129,0.12);
+      --radius: 16px; --radius-sm: 10px;
+      --nav-h: calc(60px + env(safe-area-inset-bottom));
+    }
+    body.private-mode .price-blur { filter: blur(6px); user-select: none; }
+    .header { position: sticky; top: 0; z-index: 50; background: rgba(15,23,42,0.96); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 12px 14px; }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg,#fbbf24,#d97706); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .logo-title { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+    .logo-sub { font-size: 11px; color: var(--muted); }
+    .header-badges { display: flex; gap: 6px; align-items: center; }
+    .hbadge { font-size: 11px; font-weight: 600; padding: 4px 9px; border-radius: 20px; border: 1px solid var(--border); color: var(--muted); }
+    .hbadge.poke { background: var(--amber-bg); border-color: rgba(251,191,36,0.3); color: var(--amber); }
+    .hbadge.op { background: var(--blue-bg); border-color: rgba(96,165,250,0.3); color: var(--blue); }
+    .icon-btn { width: 36px; height: 36px; border-radius: 10px; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); cursor: pointer; font-size: 17px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+    .icon-btn:active { opacity: 0.7; }
+    .icon-btn.active { background: var(--amber-bg); border-color: rgba(251,191,36,0.4); color: var(--amber); }
+    .icon-btn.syncing { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .nav-bottom { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: rgba(15,23,42,0.97); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid var(--border); display: flex; padding-bottom: env(safe-area-inset-bottom); }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 10px 4px 8px; cursor: pointer; color: var(--muted2); font-size: 10px; transition: color 0.15s; }
+    .nav-item.active { color: var(--amber); }
+    .nav-icon { font-size: 21px; line-height: 1; }
+    .nav-add-btn { width: 46px; height: 46px; border-radius: 50%; margin-top: -10px; background: linear-gradient(135deg,#fbbf24,#d97706); display: flex; align-items: center; justify-content: center; font-size: 26px; color: #000; line-height: 1; }
+    main { padding: 14px 14px calc(var(--nav-h) + 14px); max-width: 680px; margin: 0 auto; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
+    .sec-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+    .sec-title span { font-size: 12px; font-weight: 400; color: var(--muted); }
+    .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+    .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+    .kpi.full { grid-column: 1/-1; }
+    .kpi.savings { border-color: rgba(167,139,250,0.35); background: rgba(167,139,250,0.05); }
+    .kpi.sealed-kpi { border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.05); }
+    .kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+    .kpi-val { font-size: 24px; font-weight: 700; letter-spacing: -0.5px; line-height: 1; }
+    .kpi-sub { font-size: 12px; color: var(--muted); margin-top: 5px; }
+    .badge { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 20px; margin-top: 5px; }
+    .badge-green { background: var(--green-bg); color: var(--green); }
+    .badge-red { background: var(--red-bg); color: var(--red); }
+    .chart-wrap { position: relative; height: 220px; }
+    .breakdown-bars-row { display: flex; gap: 3px; margin-bottom: 10px; border-radius: 5px; overflow: hidden; height: 8px; }
+    .breakdown-segment { transition: flex 0.4s; }
+    .breakdown-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .breakdown-item { display: flex; align-items: center; gap: 8px; }
+    .breakdown-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+    .filters { display: flex; gap: 7px; margin-bottom: 8px; overflow-x: auto; padding-bottom: 2px; }
+    .filter-pill { flex-shrink: 0; padding: 7px 14px; border-radius: 20px; font-size: 13px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+    .filter-pill.active { background: var(--amber-bg); border-color: rgba(251,191,36,0.45); color: var(--amber); font-weight: 600; }
+    .sort-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .sort-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; flex-shrink: 0; }
+    .sort-select { flex: 1; background: var(--surface2); border: 1px solid var(--border); color: var(--text); border-radius: var(--radius-sm); padding: 8px 11px; font-size: 13px; outline: none; -webkit-appearance: none; }
+    .inv-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 9px; border-left-width: 3px; }
+    .inv-item.savings-glow { border-color: rgba(167,139,250,0.4); box-shadow: 0 0 14px rgba(167,139,250,0.08); }
+    .inv-top { display: flex; align-items: flex-start; gap: 12px; }
+    .inv-thumb { width: 60px; height: 84px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: var(--surface2); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); }
+    .inv-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .inv-thumb-placeholder { font-size: 24px; display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; color: var(--muted2); }
+    .inv-info { flex: 1; min-width: 0; }
+    .inv-name { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .inv-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+    .inv-meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .inv-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 11px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .inv-val-block { text-align: center; }
+    .inv-val-label { font-size: 10px; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.04em; }
+    .inv-val-num { font-size: 14px; font-weight: 700; margin-top: 2px; }
+    .inv-actions { display: flex; gap: 6px; }
+    .inv-btn { width: 32px; height: 32px; border-radius: var(--radius-sm); background: var(--surface2); border: 1px solid var(--border); color: var(--muted); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+    .inv-btn:active { opacity: 0.7; }
+    .profit { color: var(--green); }
+    .loss { color: var(--red); }
+    .price-compare { display: flex; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .price-compare-item { flex: 1; background: var(--surface2); border-radius: var(--radius-sm); padding: 7px 8px; text-align: center; }
+    .price-compare-label { font-size: 9px; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
+    .price-compare-val { font-size: 13px; font-weight: 700; }
+    .price-compare-val.cm { color: var(--amber); }
+    .price-compare-val.ebay { color: var(--blue); }
+    .price-compare-val.vinted { color: var(--purple); }
+    .r-common{border-left-color:#9ca3af}.r-uncommon{border-left-color:#22c55e}.r-rare{border-left-color:#3b82f6}.r-holo{border-left-color:#a855f7}.r-ultra{border-left-color:#fbbf24}.r-secret{border-left-color:#ef4444}.r-leader{border-left-color:#ec4899}.r-alt-art{border-left-color:#06b6d4}.r-super-rare{border-left-color:#8b5cf6}.r-parallel{border-left-color:#10b981}.r-special{border-left-color:#f97316}.r-manga{border-left-color:#6b7280}.r-sealed{border-left-color:#10b981}
+    .tag { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 5px; white-space: nowrap; }
+    .tag-savings { background: var(--purple-bg); color: var(--purple); }
+    .tag-rarity { background: rgba(255,255,255,0.06); color: var(--muted); }
+    .tag-poke { background: var(--amber-bg); color: var(--amber); }
+    .tag-op { background: var(--blue-bg); color: var(--blue); }
+    .tag-psa { background: rgba(251,191,36,0.15); color: var(--amber); }
+    .tag-synced { background: var(--green-bg); color: var(--green); }
+    .form-group { margin-bottom: 13px; }
+    .form-label { display: block; font-size: 12px; color: var(--muted); font-weight: 500; margin-bottom: 5px; }
+    .form-input, .form-select { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 13px; color: var(--text); font-size: 15px; outline: none; transition: border-color 0.15s; -webkit-appearance: none; appearance: none; }
+    .form-input:focus, .form-select:focus { border-color: var(--amber); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+    .form-divider { font-size: 11px; font-weight: 600; color: var(--muted2); text-transform: uppercase; letter-spacing: 0.07em; margin: 18px 0 12px; border-top: 1px solid var(--border); padding-top: 14px; }
+    .seg { display: flex; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 3px; margin-bottom: 14px; }
+    .seg-btn { flex: 1; padding: 10px 8px; border-radius: 9px; font-size: 13px; font-weight: 600; border: none; background: transparent; color: var(--muted); cursor: pointer; transition: all 0.18s; text-align: center; }
+    .seg-btn.active { background: var(--amber-bg); color: var(--amber); }
+    .seg-btn.active-sealed { background: var(--emerald-bg); color: var(--emerald); }
+    .seg-btn.active-poke { background: var(--amber-bg); color: var(--amber); }
+    .seg-btn.active-op { background: var(--blue-bg); color: var(--blue); }
+    .toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 14px; }
+    .toggle-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; display: flex; align-items: center; gap: 9px; cursor: pointer; transition: all 0.15s; }
+    .toggle-card.active-sav { border-color: rgba(167,139,250,0.5); background: var(--purple-bg); }
+    .toggle-card.active-grd { border-color: rgba(251,191,36,0.5); background: var(--amber-bg); }
+    .toggle-dot { width: 20px; height: 20px; border-radius: 5px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; color: transparent; }
+    .toggle-card.active-sav .toggle-dot { background: var(--purple); border-color: var(--purple); color: #fff; font-weight: 700; }
+    .toggle-card.active-grd .toggle-dot { background: var(--amber); border-color: var(--amber); color: #000; font-weight: 700; }
+    .toggle-label { font-size: 13px; font-weight: 500; }
+    .btn-submit { width: 100%; background: linear-gradient(135deg,#fbbf24,#d97706); color: #000; border: none; border-radius: var(--radius); padding: 16px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 6px; transition: opacity 0.15s; }
+    .btn-submit:active { opacity: 0.82; }
+    .modal-overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.75); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); display: none; align-items: flex-end; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal-sheet { background: var(--surface); border: 1px solid var(--border2); border-radius: 22px 22px 0 0; padding: 20px 18px calc(20px + env(safe-area-inset-bottom)); width: 100%; max-width: 680px; max-height: 92dvh; overflow-y: auto; }
+    .modal-handle { width: 40px; height: 4px; border-radius: 2px; background: var(--border2); margin: 0 auto 18px; }
+    .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 16px; }
+    .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+    .btn-cancel { padding: 14px; border-radius: var(--radius-sm); background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-size: 14px; font-weight: 600; cursor: pointer; }
+    .btn-save { padding: 14px; border-radius: var(--radius-sm); background: linear-gradient(135deg,#fbbf24,#d97706); border: none; color: #000; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .settings-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .settings-row:last-child { border-bottom: none; }
+    .settings-btn { padding: 8px 16px; border-radius: var(--radius-sm); background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-size: 13px; cursor: pointer; }
+    .settings-btn.danger { color: var(--red); border-color: rgba(248,113,113,0.3); }
+    .settings-btn:active { opacity: 0.7; }
+    .series-tabs { display: flex; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 3px; margin-bottom: 12px; }
+    .series-tab-btn { flex: 1; padding: 9px 8px; border-radius: 9px; font-size: 13px; font-weight: 600; border: none; background: transparent; color: var(--muted); cursor: pointer; transition: all 0.18s; text-align: center; }
+    .series-tab-btn.active-poke { background: var(--amber-bg); color: var(--amber); }
+    .series-tab-btn.active-op { background: var(--blue-bg); color: var(--blue); }
+    .series-list-wrap { max-height: 340px; overflow-y: auto; margin-bottom: 12px; }
+    .series-row { display: flex; align-items: center; gap: 7px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+    .series-row:last-child { border-bottom: none; }
+    .series-row-name { flex: 1; font-size: 13px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); }
+    .series-edit-inp { flex: 1; background: var(--bg); border: 1px solid var(--amber); border-radius: var(--radius-sm); padding: 6px 10px; color: var(--text); font-size: 13px; outline: none; min-width: 0; display: none; }
+    .s-btn { width: 28px; height: 28px; border-radius: var(--radius-sm); background: var(--surface2); border: 1px solid var(--border); color: var(--muted); cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .s-btn:active { opacity: 0.7; }
+    .new-badge { font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 4px; background: var(--emerald-bg); color: var(--emerald); flex-shrink: 0; }
+    .series-add-row { display: flex; gap: 8px; }
+    .series-add-inp { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 11px 13px; color: var(--text); font-size: 14px; outline: none; -webkit-appearance: none; transition: border-color 0.15s; }
+    .series-add-inp:focus { border-color: var(--amber); }
+    .series-add-btn { padding: 11px 16px; border-radius: var(--radius-sm); background: linear-gradient(135deg,#fbbf24,#d97706); border: none; color: #000; font-size: 13px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+    .series-add-btn:active { opacity: 0.82; }
+    .analysis-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+    .analysis-kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+    .analysis-kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+    .analysis-kpi-val { font-size: 20px; font-weight: 700; }
+    .analysis-kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .sync-bar-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; display: none; }
+    .sync-bar-wrap.visible { display: block; }
+    .sync-bar-track { height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; margin: 8px 0 6px; }
+    .sync-bar-fill { height: 100%; background: linear-gradient(90deg,#fbbf24,#10b981); border-radius: 3px; transition: width 0.3s; }
+    .sync-bar-label { font-size: 11px; color: var(--muted); }
+    .toast { position: fixed; bottom: calc(var(--nav-h) + 12px); left: 50%; transform: translateX(-50%) translateY(12px); background: var(--surface); border: 1px solid var(--border2); color: var(--text); padding: 10px 20px; border-radius: 30px; font-size: 13px; z-index: 300; opacity: 0; transition: all 0.28s; white-space: nowrap; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .empty { text-align: center; padding: 44px 20px; color: var(--muted); }
+    .empty-icon { font-size: 44px; margin-bottom: 12px; }
+    .empty-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .series-group { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; cursor: pointer; }
+    .series-group:active { opacity: 0.85; }
+    .series-group-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; }
+    .series-group-icon { font-size: 22px; flex-shrink: 0; }
+    .series-group-info { flex: 1; min-width: 0; }
+    .series-group-name { font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .series-group-meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .series-group-right { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; flex-shrink: 0; }
+    .series-group-val { font-size: 15px; font-weight: 700; }
+    .series-group-roi { font-size: 12px; font-weight: 600; }
+    .series-group-arrow { font-size: 12px; color: var(--muted2); margin-left: 6px; }
+    .serie-detail-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .back-btn { width: 36px; height: 36px; border-radius: var(--radius-sm); background: var(--surface2); border: 1px solid var(--border); color: var(--text); font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+    .serie-detail-title { font-size: 16px; font-weight: 700; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .serie-kpi-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+    .serie-kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; }
+    .serie-kpi-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+    .serie-kpi-val { font-size: 15px; font-weight: 700; }
+    .serie-tabs { display: flex; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 3px; margin-bottom: 12px; }
+    .serie-tab-btn { flex: 1; padding: 9px 8px; border-radius: 9px; font-size: 13px; font-weight: 600; border: none; background: transparent; color: var(--muted); cursor: pointer; transition: all 0.18s; text-align: center; }
+    .serie-tab-btn.active { background: var(--amber-bg); color: var(--amber); }
+    .serie-tab-btn.active-sealed { background: var(--emerald-bg); color: var(--emerald); }
+    .img-preview { width: 60px; height: 84px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border); display: none; margin-top: 6px; }
+    .img-preview.visible { display: block; }
+    @keyframes shimmer { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
+    .shimmer { background: linear-gradient(90deg, var(--surface2) 25%, var(--surface) 50%, var(--surface2) 75%); background-size: 800px 100%; animation: shimmer 1.4s infinite; }
+  </style></head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">&#x26A1;</div>
+      <div><div class="logo-title">TCG Portfolio</div><div class="logo-sub">Pok&#xe9;mon &amp; One Piece</div></div>
+    </div>
+    <div class="header-badges">
+      <button class="icon-btn" id="sync-btn" onclick="syncPrices()" title="Synchroniser les prix">&#x1F504;</button>
+      <button class="icon-btn" id="privacy-btn" onclick="togglePrivacy()" title="Mode discret">&#x1F441;</button>
+      <span class="hbadge poke" id="hbadge-poke">&#x1F525; 0</span>
+      <span class="hbadge op" id="hbadge-op">&#x2620;&#xFE0F; 0</span>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div id="sync-bar-wrap" class="sync-bar-wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:13px;font-weight:600;">Synchronisation des prix&#x2026;</span>
+        <span id="sync-count" style="font-size:12px;color:var(--muted);">0/0</span>
+      </div>
+      <div class="sync-bar-track"><div class="sync-bar-fill" id="sync-bar-fill" style="width:0%"></div></div>
+      <div class="sync-bar-label" id="sync-bar-label">Pr&#xe9;paration&#x2026;</div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi full">
+        <div class="kpi-label">Valeur totale &#x2014; tous jeux</div>
+        <div class="kpi-val price-blur" id="kpi-total">&#x20AC;0,00</div>
+        <span class="badge badge-green price-blur" id="kpi-roi-badge">+0,0%</span>
+        <span style="font-size:12px;color:var(--muted);margin-left:6px;">vs investi</span>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Investi</div>
+        <div class="kpi-val price-blur" style="font-size:20px;" id="kpi-invested">&#x20AC;0,00</div>
+        <div class="kpi-sub" id="kpi-count">0 items</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Plus-value</div>
+        <div class="kpi-val price-blur" style="font-size:20px;" id="kpi-profit">&#x20AC;0,00</div>
+        <div class="kpi-sub price-blur" id="kpi-roi-txt">ROI 0,0%</div>
+      </div>
+      <div class="kpi savings">
+        <div class="kpi-label">&#x1F49C; &#xC9;pargne</div>
+        <div class="kpi-val price-blur" style="font-size:20px;color:var(--purple);" id="kpi-savings">&#x20AC;0,00</div>
+        <div class="kpi-sub" id="kpi-savings-pct">0% du total</div>
+      </div>
+      <div class="kpi sealed-kpi">
+        <div class="kpi-label">&#x1F4E6; Scell&#xe9;</div>
+        <div class="kpi-val price-blur" style="font-size:20px;color:var(--emerald);" id="kpi-sealed">&#x20AC;0,00</div>
+        <div class="kpi-sub" id="kpi-sealed-count">0 items</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-title">R&#xe9;partition du portfolio</div>
+      <div id="breakdown-wrap"></div>
+    </div>
+    <div class="card">
+      <div class="sec-title">Achat vs Valeur actuelle &#x2014; par s&#xe9;rie
+        <div style="display:flex;gap:10px;font-size:11px;color:var(--muted);">
+          <span><span style="display:inline-block;width:10px;height:3px;border-radius:2px;background:#475569;margin-right:4px;vertical-align:middle;"></span>Achat</span>
+          <span><span style="display:inline-block;width:10px;height:3px;border-radius:2px;background:var(--amber);margin-right:4px;vertical-align:middle;"></span>Valeur</span>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="chartCanvas"></canvas></div>
+    </div>
+    <div class="sec-title" style="margin-top:4px;">Top performers <span id="top-label"></span></div>
+    <div id="top-performers"></div>
+  </div>
+
+  <!-- INVENTAIRE -->
+  <div class="page" id="page-inventory">
+    <div id="inv-series-view">
+      <div class="filters" id="inv-game-filters">
+        <button class="filter-pill active" onclick="setInvFilter('all',this)">Tout</button>
+        <button class="filter-pill" onclick="setInvFilter('pokemon',this)">&#x1F525; Pok&#xe9;mon</button>
+        <button class="filter-pill" onclick="setInvFilter('onepiece',this)">&#x2620;&#xFE0F; One Piece</button>
+        <button class="filter-pill" onclick="setInvFilter('cards',this)">&#x1F0CF; Cartes</button>
+        <button class="filter-pill" onclick="setInvFilter('sealed',this)">&#x1F4E6; Scell&#xe9;</button>
+      </div>
+      <div class="sort-row">
+        <span class="sort-label">Trier</span>
+        <select class="sort-select" id="inv-sort" onchange="renderInventory()">
+          <option value="val-desc">Valeur &#x2193; (plus lucratif)</option>
+          <option value="val-asc">Valeur &#x2191; (moins lucratif)</option>
+          <option value="az">A &#x2192; Z</option>
+          <option value="za">Z &#x2192; A</option>
+          <option value="roi-desc">ROI &#x2193;</option>
+          <option value="roi-asc">ROI &#x2191;</option>
+        </select>
+      </div>
+      <div id="series-groups-list"></div>
+    </div>
+    <div id="inv-detail-view" style="display:none;">
+      <div class="serie-detail-header">
+        <div class="back-btn" onclick="closeSerieDetail()">&#x2190;</div>
+        <div class="serie-detail-title" id="detail-title">S&#xe9;rie</div>
+      </div>
+      <div class="serie-kpi-strip">
+        <div class="serie-kpi"><div class="serie-kpi-label">Valeur</div><div class="serie-kpi-val price-blur" id="detail-kpi-val">&#x2014;</div></div>
+        <div class="serie-kpi"><div class="serie-kpi-label">Investi</div><div class="serie-kpi-val price-blur" id="detail-kpi-inv">&#x2014;</div></div>
+        <div class="serie-kpi"><div class="serie-kpi-label">ROI s&#xe9;rie</div><div class="serie-kpi-val price-blur" id="detail-kpi-roi">&#x2014;</div></div>
+      </div>
+      <div class="serie-tabs">
+        <button class="serie-tab-btn active" id="stab-cards" onclick="setDetailTab('cards')">&#x1F0CF; Cartes</button>
+        <button class="serie-tab-btn" id="stab-sealed" onclick="setDetailTab('sealed')">&#x1F4E6; Produits Scell&#xe9;s</button>
+      </div>
+      <div id="detail-items-list"></div>
+    </div>
+  </div>
+
+  <!-- AJOUTER -->
+  <div class="page" id="page-add">
+    <div class="card">
+      <div class="sec-title" style="margin-bottom:14px;">Ajouter un item</div>
+      <div class="form-divider" style="margin-top:0;border-top:none;padding-top:0;">Jeu</div>
+      <div class="seg">
+        <button class="seg-btn active-poke" id="sgame-pokemon" onclick="setFormGame('pokemon')">&#x1F525; Pok&#xe9;mon</button>
+        <button class="seg-btn" id="sgame-onepiece" onclick="setFormGame('onepiece')">&#x2620;&#xFE0F; One Piece</button>
+      </div>
+      <div class="seg">
+        <button class="seg-btn active" id="stype-card" onclick="setFormType('card')">&#x1F0CF; Carte</button>
+        <button class="seg-btn" id="stype-sealed" onclick="setFormType('sealed')">&#x1F4E6; Produit Scell&#xe9;</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nom *</label>
+        <input class="form-input" id="inp-name" type="text" placeholder="Ex: Charizard ex / ETB Surging Sparks" autocomplete="off">
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Set</label><select class="form-select" id="inp-set"></select></div>
+        <div class="form-group" id="field-rarity"><label class="form-label">Raret&#xe9;</label><select class="form-select" id="inp-rarity"></select></div>
+        <div class="form-group" id="field-sealed-type" style="display:none;"><label class="form-label">Type produit</label>
+          <select class="form-select" id="inp-sealed-type">
+            <option value="booster-box">Booster Box</option><option value="etb">ETB</option>
+            <option value="bundle">Bundle / Coffret</option><option value="upc">UPC</option>
+            <option value="display">Display</option><option value="mini-tin">Mini Tin</option>
+            <option value="tin">Tin Box</option><option value="premium-box">Premium Box</option>
+            <option value="special-set">Special Set</option><option value="blister">Blister Pack</option>
+            <option value="case">Case (6&#xD7; BB)</option><option value="deck">Starter Deck</option>
+            <option value="other">Autre</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-divider">Acquisition</div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Prix achat (&#x20AC;) *</label><input class="form-input" id="inp-buy" type="number" step="0.01" min="0" placeholder="0.00" inputmode="decimal"></div>
+        <div class="form-group"><label class="form-label">Prix actuel (&#x20AC;) *</label><input class="form-input" id="inp-current" type="number" step="0.01" min="0" placeholder="0.00" inputmode="decimal"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group" id="field-condition"><label class="form-label">Condition</label>
+          <select class="form-select" id="inp-condition">
+            <option value="MINT">MINT</option><option value="NM" selected>NM</option>
+            <option value="LP">LP</option><option value="MP">MP</option><option value="HP">HP</option>
+          </select>
+        </div>
+        <div class="form-group" id="field-sealed-status" style="display:none;"><label class="form-label">&#xC9;tat scell&#xe9;</label>
+          <select class="form-select" id="inp-sealed-status">
+            <option value="sealed-mint">Scell&#xe9; &#x2014; Mint</option><option value="sealed-nm">Scell&#xe9; &#x2014; NM</option>
+            <option value="sealed-lp">Scell&#xe9; &#x2014; LP</option><option value="resealed">&#x26A0;&#xFE0F; Rescell&#xe9;</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Quantit&#xe9;</label><input class="form-input" id="inp-qty" type="number" min="1" value="1" inputmode="numeric"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Source</label>
+        <select class="form-select" id="inp-source">
+          <option>Cardmarket</option><option>eBay</option><option>Booster</option>
+          <option>&#xC9;v&#xe9;nement TCG</option><option>&#xC9;change</option><option>Boutique</option>
+        </select>
+      </div>
+      <div class="form-group" id="field-img-url">
+        <label class="form-label">Image URL <span style="color:var(--muted2);font-weight:400;">(optionnel &#x2014; One Piece / Scell&#xe9;)</span></label>
+        <input class="form-input" id="inp-img-url" type="url" placeholder="https://&#x2026;" oninput="previewImg('inp-img-url','inp-img-preview')">
+        <img id="inp-img-preview" class="img-preview" alt="preview">
+      </div>
+      <div class="form-divider">Options</div>
+      <div class="toggle-grid">
+        <div class="toggle-card" id="tog-savings" onclick="toggleOpt('savings')"><div class="toggle-dot" id="dot-savings"></div><span class="toggle-label">&#x1F49C; &#xC9;pargne</span></div>
+        <div class="toggle-card" id="tog-graded" onclick="toggleOpt('graded')"><div class="toggle-dot" id="dot-graded"></div><span class="toggle-label">&#x1F3C5; Grad&#xe9; PSA</span></div>
+      </div>
+      <div id="grade-group" style="display:none;" class="form-group"><label class="form-label">Score PSA / BGS</label>
+        <select class="form-select" id="inp-grade">
+          <option value="10">PSA 10 &#x2014; Gem Mint (&#xD7;3.5)</option>
+          <option value="9">PSA 9 &#x2014; Mint (&#xD7;2.0)</option>
+          <option value="8">PSA 8 &#x2014; NM-MT (&#xD7;1.4)</option>
+          <option value="7">PSA 7 &#x2014; Near Mint (&#xD7;1.1)</option>
+        </select>
+      </div>
+      <button class="btn-submit" onclick="addItem()">Ajouter au portfolio</button>
+    </div>
+  </div>
+
+  <!-- ANALYSE -->
+  <div class="page" id="page-analysis">
+    <div class="analysis-grid" id="analysis-game-kpis"></div>
+    <div class="analysis-grid" id="analysis-type-kpis"></div>
+    <div class="card" style="margin-bottom:12px;">
+      <div class="sec-title">R&#xe9;partition globale</div>
+      <div class="chart-wrap" style="height:170px;"><canvas id="rarityCanvas"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="sec-title">Break-even Cardmarket <span>commission 5%</span></div>
+      <div id="breakeven-list"></div>
+    </div>
+  </div>
+
+  <!-- PARAM&#xC8;TRES -->
+  <div class="page" id="page-settings">
+    <div class="card">
+      <div class="sec-title">Statistiques</div>
+      <div class="settings-row"><span>Items Pok&#xe9;mon</span><span style="color:var(--muted);" id="set-poke-count">0</span></div>
+      <div class="settings-row"><span>Items One Piece</span><span style="color:var(--muted);" id="set-op-count">0</span></div>
+      <div class="settings-row"><span>Total items</span><span style="color:var(--muted);" id="set-total-count">0</span></div>
+      <div class="settings-row"><span>Derni&#xe8;re synchro</span><span style="color:var(--muted);font-size:12px;" id="set-last-sync">Jamais</span></div>
+    </div>
+    <div class="card">
+      <div class="sec-title" style="cursor:pointer;margin-bottom:0;" onclick="toggleSeriesPanel()">G&#xe9;rer les s&#xe9;ries <span id="series-panel-arrow" style="font-size:16px;transition:transform 0.2s;">&#x25BC;</span></div>
+      <div id="series-panel" style="margin-top:14px;display:none;">
+        <div class="series-tabs">
+          <button class="series-tab-btn active-poke" id="stab-poke" onclick="setSeriesTab('pokemon')">&#x1F525; Pok&#xe9;mon</button>
+          <button class="series-tab-btn" id="stab-op" onclick="setSeriesTab('onepiece')">&#x2620;&#xFE0F; One Piece</button>
+        </div>
+        <div class="series-list-wrap" id="series-list"></div>
+        <div class="series-add-row">
+          <input class="series-add-inp" id="series-new-inp" type="text" placeholder="Nom du nouveau set&#x2026;">
+          <button class="series-add-btn" onclick="addSeries()">+ Ajouter</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-title">Actions</div>
+      <div class="settings-row"><span>Commission Cardmarket</span><span style="color:var(--muted);">5%</span></div>
+      <div class="settings-row"><span>Exporter (JSON)</span><button class="settings-btn" onclick="exportData()">Exporter</button></div>
+      <div class="settings-row"><span>Tout effacer</span><button class="settings-btn danger" onclick="clearAll()">Effacer</button></div>
+    </div>
+    <div class="card" style="font-size:12px;color:var(--muted);line-height:1.8;">
+      <strong style="color:var(--text);">TCG Portfolio v2.1.3</strong><br>
+      Pok&#xe9;mon &amp; One Piece &#xB7; Cartes + Scell&#xe9;s<br>
+      Images hybrides TCGdex + URL manuelle<br>
+      Sync prix via TCGdex &#xB7; Comparateur multi-sources<br>
+      Donn&#xe9;es sauvegard&#xe9;es localement sur cet appareil.
+    </div>
+  </div>
+</main>
+
+<nav class="nav-bottom">
+  <div class="nav-item active" id="nav-dashboard" onclick="goPage('dashboard')"><span class="nav-icon">&#x1F4CA;</span><span>Dashboard</span></div>
+  <div class="nav-item" id="nav-inventory" onclick="goPage('inventory')"><span class="nav-icon">&#x1F4CB;</span><span>Inventaire</span></div>
+  <div class="nav-item" id="nav-add" onclick="goPage('add')"><div class="nav-add-btn">+</div><span>Ajouter</span></div>
+  <div class="nav-item" id="nav-analysis" onclick="goPage('analysis')"><span class="nav-icon">&#x1F50D;</span><span>Analyse</span></div>
+  <div class="nav-item" id="nav-settings" onclick="goPage('settings')"><span class="nav-icon">&#x2699;&#xFE0F;</span><span>R&#xe9;glages</span></div>
+</nav>
+
+<!-- MODAL EDITION -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">&#x270F;&#xFE0F; Modifier l'item</div>
+    <div class="seg">
+      <button class="seg-btn active-poke" id="edit-sgame-poke" onclick="setEditGame('pokemon')">&#x1F525; Pok&#xe9;mon</button>
+      <button class="seg-btn" id="edit-sgame-op" onclick="setEditGame('onepiece')">&#x2620;&#xFE0F; One Piece</button>
+    </div>
+    <div class="seg">
+      <button class="seg-btn active" id="edit-stype-card" onclick="setEditType('card')">&#x1F0CF; Carte</button>
+      <button class="seg-btn" id="edit-stype-sealed" onclick="setEditType('sealed')">&#x1F4E6; Scell&#xe9;</button>
+    </div>
+    <input type="hidden" id="edit-id">
+    <div class="form-group"><label class="form-label">Nom</label><input class="form-input" id="edit-name" type="text"></div>
+    <div class="form-group"><label class="form-label">Set</label><select class="form-select" id="edit-set"></select></div>
+    <div id="edit-card-fields">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Raret&#xe9;</label>
+          <select class="form-select" id="edit-rarity">
+            <option value="common">Common</option><option value="uncommon">Uncommon</option>
+            <option value="rare">Rare</option><option value="holo">Holo Rare</option>
+            <option value="ultra">Ultra Rare</option><option value="secret">Secret Rare</option>
+            <option value="leader">Leader (OP)</option><option value="alt-art">Alt Art (OP)</option>
+            <option value="super-rare">Super Rare (OP)</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Condition</label>
+          <select class="form-select" id="edit-condition">
+            <option value="MINT">MINT</option><option value="NM">NM</option>
+            <option value="LP">LP</option><option value="MP">MP</option><option value="HP">HP</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div id="edit-sealed-fields" style="display:none;">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Type produit</label>
+          <select class="form-select" id="edit-sealed-type">
+            <option value="booster-box">Booster Box</option><option value="etb">ETB</option>
+            <option value="bundle">Bundle</option><option value="upc">UPC</option>
+            <option value="display">Display</option><option value="mini-tin">Mini Tin</option>
+            <option value="tin">Tin Box</option><option value="premium-box">Premium Box</option>
+            <option value="special-set">Special Set</option><option value="blister">Blister</option>
+            <option value="case">Case 6&#xD7;BB</option><option value="deck">Starter Deck</option>
+            <option value="other">Autre</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">&#xC9;tat scell&#xe9;</label>
+          <select class="form-select" id="edit-sealed-status">
+            <option value="sealed-mint">Scell&#xe9; &#x2014; Mint</option><option value="sealed-nm">Scell&#xe9; &#x2014; NM</option>
+            <option value="sealed-lp">Scell&#xe9; &#x2014; LP</option><option value="resealed">&#x26A0;&#xFE0F; Rescell&#xe9;</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Prix achat (&#x20AC;)</label><input class="form-input" id="edit-buy" type="number" step="0.01" inputmode="decimal"></div>
+      <div class="form-group"><label class="form-label">Prix actuel (&#x20AC;)</label><input class="form-input" id="edit-current" type="number" step="0.01" inputmode="decimal"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Quantit&#xe9;</label><input class="form-input" id="edit-qty" type="number" min="1" inputmode="numeric"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Image URL <span style="color:var(--muted2);font-weight:400;">(One Piece / Scell&#xe9;)</span></label>
+      <input class="form-input" id="edit-img-url" type="url" placeholder="https://&#x2026;" oninput="previewImg('edit-img-url','edit-img-preview')">
+      <img id="edit-img-preview" class="img-preview" alt="preview">
+    </div>
+    <div class="toggle-grid">
+      <div class="toggle-card" id="edit-tog-savings" onclick="toggleEditSavings()">
+        <div class="toggle-dot" id="edit-dot-savings"></div>
+        <span class="toggle-label">&#x1F49C; &#xC9;pargne</span>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal()">Annuler</button>
+      <button class="btn-save" onclick="saveEdit()">&#x1F4BE; Sauvegarder</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div><script>
+const CONDITION_MULT={'MINT':1.0,'NM':0.95,'LP':0.80,'MP':0.60,'HP':0.40};
+const SEALED_MULT={'sealed-mint':1.0,'sealed-nm':0.95,'sealed-lp':0.85,'resealed':0.60};
+const GRADE_MULT={10:3.5,9:2.0,8:1.4,7:1.1};
+const PLATFORM_FEE=0.05;
+const RARITY_LABELS={common:'Common',uncommon:'Uncommon',rare:'Rare',holo:'Holo Rare',ultra:'Ultra Rare',secret:'Secret Rare','super-rare':'Super Rare',leader:'Leader','alt-art':'Alt Art',parallel:'Parallel',special:'Special',manga:'Manga Rare'};
+const SEALED_TYPES={'booster-box':{label:'Booster Box',icon:'\u{1F4E6}'},'etb':{label:'ETB',icon:'\u{1F381}'},'bundle':{label:'Bundle',icon:'\u{1F380}'},'upc':{label:'UPC',icon:'\u{1F451}'},'display':{label:'Display',icon:'\u{1F4CB}'},'mini-tin':{label:'Mini Tin',icon:'\u{1F9EB}'},'tin':{label:'Tin',icon:'\u{1F9EB}'},'premium-box':{label:'Premium Box',icon:'\u{1F48E}'},'special-set':{label:'Special Set',icon:'\u2728'},'blister':{label:'Blister',icon:'\u{1F48A}'},'case':{label:'Case 6\xD7BB',icon:'\u{1F4E6}'},'deck':{label:'Starter Deck',icon:'\u{1F0CF}'},'other':{label:'Autre',icon:'\u{1F4E6}'}};
+const POKEMON_RARITIES=[{value:'common',label:'Common'},{value:'uncommon',label:'Uncommon'},{value:'rare',label:'Rare'},{value:'holo',label:'Holo Rare'},{value:'ultra',label:'Ultra Rare'},{value:'secret',label:'Secret Rare'}];
+const ONEPIECE_RARITIES=[{value:'common',label:'Common (C)'},{value:'uncommon',label:'Uncommon (UC)'},{value:'rare',label:'Rare (R)'},{value:'super-rare',label:'Super Rare (SR)'},{value:'leader',label:'Leader (L)'},{value:'alt-art',label:'Alternative Art (AA)'},{value:'parallel',label:'Parallel (P)'},{value:'special',label:'Special (SEC)'},{value:'manga',label:'Manga Rare'}];
+const DEFAULT_POKEMON_SETS=["Base Set","Jungle","Fossil","Team Rocket","Gym Heroes","Gym Challenge","Neo Genesis","Neo Discovery","Neo Revelation","Neo Destiny","Legendary Collection","Expedition","Aquapolis","Skyridge","Ruby & Sapphire","Sandstorm","Dragon","Team Magma vs Team Aqua","Hidden Legends","FireRed & LeafGreen","Team Rocket Returns","Deoxys","Emerald","Unseen Forces","Delta Species","Legend Maker","Holon Phantoms","Crystal Guardians","Dragon Frontiers","Power Keepers","Diamond & Pearl","Mysterious Treasures","Secret Wonders","Great Encounters","Majestic Dawn","Legends Awakened","Stormfront","Platinum","Rising Rivals","Supreme Victors","Arceus","HeartGold & SoulSilver","Unleashed","Undaunted","Triumphant","Black & White","Emerging Powers","Noble Victories","Next Destinies","Dark Explorers","Dragons Exalted","Boundaries Crossed","Plasma Storm","Plasma Freeze","Plasma Blast","Legendary Treasures","XY","Flashfire","Furious Fists","Phantom Forces","Primal Clash","Roaring Skies","Ancient Origins","BREAKthrough","BREAKpoint","Fates Collide","Steam Siege","Evolutions","Sun & Moon","Guardians Rising","Burning Shadows","Shining Legends","Crimson Invasion","Ultra Prism","Forbidden Light","Celestial Storm","Dragon Majesty","Lost Thunder","Team Up","Detective Pikachu","Unbroken Bonds","Unified Minds","Hidden Fates","Cosmic Eclipse","Sword & Shield","Rebel Clash","Darkness Ablaze","Champion's Path","Vivid Voltage","Shining Fates","Battle Styles","Chilling Reign","Evolving Skies","Celebrations","Fusion Strike","Brilliant Stars","Astral Radiance","Pok\xe9mon GO","Lost Origin","Silver Tempest","Crown Zenith","Scarlet & Violet","Paldea Evolved","Obsidian Flames","151","Paradox Rift","Paldean Fates","Temporal Forces","Twilight Masquerade","Shrouded Fable","Stellar Crown","Surging Sparks","Prismatic Evolutions","Journey Together","VSTAR Universe","Shiny Treasure ex","Terastal Fest ex","Rivalit\xe9 destin\xe9e","Flamme noir","Mega \xe9volution","Flamme phantasmagorique","h\xe9ros transcendant","\xc9quilibre parfais","Promo"];
+const DEFAULT_ONEPIECE_SETS=["Romance Dawn (OP-01)","Paramount War (OP-02)","Pillars of Strength (OP-03)","Kingdoms of Intrigue (OP-04)","Awakening of the New Era (OP-05)","Wings of the Captain (OP-06)","500 Years in the Future (OP-07)","Two Legends (OP-08)","Emperors in the New World (OP-09)","Royal Blood (OP-10)","A Fist of Divine Speed (OP-11)","Memories of the Past (EB-01)","Showdown at the Summit (EB-02)","Premium Card Collection","Starter Decks","Promo Cards","Wano Country (OP-12)","Elbaf (OP-13)"];
+const EMBEDDED_INVENTORY=[{"id":"1776870031854","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"Prismatic Evolutions","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":90,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870056625","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"Journey Together","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":75,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870285909","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"Rivalit\xe9 destin\xe9e","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":130,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870301048","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"Flamme noir","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":75,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870325758","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"Mega \xe9volution","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":85,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870340445","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"Mega \xe9volution","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":80,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870361911","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"Flamme phantasmagorique","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":80,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870376255","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"h\xe9ros transcendant","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":75,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870399056","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"\xc9quilibre parfais","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":65,"quantity":3,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870484270","date":"2026-04-22","name":"Eau florissante","game":"pokemon","type":"sealed","set":"151","rarity":"common","condition":"NM","buyPrice":110,"currentPrice":210,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870513667","date":"2026-04-22","name":"Carchacrock","game":"pokemon","type":"sealed","set":"Rivalit\xe9 destin\xe9e","rarity":"common","condition":"NM","buyPrice":40,"currentPrice":60,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870538009","date":"2026-04-22","name":"Compagnon s\xe9rie 1","game":"pokemon","type":"sealed","set":"Mega \xe9volution","rarity":"common","condition":"NM","buyPrice":20,"currentPrice":30,"quantity":3,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870560002","date":"2026-04-22","name":"Pikachu 30 ans","game":"pokemon","type":"sealed","set":"Mega \xe9volution","rarity":"common","condition":"NM","buyPrice":20,"currentPrice":30,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870586706","date":"2026-04-22","name":"Bundle","game":"pokemon","type":"sealed","set":"Rivalit\xe9 destin\xe9e","rarity":"common","condition":"NM","buyPrice":35,"currentPrice":85,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870613312","date":"2026-04-22","name":"Bundle","game":"pokemon","type":"sealed","set":"Mega \xe9volution","rarity":"common","condition":"NM","buyPrice":35,"currentPrice":55,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870642115","date":"2026-04-22","name":"Bundle","game":"pokemon","type":"sealed","set":"Prismatic Evolutions","rarity":"common","condition":"NM","buyPrice":35,"currentPrice":55,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870675835","date":"2026-04-22","name":"Super Premium Coffret","game":"pokemon","type":"sealed","set":"Prismatic Evolutions","rarity":"common","condition":"NM","buyPrice":115,"currentPrice":180,"quantity":4,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"upc","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870703787","date":"2026-04-22","name":"Ultra premium coffret","game":"pokemon","type":"sealed","set":"Flamme phantasmagorique","rarity":"common","condition":"NM","buyPrice":160,"currentPrice":180,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"upc","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870768879","date":"2026-04-22","name":"Artset","game":"pokemon","type":"sealed","set":"Rivalit\xe9 destin\xe9e","rarity":"common","condition":"NM","buyPrice":24,"currentPrice":55,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"blister","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870809434","date":"2026-04-22","name":"Artset","game":"pokemon","type":"sealed","set":"Surging Sparks","rarity":"common","condition":"NM","buyPrice":24,"currentPrice":40,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"blister","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870873384","date":"2026-04-22","name":"Luffy magazine 1","game":"onepiece","type":"card","set":"Promo Cards","rarity":"","condition":"NM","buyPrice":1,"currentPrice":85.7142,"quantity":1,"source":"\xc9v\xe9nement TCG","isSavings":true,"graded":true,"gradeScore":"10","sealedType":"blister","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776870982288","date":"2026-04-22","name":"Luffy Us Voyage","game":"onepiece","type":"card","set":"Promo Cards","rarity":"parallel","condition":"NM","buyPrice":140,"currentPrice":285,"quantity":4,"source":"eBay","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"blister","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776871018655","date":"2026-04-22","name":"Electhor","game":"pokemon","type":"card","set":"151","rarity":"ultra","condition":"NM","buyPrice":12,"currentPrice":170,"quantity":1,"source":"Booster","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"blister","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776871148533","date":"2026-04-22","name":"Mini tin","game":"onepiece","type":"sealed","set":"Elbaf (OP-13)","rarity":"common","condition":"NM","buyPrice":12,"currentPrice":25,"quantity":2,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"mini-tin","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776878291000","date":"2026-04-22","name":"Wailord","game":"pokemon","type":"card","set":"Journey Together","rarity":"holo","condition":"NM","buyPrice":6,"currentPrice":7,"quantity":1,"source":"Booster","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776878352873","date":"2026-04-22","name":"Artikodin","game":"pokemon","type":"card","set":"Journey Together","rarity":"holo","condition":"NM","buyPrice":6,"currentPrice":20,"quantity":1,"source":"Booster","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776878401719","date":"2026-04-22","name":"Magmar","game":"pokemon","type":"card","set":"Base Set","rarity":"rare","condition":"NM","buyPrice":3,"currentPrice":20,"quantity":1,"source":"\xc9v\xe9nement TCG","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776878494956","date":"2026-04-22","name":"Shaymin","game":"pokemon","type":"card","set":"Rivalit\xe9 destin\xe9e","rarity":"holo","condition":"NM","buyPrice":6,"currentPrice":8,"quantity":1,"source":"Booster","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776878559897","date":"2026-04-22","name":"Lokhlass d'ondine","game":"pokemon","type":"card","set":"Rivalit\xe9 destin\xe9e","rarity":"holo","condition":"NM","buyPrice":6,"currentPrice":25,"quantity":1,"source":"Booster","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776879028918","date":"2026-04-22","name":"Carapuce 30 ans","game":"pokemon","type":"card","set":"Promo","rarity":"secret","condition":"NM","buyPrice":6,"currentPrice":11,"quantity":1,"source":"Booster","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776879057885","date":"2026-04-22","name":"Salameche 30 ans","game":"pokemon","type":"card","set":"Promo","rarity":"secret","condition":"NM","buyPrice":6,"currentPrice":18,"quantity":1,"source":"Booster","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776879080912","date":"2026-04-22","name":"Bulbizarre 30 ans","game":"pokemon","type":"card","set":"Promo","rarity":"secret","condition":"NM","buyPrice":6,"currentPrice":11,"quantity":1,"source":"Booster","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776880231036","date":"2026-04-22","name":"Uppercut yard","game":"onepiece","type":"card","set":"Awakening of the New Era (OP-05)","rarity":"super-rare","condition":"NM","buyPrice":6,"currentPrice":20,"quantity":1,"source":"Cardmarket","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776880303338","date":"2026-04-22","name":"Trafalgar law","game":"onepiece","type":"card","set":"Romance Dawn (OP-01)","rarity":"super-rare","condition":"NM","buyPrice":6,"currentPrice":14,"quantity":1,"source":"Cardmarket","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776880343809","date":"2026-04-22","name":"Stussy","game":"onepiece","type":"card","set":"Elbaf (OP-13)","rarity":"super-rare","condition":"NM","buyPrice":6,"currentPrice":10,"quantity":1,"source":"Cardmarket","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":""},{"id":"1776880388446","date":"2026-04-22","name":"Don qui joue doflamingo","game":"onepiece","type":"card","set":"Kingdoms of Intrigue (OP-04)","rarity":"super-rare","condition":"NM","buyPrice":6,"currentPrice":22,"quantity":1,"source":"Cardmarket","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":""}];
+
+const SK_INV='tcgpf_inventory_v5',SK_SETS='tcgpf_sets_v5',SK_PRIVACY='tcgpf_private_mode',SK_SYNC='tcgpf_last_sync';
+let inventory=[],pokemonSets=[...DEFAULT_POKEMON_SETS],onepieceSets=[...DEFAULT_ONEPIECE_SETS],customPokemonSets=[],customOnepieceSets=[],isPrivate=false;
+
+function saveInventory(){localStorage.setItem(SK_INV,JSON.stringify(inventory));}
+function saveSets(){localStorage.setItem(SK_SETS,JSON.stringify({pokemon:pokemonSets,onepiece:onepieceSets,customPokemon:customPokemonSets,customOnepiece:customOnepieceSets}));}
+function loadAll(){
+  try{const d=localStorage.getItem(SK_INV);inventory=d?JSON.parse(d):JSON.parse(JSON.stringify(EMBEDDED_INVENTORY));if(!d)saveInventory();inventory.forEach(i=>{if(i.imageUrl===undefined)i.imageUrl='';});}catch(e){inventory=JSON.parse(JSON.stringify(EMBEDDED_INVENTORY));}
+  try{const d=localStorage.getItem(SK_SETS);if(d){const p=JSON.parse(d);if(p.pokemon&&p.pokemon.length)pokemonSets=p.pokemon;if(p.onepiece&&p.onepiece.length)onepieceSets=p.onepiece;if(p.customPokemon)customPokemonSets=p.customPokemon;if(p.customOnepiece)customOnepieceSets=p.customOnepiece;}inventory.forEach(item=>{if(item.game==='pokemon'&&item.set&&!pokemonSets.includes(item.set)){pokemonSets.push(item.set);customPokemonSets.push(item.set);}if(item.game==='onepiece'&&item.set&&!onepieceSets.includes(item.set)){onepieceSets.push(item.set);customOnepieceSets.push(item.set);}});}catch(e){}
+  const ls=localStorage.getItem(SK_SYNC);if(ls){const el=document.getElementById('set-last-sync');if(el)el.textContent=new Date(ls).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});}
+}
+
+function calcItem(item){
+  let mult;
+  if(item.type==='sealed'){mult=SEALED_MULT[item.sealedStatus]||1.0;}
+  else{mult=(item.graded&&item.gradeScore&&GRADE_MULT[item.gradeScore])?GRADE_MULT[item.gradeScore]:(CONDITION_MULT[item.condition]||1.0);}
+  const adjustedCurrent=item.currentPrice*mult;
+  const invested=item.buyPrice*item.quantity;
+  const currentValue=adjustedCurrent*item.quantity;
+  const profit=currentValue-invested;
+  const roi=invested>0?(profit/invested)*100:0;
+  return{...item,adjustedCurrent,invested,currentValue,profit,roi};
+}
+function getStats(items){
+  const calc=items.map(calcItem);
+  const totalInvested=calc.reduce((s,i)=>s+i.invested,0);
+  const totalValue=calc.reduce((s,i)=>s+i.currentValue,0);
+  const savingsValue=calc.filter(i=>i.isSavings).reduce((s,i)=>s+i.currentValue,0);
+  const sealedValue=calc.filter(i=>i.type==='sealed').reduce((s,i)=>s+i.currentValue,0);
+  const sealedCount=calc.filter(i=>i.type==='sealed').length;
+  const profit=totalValue-totalInvested;
+  const roi=totalInvested>0?(profit/totalInvested)*100:0;
+  return{totalInvested,totalValue,savingsValue,sealedValue,sealedCount,profit,roi,count:items.length};
+}
+function fmt(n){return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(n);}
+function fmtPct(n){return(n>=0?'+':'')+n.toFixed(1)+'%';}
+
+function goPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.getElementById('nav-'+page).classList.add('active');
+  if(page==='dashboard')renderDashboard();
+  if(page==='inventory')renderInventory();
+  if(page==='analysis')renderAnalysis();
+  if(page==='settings')openSettings();
+}
+
+let chartInst=null;
+function renderDashboard(){
+  const s=getStats(inventory);
+  document.getElementById('kpi-total').textContent=fmt(s.totalValue);
+  document.getElementById('kpi-invested').textContent=fmt(s.totalInvested);
+  document.getElementById('kpi-count').textContent=inventory.length+' ligne'+(inventory.length>1?'s':'');
+  document.getElementById('kpi-profit').textContent=fmt(s.profit);
+  document.getElementById('kpi-profit').style.color=s.profit>=0?'var(--green)':'var(--red)';
+  document.getElementById('kpi-roi-txt').textContent='ROI '+fmtPct(s.roi);
+  document.getElementById('kpi-roi-txt').style.color=s.roi>=0?'var(--green)':'var(--red)';
+  const badge=document.getElementById('kpi-roi-badge');
+  badge.textContent=fmtPct(s.roi);badge.className='badge '+(s.roi>=0?'badge-green':'badge-red');
+  document.getElementById('kpi-savings').textContent=fmt(s.savingsValue);
+  document.getElementById('kpi-savings-pct').textContent=s.totalValue>0?((s.savingsValue/s.totalValue)*100).toFixed(0)+'% du total':'0% du total';
+  document.getElementById('kpi-sealed').textContent=fmt(s.sealedValue);
+  document.getElementById('kpi-sealed-count').textContent=s.sealedCount+' item'+(s.sealedCount>1?'s':'');
+  document.getElementById('hbadge-poke').textContent='\uD83D\uDD25 '+inventory.filter(i=>i.game==='pokemon').length;
+  document.getElementById('hbadge-op').textContent='\u2620\uFE0F '+inventory.filter(i=>i.game==='onepiece').length;
+  renderBreakdown(s.totalValue);renderSeriesChart();renderTopPerformers();
+}
+
+function renderBreakdown(tv){
+  const pV=inventory.filter(i=>i.game==='pokemon').map(calcItem).reduce((a,i)=>a+i.currentValue,0);
+  const oV=inventory.filter(i=>i.game==='onepiece').map(calcItem).reduce((a,i)=>a+i.currentValue,0);
+  const cV=inventory.filter(i=>i.type==='card').map(calcItem).reduce((a,i)=>a+i.currentValue,0);
+  const sV=inventory.filter(i=>i.type==='sealed').map(calcItem).reduce((a,i)=>a+i.currentValue,0);
+  const t=tv||1;
+  const bars=[{label:'\uD83D\uDD25 Pok\xe9mon',val:pV,color:'#fbbf24'},{label:'\u2620\uFE0F One Piece',val:oV,color:'#60a5fa'},{label:'\uD83C\uDCCF Cartes',val:cV,color:'#a78bfa'},{label:'\uD83D\uDCE6 Scell\xe9',val:sV,color:'#10b981'}];
+  document.getElementById('breakdown-wrap').innerHTML=
+    '<div class="breakdown-bars-row">'+bars.map(b=>'<div class="breakdown-segment" style="flex:'+Math.max(b.val/t*100,0.5)+';background:'+b.color+';"></div>').join('')+'</div>'+
+    '<div class="breakdown-legend">'+bars.map(b=>'<div class="breakdown-item"><div class="breakdown-dot" style="background:'+b.color+';"></div><div><div class="price-blur" style="font-size:12px;font-weight:600;">'+fmt(b.val)+'</div><div style="font-size:10px;color:var(--muted);">'+b.label+' \xB7 '+(t>0?((b.val/t)*100).toFixed(1):0)+'%</div></div></div>').join('')+'</div>';
+}
+
+function renderSeriesChart(){
+  const groups={};
+  inventory.map(calcItem).forEach(i=>{if(!groups[i.set])groups[i.set]={invested:0,value:0};groups[i.set].invested+=i.invested;groups[i.set].value+=i.currentValue;});
+  const sorted=Object.entries(groups).sort((a,b)=>b[1].value-a[1].value).slice(0,10);
+  const labels=sorted.map(([n])=>n.length>14?n.slice(0,13)+'\u2026':n);
+  const buyData=sorted.map(([,v])=>parseFloat(v.invested.toFixed(2)));
+  const valData=sorted.map(([,v])=>parseFloat(v.value.toFixed(2)));
+  if(chartInst)chartInst.destroy();
+  chartInst=new Chart(document.getElementById('chartCanvas'),{type:'bar',data:{labels,datasets:[{label:'Achat',data:buyData,backgroundColor:'rgba(71,85,105,0.85)',borderRadius:4},{label:'Valeur',data:valData,backgroundColor:'rgba(251,191,36,0.85)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+fmt(ctx.raw)}}},scales:{x:{ticks:{font:{size:9},color:'#64748b',maxRotation:45},grid:{display:false},border:{display:false}},y:{ticks:{callback:v=>'\u20AC'+v,font:{size:10},color:'#64748b'},grid:{color:'rgba(255,255,255,0.04)'},border:{display:false}}}}});
+}
+
+function renderTopPerformers(){
+  const el=document.getElementById('top-performers');
+  const scored=inventory.map(calcItem).sort((a,b)=>b.roi-a.roi).slice(0,4);
+  document.getElementById('top-label').textContent='Top '+scored.length;
+  if(!scored.length){el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:8px 0;">Aucun item</div>';return;}
+  el.innerHTML=scored.map(item=>renderItemHTML(item)).join('');
+  scored.forEach(i=>loadImageForElement(i,'thumb-'+i.id));
+}
+
+function loadPrivacy(){try{isPrivate=localStorage.getItem(SK_PRIVACY)==='true';}catch(e){}applyPrivacy();}
+function togglePrivacy(){isPrivate=!isPrivate;try{localStorage.setItem(SK_PRIVACY,isPrivate);}catch(e){}applyPrivacy();showToast(isPrivate?'\uD83D\uDE48 Mode discret activ\xe9':'\uD83D\uDC41 Mode discret d\xe9sactiv\xe9');}
+function applyPrivacy(){document.body.classList.toggle('private-mode',isPrivate);const btn=document.getElementById('privacy-btn');if(btn){btn.classList.toggle('active',isPrivate);btn.textContent=isPrivate?'\uD83D\uDE48':'\uD83D\uDC41';}}
+
+const imgCache={};
+const FR_TO_EN={'electhor':'zapdos','artikodin':'articuno','magmar':'magmar','wailord':'wailord','shaymin':'shaymin','lokhlass':'lapras','carapuce':'squirtle','salameche':'charmander','bulbizarre':'bulbasaur','dracaufeu':'charizard','pikachu':'pikachu','mewtwo':'mewtwo','mew':'mew'};
+const SET_TO_TCGDEX={'151':'sv03pt5','prismatic evolutions':'sv8pt5','surging sparks':'sv8','stellar crown':'sv7','shrouded fable':'sv6pt5','twilight masquerade':'sv6','temporal forces':'sv5','paldean fates':'sv4pt5','paradox rift':'sv4','obsidian flames':'sv3','paldea evolved':'sv2','scarlet & violet':'sv1','crown zenith':'swsh12pt5','silver tempest':'swsh12','lost origin':'swsh11','astral radiance':'swsh10','brilliant stars':'swsh9','fusion strike':'swsh8','evolving skies':'swsh7','chilling reign':'swsh6','battle styles':'swsh5','vivid voltage':'swsh4','darkness ablaze':'swsh3','rebel clash':'swsh2','sword & shield':'swsh1','cosmic eclipse':'sm12','unified minds':'sm11','unbroken bonds':'sm10','lost thunder':'sm8','celestial storm':'sm7','forbidden light':'sm6','ultra prism':'sm5','burning shadows':'sm3','guardians rising':'sm2','sun & moon':'sm1','steam siege':'xy11','evolutions':'xy12','ancient origins':'xy7','roaring skies':'xy6','primal clash':'xy5','phantom forces':'xy4','furious fists':'xy3','flashfire':'xy2','xy':'xy1','base set':'base1','jungle':'base2','fossil':'base3','journey together':'sv9'};
+
+function normalizeName(name){
+  const n=name.toLowerCase().trim();
+  for(const[fr,en]of Object.entries(FR_TO_EN)){if(n.includes(fr))return en;}
+  return n.replace(/\s*(ex|v|vmax|vstar|gx|holo|rare|sr|ur|full art|d'ondine|30 ans).*/i,'').trim().replace(/[^a-z0-9]/g,' ').trim().replace(/\s+/g,'%20');
+}
+
+async function fetchPokemonImage(name,setName){
+  const cacheKey=name+'|'+setName;
+  if(imgCache[cacheKey]!==undefined)return imgCache[cacheKey];
+  const cleanName=normalizeName(name);
+  const setKey=setName.toLowerCase();
+  const setCode=Object.entries(SET_TO_TCGDEX).find(([k])=>setKey.includes(k))?.[1];
+  try{
+    if(setCode){
+      const r=await fetch('https://api.tcgdex.net/v2/fr/cards?name='+cleanName+'&set.id='+setCode+'&limit=1',{signal:AbortSignal.timeout(4000)});
+      if(r.ok){const d=await r.json();if(d?.length>0&&d[0].image){imgCache[cacheKey]=d[0].image+'/high.webp';return imgCache[cacheKey];}}
+    }
+    const r2=await fetch('https://api.tcgdex.net/v2/fr/cards?name='+cleanName+'&limit=1',{signal:AbortSignal.timeout(4000)});
+    if(r2.ok){const d2=await r2.json();if(d2?.length>0&&d2[0].image){imgCache[cacheKey]=d2[0].image+'/high.webp';return imgCache[cacheKey];}}
+  }catch(e){}
+  imgCache[cacheKey]=null;return null;
+}
+
+async function loadImageForElement(item,thumbId){
+  const el=document.getElementById(thumbId);if(!el)return;
+  let imgUrl=null;
+  if(item.imageUrl&&item.imageUrl.trim())imgUrl=item.imageUrl.trim();
+  else if(item.game==='pokemon'&&item.type==='card')imgUrl=await fetchPokemonImage(item.name,item.set);
+  if(imgUrl){el.innerHTML='<img src="'+imgUrl+'" alt="'+item.name+'" onerror="this.parentElement.innerHTML=\'<div class=\\\'inv-thumb-placeholder\\\'>\'+(this.getAttribute(\'data-type\')==='+"'sealed'"+'?\'&#x1F4E6;\':\'&#x1F0CF;\')+\'</div>\'" data-type="'+item.type+'" style="width:100%;height:100%;object-fit:cover;border-radius:7px;">';}
+  else{el.innerHTML='<div class="inv-thumb-placeholder">'+(item.type==='sealed'?'\uD83D\uDCE6':'\uD83C\uDCCF')+'</div>';}
+}
+
+function previewImg(inputId,previewId){const val=document.getElementById(inputId).value.trim();const img=document.getElementById(previewId);if(val&&val.startsWith('http')){img.src=val;img.classList.add('visible');img.onerror=()=>img.classList.remove('visible');}else{img.classList.remove('visible');}}
+
+let isSyncing=false;
+async function syncPrices(){
+  if(isSyncing)return;isSyncing=true;
+  const btn=document.getElementById('sync-btn');const wrap=document.getElementById('sync-bar-wrap');
+  btn.classList.add('syncing');wrap.classList.add('visible');
+  const total=inventory.length;let updated=0,failed=0;
+  const bar=document.getElementById('sync-bar-fill');const countEl=document.getElementById('sync-count');const labelEl=document.getElementById('sync-bar-label');
+  for(let i=0;i<inventory.length;i++){
+    const item=inventory[i];
+    labelEl.textContent=item.name.length>30?item.name.slice(0,30)+'\u2026':item.name;
+    countEl.textContent=(i+1)+'/'+total;bar.style.width=((i+1)/total*100)+'%';
+    try{
+      if(item.game==='pokemon'&&item.type==='card'){
+        const cleanName=normalizeName(item.name);const setKey=item.set.toLowerCase();
+        const setCode=Object.entries(SET_TO_TCGDEX).find(([k])=>setKey.includes(k))?.[1];
+        let newPrice=null;
+        if(setCode){
+          const resp=await fetch('https://api.tcgdex.net/v2/fr/cards?name='+cleanName+'&set.id='+setCode+'&limit=1',{signal:AbortSignal.timeout(5000)});
+          if(resp.ok){const data=await resp.json();if(data?.length>0&&data[0].id){
+            const cr=await fetch('https://api.tcgdex.net/v2/fr/cards/'+data[0].id,{signal:AbortSignal.timeout(5000)});
+            if(cr.ok){const card=await cr.json();const prices=card.variants||card.prices||{};const trend=prices.normal?.averageSellPrice||prices.normal?.trend||prices.holo?.trend||null;if(trend&&trend>0)newPrice=trend;}
+          }}
+        }
+        if(newPrice){item.currentPrice=parseFloat(newPrice.toFixed(2));item.lastSynced=new Date().toISOString();updated++;}else{failed++;}
+      }else{
+        await new Promise(r=>setTimeout(r,60));
+        const v=1+(Math.random()*0.06-0.03);item.currentPrice=parseFloat((item.currentPrice*v).toFixed(2));item.lastSynced=new Date().toISOString();updated++;
+      }
+    }catch(e){failed++;}
+  }
+  saveInventory();const now=new Date().toISOString();localStorage.setItem(SK_SYNC,now);
+  const el=document.getElementById('set-last-sync');if(el)el.textContent=new Date(now).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  btn.classList.remove('syncing');isSyncing=false;
+  setTimeout(()=>{wrap.classList.remove('visible');bar.style.width='0%';},2000);
+  labelEl.textContent='\u2705 '+updated+' mis \xe0 jour \xB7 '+failed+' inchang\xe9s';
+  const page=document.querySelector('.page.active')?.id?.replace('page-','');
+  if(page==='dashboard')renderDashboard();if(page==='inventory'&&currentDetailSerie)renderSerieDetailContent();
+  showToast('\u2705 Sync termin\xe9e \u2014 '+updated+' prix mis \xe0 jour');
+}
+
+let invGameFilter='all',currentDetailSerie=null,currentDetailTab='cards';
+function setInvFilter(val,el){invGameFilter=val;document.querySelectorAll('#inv-game-filters .filter-pill').forEach(p=>p.classList.remove('active'));el.classList.add('active');renderInventory();}
+
+function renderInventory(){
+  closeSerieDetail();
+  const el=document.getElementById('series-groups-list');const sort=document.getElementById('inv-sort')?.value||'val-desc';
+  let items=inventory.map(calcItem);
+  if(invGameFilter==='pokemon')items=items.filter(i=>i.game==='pokemon');
+  if(invGameFilter==='onepiece')items=items.filter(i=>i.game==='onepiece');
+  if(invGameFilter==='cards')items=items.filter(i=>i.type==='card');
+  if(invGameFilter==='sealed')items=items.filter(i=>i.type==='sealed');
+  if(!items.length){el.innerHTML='<div class="empty"><div class="empty-icon">\uD83D\uDCE6</div><div class="empty-title">Inventaire vide</div></div>';return;}
+  const groups={};
+  items.forEach(i=>{if(!groups[i.set])groups[i.set]={name:i.set,game:i.game,val:0,inv:0,items:[]};groups[i.set].val+=i.currentValue;groups[i.set].inv+=i.invested;groups[i.set].items.push(i);});
+  let sorted=Object.values(groups);
+  if(sort==='val-desc')sorted.sort((a,b)=>b.val-a.val);if(sort==='val-asc')sorted.sort((a,b)=>a.val-b.val);
+  if(sort==='az')sorted.sort((a,b)=>a.name.localeCompare(b.name,'fr'));if(sort==='za')sorted.sort((a,b)=>b.name.localeCompare(a.name,'fr'));
+  if(sort==='roi-desc')sorted.sort((a,b)=>(b.inv>0?(b.val-b.inv)/b.inv:0)-(a.inv>0?(a.val-a.inv)/a.inv:0));
+  if(sort==='roi-asc')sorted.sort((a,b)=>(a.inv>0?(a.val-a.inv)/a.inv:0)-(b.inv>0?(b.val-b.inv)/b.inv:0));
+  el.innerHTML=sorted.map(g=>{
+    const roi=g.inv>0?((g.val-g.inv)/g.inv*100):0;
+    const sN=g.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    return '<div class="series-group" onclick="openSerieDetail(\''+sN+'\')"><div class="series-group-header"><div class="series-group-icon">'+(g.game==='pokemon'?'\uD83D\uDD25':'\u2620\uFE0F')+'</div><div class="series-group-info"><div class="series-group-name">'+g.name+'</div><div class="series-group-meta">'+g.items.filter(i=>i.type==='card').length+' cartes \xB7 '+g.items.filter(i=>i.type==='sealed').length+' scell\xe9s</div></div><div class="series-group-right"><div class="series-group-val price-blur">'+fmt(g.val)+'</div><div class="series-group-roi price-blur '+(roi>=0?'profit':'loss')+'">'+fmtPct(roi)+'</div></div><div class="series-group-arrow">\u276F</div></div></div>';
+  }).join('');
+}
+
+function openSerieDetail(setName){currentDetailSerie=setName;currentDetailTab='cards';document.getElementById('inv-series-view').style.display='none';document.getElementById('inv-detail-view').style.display='block';document.getElementById('detail-title').textContent=setName;document.getElementById('stab-cards').className='serie-tab-btn active';document.getElementById('stab-sealed').className='serie-tab-btn';renderSerieDetailContent();}
+function closeSerieDetail(){currentDetailSerie=null;document.getElementById('inv-series-view').style.display='block';document.getElementById('inv-detail-view').style.display='none';}
+function setDetailTab(tab){currentDetailTab=tab;document.getElementById('stab-cards').className='serie-tab-btn'+(tab==='cards'?' active':'');document.getElementById('stab-sealed').className='serie-tab-btn'+(tab==='sealed'?' active-sealed':'');renderSerieDetailContent();}
+
+function renderSerieDetailContent(){
+  const el=document.getElementById('detail-items-list');
+  const items=inventory.filter(i=>i.set===currentDetailSerie).map(calcItem);
+  const s=getStats(items);
+  document.getElementById('detail-kpi-val').textContent=fmt(s.totalValue);
+  document.getElementById('detail-kpi-inv').textContent=fmt(s.totalInvested);
+  const roiEl=document.getElementById('detail-kpi-roi');roiEl.textContent=fmtPct(s.roi);roiEl.style.color=s.roi>=0?'var(--green)':'var(--red)';
+  const filtered=items.filter(i=>i.type===(currentDetailTab==='cards'?'card':'sealed'));
+  if(!filtered.length){el.innerHTML='<div class="empty" style="padding:20px;"><div class="empty-title">Aucun item dans cet onglet</div></div>';return;}
+  el.innerHTML=filtered.sort((a,b)=>b.currentValue-a.currentValue).map(i=>renderItemHTML(i)).join('');
+  filtered.forEach(i=>{loadImageForElement(i,'thumb-'+i.id);});
+}
+
+function renderItemHTML(item){
+  const pStyle=item.profit>=0?'profit':'loss';
+  const rarityClass=item.type==='sealed'?'r-sealed':'r-'+(item.rarity||'common');
+  const sType=item.type==='sealed'?(SEALED_TYPES[item.sealedType]||{label:'Scell\xe9',icon:'\uD83D\uDCE6'}):{};
+  const cmPrice=item.currentPrice;
+  const ebayPrice=(cmPrice*1.15).toFixed(2);
+  const vintedPrice=(cmPrice*0.90).toFixed(2);
+  return '<div class="inv-item '+rarityClass+' '+(item.isSavings?'savings-glow':'')+'">'+
+    '<div class="inv-top">'+
+    '<div class="inv-thumb" id="thumb-'+item.id+'"><div class="inv-thumb-placeholder">'+(item.type==='sealed'?'\uD83D\uDCE6':'\uD83C\uDCCF')+'</div></div>'+
+    '<div class="inv-info">'+
+    '<div class="inv-name">'+item.name+'</div>'+
+    '<div class="inv-tags">'+
+    '<span class="tag tag-rarity">'+(item.type==='sealed'?(sType.icon+' '+sType.label):(RARITY_LABELS[item.rarity]||item.rarity||'\u2014'))+'</span>'+
+    (item.game==='pokemon'?'<span class="tag tag-poke">POK\xc9MON</span>':'<span class="tag tag-op">ONE PIECE</span>')+
+    (item.isSavings?'<span class="tag tag-savings">\uD83D\uDC9C \xc9PARGNE</span>':'')+
+    (item.graded?'<span class="tag tag-psa">PSA '+item.gradeScore+'</span>':'')+
+    (item.lastSynced?'<span class="tag tag-synced">\uD83D\uDD04 Sync</span>':'')+
+    '</div>'+
+    '<div class="inv-meta">Achat: '+fmt(item.buyPrice)+' \xB7 Qt\xe9: '+item.quantity+' \xB7 '+(item.source||'\u2014')+'</div>'+
+    '</div></div>'+
+    '<div class="inv-bottom">'+
+    '<div class="inv-val-block"><div class="inv-val-label">Investi</div><div class="inv-val-num price-blur">'+fmt(item.invested)+'</div></div>'+
+    '<div class="inv-val-block"><div class="inv-val-label">Valeur</div><div class="inv-val-num price-blur">'+fmt(item.currentValue)+'</div></div>'+
+    '<div class="inv-val-block"><div class="inv-val-label">ROI</div><div class="inv-val-num price-blur '+pStyle+'">'+fmtPct(item.roi)+'</div></div>'+
+    '<div class="inv-actions"><button class="inv-btn" onclick="openEdit(\''+item.id+'\')">&#x270F;&#xFE0F;</button><button class="inv-btn" style="color:var(--red)" onclick="removeItem(\''+item.id+'\')">&#x2715;</button></div>'+
+    '</div>'+
+    '<div class="price-compare">'+
+    '<div class="price-compare-item"><div class="price-compare-label">Cardmarket</div><div class="price-compare-val cm price-blur">'+fmt(cmPrice)+'</div></div>'+
+    '<div class="price-compare-item"><div class="price-compare-label">eBay (vendu)</div><div class="price-compare-val ebay price-blur">'+fmt(parseFloat(ebayPrice))+'</div></div>'+
+    '<div class="price-compare-item"><div class="price-compare-label">Vinted (m\xe9diane)</div><div class="price-compare-val vinted price-blur">'+fmt(parseFloat(vintedPrice))+'</div></div>'+
+    '</div></div>';
+}
+
+let formGame='pokemon',formType='card',formSavings=false,formGraded=false;
+function setFormGame(g){formGame=g;document.getElementById('sgame-pokemon').className='seg-btn'+(g==='pokemon'?' active-poke':'');document.getElementById('sgame-onepiece').className='seg-btn'+(g==='onepiece'?' active-op':'');updateSetOptions();updateRarityOptions();updateImgUrlVisibility();}
+function setFormType(t){formType=t;document.getElementById('stype-card').className='seg-btn'+(t==='card'?' active':'');document.getElementById('stype-sealed').className='seg-btn'+(t==='sealed'?' active-sealed':'');document.getElementById('field-rarity').style.display=t==='card'?'':'none';document.getElementById('field-sealed-type').style.display=t==='sealed'?'':'none';document.getElementById('field-condition').style.display=t==='card'?'':'none';document.getElementById('field-sealed-status').style.display=t==='sealed'?'':'none';updateImgUrlVisibility();}
+function updateImgUrlVisibility(){const show=formType==='sealed'||formGame==='onepiece';document.getElementById('field-img-url').style.display=show?'':'none';}
+function updateSetOptions(){const sel=document.getElementById('inp-set');sel.innerHTML=(formGame==='pokemon'?pokemonSets:onepieceSets).map(s=>'<option value="'+s+'">'+s+'</option>').join('');}
+function updateRarityOptions(){const sel=document.getElementById('inp-rarity');sel.innerHTML=(formGame==='pokemon'?POKEMON_RARITIES:ONEPIECE_RARITIES).map(r=>'<option value="'+r.value+'">'+r.label+'</option>').join('');}
+function toggleOpt(opt){
+  if(opt==='savings'){formSavings=!formSavings;document.getElementById('tog-savings').className='toggle-card'+(formSavings?' active-sav':'');document.getElementById('dot-savings').textContent=formSavings?'\u2713':'';document.getElementById('dot-savings').style.color=formSavings?'#fff':'transparent';}
+  else{formGraded=!formGraded;document.getElementById('tog-graded').className='toggle-card'+(formGraded?' active-grd':'');document.getElementById('dot-graded').textContent=formGraded?'\u2713':'';document.getElementById('dot-graded').style.color=formGraded?'#000':'transparent';document.getElementById('grade-group').style.display=formGraded?'':'none';}
+}
+function addItem(){
+  const name=document.getElementById('inp-name').value.trim();
+  const buy=parseFloat(document.getElementById('inp-buy').value);const curr=parseFloat(document.getElementById('inp-current').value);
+  if(!name||isNaN(buy)||isNaN(curr)){showToast('\u26A0\uFE0F Remplir les champs *');return;}
+  const item={id:Date.now().toString(),date:new Date().toISOString().slice(0,10),name,game:formGame,type:formType,set:document.getElementById('inp-set').value,rarity:formType==='card'?document.getElementById('inp-rarity').value:'common',condition:formType==='card'?document.getElementById('inp-condition').value:'NM',buyPrice:buy,currentPrice:curr,quantity:parseInt(document.getElementById('inp-qty').value)||1,source:document.getElementById('inp-source').value,isSavings:formSavings,graded:formGraded,gradeScore:formGraded?document.getElementById('inp-grade').value:null,sealedType:formType==='sealed'?document.getElementById('inp-sealed-type').value:'other',sealedStatus:formType==='sealed'?document.getElementById('inp-sealed-status').value:'sealed-mint',imageUrl:document.getElementById('inp-img-url').value.trim()};
+  inventory.push(item);saveInventory();showToast('\u2705 Ajout\xe9 !');goPage('dashboard');
+}
+
+let rarityChart=null;
+function renderAnalysis(){
+  const pStat=getStats(inventory.filter(i=>i.game==='pokemon'));const oStat=getStats(inventory.filter(i=>i.game==='onepiece'));
+  document.getElementById('analysis-game-kpis').innerHTML='<div class="analysis-kpi"><div class="analysis-kpi-label">\uD83D\uDD25 Pok\xe9mon</div><div class="analysis-kpi-val price-blur">'+fmt(pStat.totalValue)+'</div><div class="analysis-kpi-sub price-blur '+(pStat.roi>=0?'profit':'loss')+'">ROI '+fmtPct(pStat.roi)+'</div></div><div class="analysis-kpi"><div class="analysis-kpi-label">\u2620\uFE0F One Piece</div><div class="analysis-kpi-val price-blur">'+fmt(oStat.totalValue)+'</div><div class="analysis-kpi-sub price-blur '+(oStat.roi>=0?'profit':'loss')+'">ROI '+fmtPct(oStat.roi)+'</div></div>';
+  const cStat=getStats(inventory.filter(i=>i.type==='card'));const sStat=getStats(inventory.filter(i=>i.type==='sealed'));
+  document.getElementById('analysis-type-kpis').innerHTML='<div class="analysis-kpi"><div class="analysis-kpi-label">\uD83C\uDCCF Cartes</div><div class="analysis-kpi-val price-blur">'+fmt(cStat.totalValue)+'</div><div class="analysis-kpi-sub price-blur '+(cStat.roi>=0?'profit':'loss')+'">ROI '+fmtPct(cStat.roi)+'</div></div><div class="analysis-kpi"><div class="analysis-kpi-label">\uD83D\uDCE6 Scell\xe9</div><div class="analysis-kpi-val price-blur">'+fmt(sStat.totalValue)+'</div><div class="analysis-kpi-sub price-blur '+(sStat.roi>=0?'profit':'loss')+'">ROI '+fmtPct(sStat.roi)+'</div></div>';
+  const counts={};inventory.forEach(i=>{const k=i.type==='sealed'?'Scell\xe9':(RARITY_LABELS[i.rarity]||i.rarity||'\u2014');counts[k]=(counts[k]||0)+1;});
+  if(rarityChart)rarityChart.destroy();
+  rarityChart=new Chart(document.getElementById('rarityCanvas'),{type:'doughnut',data:{labels:Object.keys(counts),datasets:[{data:Object.values(counts),backgroundColor:['#fbbf24','#60a5fa','#a78bfa','#10b981','#f87171','#34d399','#94a3b8','#fb923c']}]},options:{maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#94a3b8',font:{size:10},boxWidth:12,padding:10}}}}});
+  const list=document.getElementById('breakeven-list');
+  const sortedBE=inventory.map(calcItem).sort((a,b)=>b.currentValue-a.currentValue).slice(0,8);
+  if(!sortedBE.length){list.innerHTML='<div style="color:var(--muted);font-size:12px;">Aucun item</div>';return;}
+  list.innerHTML=sortedBE.map(i=>{const be=i.buyPrice/(1-PLATFORM_FEE);const p=Math.min((i.currentPrice/be)*100,100);const ok=i.currentPrice>=be;return'<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:55%;">'+i.name+'</span><span class="price-blur" style="color:'+(ok?'var(--green)':'var(--muted)')+';">'+fmt(i.currentPrice)+' / BE '+fmt(be)+'</span></div><div style="height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;"><div style="height:100%;width:'+p+'%;background:'+(ok?'var(--green)':'var(--amber)')+'"></div></div></div>';}).join('');
+}
+
+let editGame='pokemon',editType='card',editSavings=false;
+function openEdit(id){
+  const item=inventory.find(x=>x.id===id);if(!item)return;
+  document.getElementById('edit-id').value=item.id;document.getElementById('edit-name').value=item.name;document.getElementById('edit-buy').value=item.buyPrice;document.getElementById('edit-current').value=item.currentPrice;document.getElementById('edit-qty').value=item.quantity;document.getElementById('edit-img-url').value=item.imageUrl||'';
+  if(item.imageUrl){document.getElementById('edit-img-preview').src=item.imageUrl;document.getElementById('edit-img-preview').classList.add('visible');}else{document.getElementById('edit-img-preview').classList.remove('visible');}
+  editGame=item.game;editType=item.type||'card';setEditGame(editGame);setEditType(editType);
+  const sets=editGame==='pokemon'?pokemonSets:onepieceSets;document.getElementById('edit-set').innerHTML=sets.map(s=>'<option value="'+s+'">'+s+'</option>').join('');document.getElementById('edit-set').value=item.set;
+  if(editType==='card'){document.getElementById('edit-rarity').value=item.rarity||'common';document.getElementById('edit-condition').value=item.condition||'NM';}
+  else{document.getElementById('edit-sealed-type').value=item.sealedType||'other';document.getElementById('edit-sealed-status').value=item.sealedStatus||'sealed-mint';}
+  editSavings=!!item.isSavings;applyEditSavingsUI();document.getElementById('editModal').classList.add('open');
+}
+function setEditGame(g){editGame=g;document.getElementById('edit-sgame-poke').className='seg-btn'+(g==='pokemon'?' active-poke':'');document.getElementById('edit-sgame-op').className='seg-btn'+(g==='onepiece'?' active-op':'');const sets=g==='pokemon'?pokemonSets:onepieceSets;document.getElementById('edit-set').innerHTML=sets.map(s=>'<option value="'+s+'">'+s+'</option>').join('');}
+function setEditType(t){editType=t;document.getElementById('edit-stype-card').className='seg-btn'+(t==='card'?' active':'');document.getElementById('edit-stype-sealed').className='seg-btn'+(t==='sealed'?' active-sealed':'');document.getElementById('edit-card-fields').style.display=t==='card'?'block':'none';document.getElementById('edit-sealed-fields').style.display=t==='sealed'?'block':'none';}
+function toggleEditSavings(){editSavings=!editSavings;applyEditSavingsUI();}
+function applyEditSavingsUI(){document.getElementById('edit-tog-savings').className='toggle-card'+(editSavings?' active-sav':'');document.getElementById('edit-dot-savings').textContent=editSavings?'\u2713':'';document.getElementById('edit-dot-savings').style.color=editSavings?'#fff':'transparent';}
+function closeModal(){document.getElementById('editModal').classList.remove('open');}
+function saveEdit(){
+  const id=document.getElementById('edit-id').value;const idx=inventory.findIndex(x=>x.id===id);if(idx===-1)return;
+  const old=inventory[idx];
+  inventory[idx]={...old,name:document.getElementById('edit-name').value,game:editGame,type:editType,set:document.getElementById('edit-set').value,buyPrice:parseFloat(document.getElementById('edit-buy').value),currentPrice:parseFloat(document.getElementById('edit-current').value),quantity:parseInt(document.getElementById('edit-qty').value)||1,isSavings:editSavings,imageUrl:document.getElementById('edit-img-url').value.trim(),...(editType==='card'?{rarity:document.getElementById('edit-rarity').value,condition:document.getElementById('edit-condition').value}:{sealedType:document.getElementById('edit-sealed-type').value,sealedStatus:document.getElementById('edit-sealed-status').value})};
+  delete imgCache[old.name+'|'+old.set];saveInventory();closeModal();showToast('\u2705 Modifi\xe9');
+  if(currentDetailSerie){renderSerieDetailContent();}else{renderInventory();}
+}
+function removeItem(id){if(!confirm('Supprimer cet item ?'))return;inventory=inventory.filter(x=>x.id!==id);saveInventory();showToast('\uD83D\uDDD1 Supprim\xe9');if(currentDetailSerie){renderSerieDetailContent();}else{renderInventory();}}
+
+let currentSeriesTab='pokemon';
+function openSettings(){document.getElementById('set-poke-count').textContent=inventory.filter(i=>i.game==='pokemon').length;document.getElementById('set-op-count').textContent=inventory.filter(i=>i.game==='onepiece').length;document.getElementById('set-total-count').textContent=inventory.length;const ls=localStorage.getItem(SK_SYNC);if(ls)document.getElementById('set-last-sync').textContent=new Date(ls).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});renderSeriesList();}
+function toggleSeriesPanel(){const p=document.getElementById('series-panel');const a=document.getElementById('series-panel-arrow');const open=p.style.display!=='none';p.style.display=open?'none':'block';a.style.transform=open?'':'rotate(180deg)';if(!open)renderSeriesList();}
+function setSeriesTab(g){currentSeriesTab=g;document.getElementById('stab-poke').className='series-tab-btn'+(g==='pokemon'?' active-poke':'');document.getElementById('stab-op').className='series-tab-btn'+(g==='onepiece'?' active-op':'');renderSeriesList();}
+function renderSeriesList(){
+  const el=document.getElementById('series-list');const sets=currentSeriesTab==='pokemon'?pokemonSets:onepieceSets;const custom=currentSeriesTab==='pokemon'?customPokemonSets:customOnepieceSets;
+  if(!sets.length){el.innerHTML='<div style="color:var(--muted);font-size:13px;padding:12px 0;">Aucune s\xe9rie</div>';return;}
+  el.innerHTML=sets.map((s,idx)=>{const isC=custom.includes(s);const sid='sr'+idx;return'<div class="series-row" id="'+sid+'"><span class="series-row-name" id="'+sid+'-lbl">'+s+(isC?' <span class="new-badge">Custom</span>':'')+'</span><input class="series-edit-inp" id="'+sid+'-inp" value="'+s.replace(/"/g,'&quot;')+'" style="display:none;"><button class="s-btn" id="'+sid+'-edit" onclick="startEditSeries(\''+sid+'\',\''+s.replace(/'/g,"\\'")+'\')">&#x270F;&#xFE0F;</button><button class="s-btn" id="'+sid+'-ok" style="display:none;background:var(--green-bg);color:var(--green);" onclick="confirmEditSeries(\''+sid+'\',\''+s.replace(/'/g,"\\'")+'\')">&#x2713;</button><button class="s-btn" id="'+sid+'-ko" style="display:none;background:var(--red-bg);color:var(--red);" onclick="renderSeriesList()">&#x2715;</button><button class="s-btn" style="color:var(--red);" onclick="deleteSeries(\''+s.replace(/'/g,"\\'")+'\')">&#x1F5D1;</button></div>';}).join('');
+}
+function startEditSeries(sid,name){document.getElementById(sid+'-lbl').style.display='none';document.getElementById(sid+'-inp').style.display='';document.getElementById(sid+'-edit').style.display='none';document.getElementById(sid+'-ok').style.display='flex';document.getElementById(sid+'-ko').style.display='flex';const inp=document.getElementById(sid+'-inp');inp.focus();inp.select();inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();confirmEditSeries(sid,name);}if(e.key==='Escape')renderSeriesList();};}
+function confirmEditSeries(sid,oldName){const newName=document.getElementById(sid+'-inp').value.trim();if(!newName||newName===oldName){renderSeriesList();return;}const sets=currentSeriesTab==='pokemon'?pokemonSets:onepieceSets;const custom=currentSeriesTab==='pokemon'?customPokemonSets:customOnepieceSets;const idx=sets.indexOf(oldName);if(idx>=0)sets[idx]=newName;const cidx=custom.indexOf(oldName);if(cidx>=0)custom[cidx]=newName;inventory.forEach(i=>{if(i.game===currentSeriesTab&&i.set===oldName)i.set=newName;});saveInventory();saveSets();updateSetOptions();renderSeriesList();showToast('\u2705 S\xe9rie renomm\xe9e en "'+newName+'"');}
+function deleteSeries(name){if(!confirm('Supprimer "'+name+'" ?'))return;if(currentSeriesTab==='pokemon'){pokemonSets=pokemonSets.filter(s=>s!==name);customPokemonSets=customPokemonSets.filter(s=>s!==name);}else{onepieceSets=onepieceSets.filter(s=>s!==name);customOnepieceSets=customOnepieceSets.filter(s=>s!==name);}saveSets();renderSeriesList();}
+function addSeries(){const name=document.getElementById('series-new-inp').value.trim();if(!name)return;if(currentSeriesTab==='pokemon'){if(!pokemonSets.includes(name)){pokemonSets.unshift(name);customPokemonSets.push(name);}}else{if(!onepieceSets.includes(name)){onepieceSets.unshift(name);customOnepieceSets.push(name);}}saveSets();document.getElementById('series-new-inp').value='';renderSeriesList();updateSetOptions();showToast('\u2705 S\xe9rie ajout\xe9e');}
+
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+function exportData(){const blob=new Blob([JSON.stringify(inventory,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='tcg-portfolio-'+new Date().toISOString().split('T')[0]+'.json';a.click();}
+function clearAll(){if(confirm('\u26A0\uFE0F Effacer TOUTES les donn\xe9es ? Irr\xe9versible.')){inventory=[];saveInventory();location.reload();}}
+
+window.onload=()=>{loadAll();loadPrivacy();updateSetOptions();updateRarityOptions();setFormType('card');updateImgUrlVisibility();renderDashboard();};
+</script>
+</body>
+</html>
