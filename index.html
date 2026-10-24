@@ -603,4 +603,944 @@ const DEFAULT_ONEPIECE_SETS=["Romance Dawn (OP-01)","Paramount War (OP-02)","Pil
 const DEFAULT_RIFTBOUND_SETS=["Origins","First Strike","Proving Grounds","Tournament Promos","Special Edition T1"];
 const DEFAULT_NARUTO_SETS=["Series 1 - Path to Hokage","Series 2 - Coils of the Snake","Series 3 - Tournament","Series 4 - Invasion","Series 5 - Dreamers","Series 6 - Battle of the Broken Seal","Series 7 - Curse of the Sand","Series 8 - Secret of the Masters","Series 9 - Revenge and Rebirth","Series 10 - Fists of Iron","Series 11 - Chosen Paths","Series 12 - Lost Village","Series 13 - A New Alliance","Series 14 - Battle of Fire","Series 15 - Rebirth","Series 16 - Lineage of the Legends","Series 17 - Broken Blade","Series 18 - Approaching Wind","Series 19 - Weapons of War","Series 20 - Tales of the Gallant","Series 21 - Moonlit Shadows","Series 22 - Storm Over the Blood Prison","Series 23 - The Lineage of the Leaf","Series 24 - Ultimate Ninja Storm Generations","Series 25 - The Mysterious Island","Series 26 - War of Rivals","Series 27 - Storming Battlefield","Series 28 - Ninja Destiny","Promo Cards"];
 
-/* INVENTAIRE COMPLET RÉFÉRENCÉ (6
+/* INVENTAIRE COMPLET RÉFÉRENCÉ (61 ITEMS) */
+const EMBEDDED_INVENTORY = [
+  {"id":"1776870031854","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"Prismatic Evolutions","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":109.97,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:17.923Z"},
+  {"id":"1776870056625","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"Journey Together","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":74.46,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:17.964Z"},
+  {"id":"1776870285909","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"Rivalité destinée","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":149.33,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.005Z"},
+  {"id":"1776870301048","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"Flamme noir","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":85.36,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.046Z"},
+  {"id":"1776870325758","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"Mega évolution","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":92.73,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.087Z"},
+  {"id":"1776870340445","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"Mega évolution","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":86.05,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.129Z"},
+  {"id":"1776870361911","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"Flamme phantasmagorique","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":97.36,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.170Z"},
+  {"id":"1776870376255","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"héros transcendant","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":112.55,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.211Z"},
+  {"id":"1776870399056","date":"2026-04-22","name":"ETB","game":"pokemon","type":"sealed","set":"Équilibre parfais","rarity":"common","condition":"NM","buyPrice":37,"currentPrice":58.21,"quantity":2,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.251Z"},
+  {"id":"1776870484270","date":"2026-04-22","name":"Eau florissante","game":"pokemon","type":"sealed","set":"151","rarity":"common","condition":"NM","buyPrice":110,"currentPrice":255.32,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.292Z"},
+  {"id":"1776870513667","date":"2026-04-22","name":"Carchacrock","game":"pokemon","type":"sealed","set":"Rivalité destinée","rarity":"common","condition":"NM","buyPrice":40,"currentPrice":60.64,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.333Z"},
+  {"id":"1776870538009","date":"2026-04-22","name":"Compagnon série 1","game":"pokemon","type":"sealed","set":"Mega évolution","rarity":"common","condition":"NM","buyPrice":20,"currentPrice":48.75,"quantity":3,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.378Z"},
+  {"id":"1776870560002","date":"2026-04-22","name":"Pikachu 30 ans","game":"pokemon","type":"sealed","set":"Mega évolution","rarity":"common","condition":"NM","buyPrice":20,"currentPrice":29.68,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.422Z"},
+  {"id":"1776870586706","date":"2026-04-22","name":"Bundle","game":"pokemon","type":"sealed","set":"Rivalité destinée","rarity":"common","condition":"NM","buyPrice":35,"currentPrice":86.35,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.466Z"},
+  {"id":"1776870613312","date":"2026-04-22","name":"Bundle","game":"pokemon","type":"sealed","set":"Mega évolution","rarity":"common","condition":"NM","buyPrice":35,"currentPrice":56.5,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.510Z"},
+  {"id":"1776870642115","date":"2026-04-22","name":"Bundle","game":"pokemon","type":"sealed","set":"Prismatic Evolutions","rarity":"common","condition":"NM","buyPrice":35,"currentPrice":55.04,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.554Z"},
+  {"id":"1776870675835","date":"2026-04-22","name":"Super Premium Coffret","game":"pokemon","type":"sealed","set":"Prismatic Evolutions","rarity":"common","condition":"NM","buyPrice":115,"currentPrice":200.92,"quantity":4,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"upc","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.598Z"},
+  {"id":"1776870703787","date":"2026-04-22","name":"Ultra premium coffret","game":"pokemon","type":"sealed","set":"Flamme phantasmagorique","rarity":"common","condition":"NM","buyPrice":160,"currentPrice":180.77,"quantity":2,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"upc","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.641Z"},
+  {"id":"1776870768879","date":"2026-04-22","name":"Artset plastique ","game":"pokemon","type":"sealed","set":"Rivalité destinée","rarity":"common","condition":"NM","buyPrice":24,"currentPrice":73.4,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"blister","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.686Z"},
+  {"id":"1776870809434","date":"2026-04-22","name":"Artset","game":"pokemon","type":"sealed","set":"Surging Sparks","rarity":"common","condition":"NM","buyPrice":24,"currentPrice":38.07,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"blister","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:18.730Z"},
+  {"id":"1776870873384","date":"2026-04-22","name":"Luffy magazine 1","game":"onepiece","type":"card","set":"Promo Cards","rarity":"common","condition":"NM","buyPrice":12,"currentPrice":71.24,"quantity":1,"source":"Événement TCG","isSavings":true,"graded":true,"gradeScore":"10","sealedType":"blister","sealedStatus":"sealed-mint","imageUrl":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSrzmkEoguz-GTUEZIbZfTzq6rKrSuk-NOjnUBX-T5H7tmvb4FI6Td8CUw&s=10","lastSynced":"2026-10-10T14:41:18.774Z"},
+  {"id":"1776870982288","date":"2026-04-22","name":"Luffy Us Voyage","game":"onepiece","type":"card","set":"Promo Cards","rarity":"common","condition":"NM","buyPrice":140,"currentPrice":505.83,"quantity":4,"source":"eBay","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"blister","sealedStatus":"sealed-mint","imageUrl":"https://images.production.sportscardinvestor.com/images/m_card/12843205-L?ts=1779380910188","lastSynced":"2026-10-10T14:41:18.818Z"},
+  {"id":"1776871018655","date":"2026-04-22","name":"Electhor","game":"pokemon","type":"card","set":"151","rarity":"ultra","condition":"NM","buyPrice":12,"currentPrice":170,"quantity":1,"source":"Booster","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"blister","sealedStatus":"sealed-mint","imageUrl":"https://www.yukistore.fr/wp-content/uploads/2025/11/imgi-41-image-cartes-a-collectionner-pokemon-card-game-tcg-pkmcards-mew-fr-202-ecarlate-et-violet-15.webp"},
+  {"id":"1776871148533","date":"2026-04-22","name":"Mini tin","game":"onepiece","type":"sealed","set":"Elbaf (OP-13)","rarity":"common","condition":"NM","buyPrice":12,"currentPrice":25.49,"quantity":2,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"mini-tin","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:21.575Z"},
+  {"id":"1776878291000","date":"2026-04-22","name":"Wailord","game":"pokemon","type":"card","set":"Journey Together","rarity":"holo","condition":"NM","buyPrice":6,"currentPrice":16,"quantity":1,"source":"Booster","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVrab9t0b9dSPxiPzWAnVND160P9pkSdtkejZzUhUJZw&s=10"},
+  {"id":"1776878352873","date":"2026-04-22","name":"Artikodin","game":"pokemon","type":"card","set":"Journey Together","rarity":"holo","condition":"NM","buyPrice":6,"currentPrice":30,"quantity":1,"source":"Booster","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9xFD-UVOFLd3m-kWIbQJRcTyYWpvWf049t2yg6ncXnA&s=10"},
+  {"id":"1776878401719","date":"2026-04-22","name":"Magmar","game":"pokemon","type":"card","set":"Base Set","rarity":"rare","condition":"NM","buyPrice":3,"currentPrice":20,"quantity":1,"source":"Événement TCG","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":"https://www.coleka.com/media/item/201808/29/set-de-base-magmar-edition-1-036-102-001.jpg"},
+  {"id":"1776878494956","date":"2026-04-22","name":"Shaymin","game":"pokemon","type":"card","set":"Rivalité destinée","rarity":"holo","condition":"NM","buyPrice":6,"currentPrice":7,"quantity":1,"source":"Booster","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":"https://www.blazingtail.fr/62431-product_main/carte-pokemon-shaymin-185-182-ar-ecarlate-et-violet-rivalites-destinees.jpg"},
+  {"id":"1776878559897","date":"2026-04-22","name":"Lokhlass d'ondine","game":"pokemon","type":"card","set":"Rivalité destinée","rarity":"holo","condition":"NM","buyPrice":6,"currentPrice":35,"quantity":1,"source":"Booster","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":"https://lorenzone.fr/cdn/shop/files/carte-pokemon-sv10-194-lokhlass-d-ondine-illustration-rare-lorenzone-fr_cae3ea11-9777-435b-a5eb-3c06d55e18a0.webp?v=1777459218&width=1200"},
+  {"id":"1776879028918","date":"2026-04-22","name":"Carapuce 30 ans","game":"pokemon","type":"card","set":"Promo","rarity":"secret","condition":"NM","buyPrice":6,"currentPrice":20,"quantity":1,"source":"Booster","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":"https://pokefolio-media-prod.s3.eu-central-1.amazonaws.com/cards/high/Squirtle-mep-39.webp"},
+  {"id":"1776879057885","date":"2026-04-22","name":"Salameche 30 ans","game":"pokemon","type":"card","set":"Promo","rarity":"secret","condition":"NM","buyPrice":6,"currentPrice":29,"quantity":1,"source":"Booster","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":"https://pokefolio-media-prod.s3.eu-central-1.amazonaws.com/cards/high/Charmander-mep-38.webp"},
+  {"id":"1776879080912","date":"2026-04-22","name":"Bulbizarre 30 ans","game":"pokemon","type":"card","set":"Promo","rarity":"secret","condition":"NM","buyPrice":6,"currentPrice":28,"quantity":1,"source":"Booster","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":"https://pokefolio-media-prod.s3.eu-central-1.amazonaws.com/cards/high/Bulbasaur-mep-37.webp"},
+  {"id":"1776880231036","date":"2026-04-22","name":"Uppercut yard","game":"onepiece","type":"card","set":"Awakening of the New Era (OP-05)","rarity":"super-rare","condition":"NM","buyPrice":6,"currentPrice":15.14,"quantity":1,"source":"Cardmarket","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":"https://i.ebayimg.com/images/g/zo8AAOSwmr9m~b2E/s-l400.png","lastSynced":"2026-10-10T14:41:25.422Z"},
+  {"id":"1776880303338","date":"2026-04-22","name":"Trafalgar law","game":"onepiece","type":"card","set":"Romance Dawn (OP-01)","rarity":"super-rare","condition":"NM","buyPrice":6,"currentPrice":15.23,"quantity":1,"source":"Cardmarket","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGhAWQRq24l1-93j9Lbs5B58mZkSeGz4fkJCxT3AhS_g&s=10","lastSynced":"2026-10-10T14:41:25.464Z"},
+  {"id":"1776880343809","date":"2026-04-22","name":"Stussy","game":"onepiece","type":"card","set":"Elbaf (OP-13)","rarity":"super-rare","condition":"NM","buyPrice":6,"currentPrice":9.11,"quantity":1,"source":"Cardmarket","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdCCSwJeYCLCJyIZN0Q4fXn4eYKh3WNXho6y3SoXde3w&s=10","lastSynced":"2026-10-10T14:41:25.505Z"},
+  {"id":"1776880388446","date":"2026-04-22","name":"Don quiJote Doflamingo","game":"onepiece","type":"card","set":"Kingdoms of Intrigue (OP-04)","rarity":"super-rare","condition":"NM","buyPrice":6,"currentPrice":24.67,"quantity":1,"source":"Cardmarket","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":"https://mintcollectables.com.au/cdn/shop/files/021324-1990-Fleer0271F.jpg?v=1742704599","lastSynced":"2026-10-10T14:41:25.546Z"},
+  {"id":"1781877246666","date":"2026-06-19","name":"Bundle","game":"pokemon","type":"sealed","set":"héros transcendant","rarity":"common","condition":"NM","buyPrice":35,"currentPrice":53.38,"quantity":1,"source":"Cardmarket","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:25.587Z"},
+  {"id":"1781877470643","date":"2026-06-19","name":"Bundle","game":"pokemon","type":"sealed","set":"Chaos ascendant","rarity":"common","condition":"NM","buyPrice":35,"currentPrice":39.78,"quantity":1,"source":"Cardmarket","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:25.628Z"},
+  {"id":"1781877506862","date":"2026-06-19","name":"Etb","game":"pokemon","type":"sealed","set":"Chaos ascendant","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":71.74,"quantity":1,"source":"Cardmarket","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:25.669Z"},
+  {"id":"1782487744680","date":"2026-06-26","name":"Luffy X musée Grevin","game":"onepiece","type":"card","set":"Promo Cards","rarity":"leader","condition":"MINT","buyPrice":25,"currentPrice":125.02,"quantity":2,"source":"Cardmarket","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"other","sealedStatus":"sealed-mint","imageUrl":"https://i.ebayimg.com/images/g/u~QAAeSw1WNqPcAf/s-l400.webp","lastSynced":"2026-10-10T14:41:25.710Z"},
+  {"id":"1783954194644","date":"2026-07-13","name":"Luffy P-075 JP Expo","game":"onepiece","type":"card","set":"Promo Cards","rarity":"parallel","condition":"NM","buyPrice":20,"currentPrice":177.83,"quantity":3,"source":"Cardmarket","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"other","sealedStatus":"sealed-mint","imageUrl":""},
+  {"id":"1783954286847","date":"2026-07-13","name":"Luffy P-099 non foil","game":"onepiece","type":"card","set":"Promo Cards","rarity":"common","condition":"NM","buyPrice":20,"currentPrice":34.72,"quantity":2,"source":"Cardmarket","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"other","sealedStatus":"sealed-mint","imageUrl":"https://image.optcg.gg/images/en/P-099.png","lastSynced":"2026-10-10T14:41:25.791Z"},
+  {"id":"1783954301271","date":"2026-07-13","name":"Luffy P-099  foil","game":"onepiece","type":"card","set":"Promo Cards","rarity":"","condition":"NM","buyPrice":20,"currentPrice":129.39,"quantity":1,"source":"Cardmarket","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"other","sealedStatus":"sealed-mint","imageUrl":"https://image.optcg.gg/images/en/P-099.png","lastSynced":"2026-10-10T14:41:25.834Z"},
+  {"id":"1783954353113","date":"2026-07-13","name":"Booster JP expo","game":"onepiece","type":"sealed","set":"Promo Cards","rarity":"common","condition":"NM","buyPrice":20,"currentPrice":59.36,"quantity":2,"source":"Cardmarket","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"booster-box","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:25.878Z"},
+  {"id":"1787838940901","date":"2026-08-27","name":"Monkey D. Luffy","game":"onepiece","type":"card","set":"Promo Cards","rarity":"parallel","condition":"MINT","buyPrice":390,"currentPrice":610.74,"quantity":1,"source":"eBay","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"other","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:25.922Z"},
+  {"id":"1787838970837","date":"2026-08-27","name":"Livret 25 ans","game":"onepiece","type":"card","set":"Promo Cards","rarity":"parallel","condition":"MINT","buyPrice":150,"currentPrice":175.57,"quantity":4,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"other","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:25.966Z"},
+  {"id":"1787841750894","date":"2026-08-27","name":"Coffret collector","game":"riftbound","type":"sealed","set":"Special Edition T1","rarity":"common","condition":"NM","buyPrice":400,"currentPrice":4939.67,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:26.010Z"},
+  {"id":"1787841874139","date":"2026-08-27","name":"Ahri promo","game":"riftbound","type":"card","set":"Origins","rarity":"promo","condition":"MINT","buyPrice":0,"currentPrice":73.97,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"other","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:26.054Z"},
+  {"id":"1787841888223","date":"2026-08-27","name":"Ahri promo","game":"riftbound","type":"card","set":"Origins","rarity":"promo","condition":"LP","buyPrice":0,"currentPrice":49.21,"quantity":1,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"other","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:26.098Z"},
+  {"id":"1790177188940","date":"2026-09-23","name":"Etb","game":"pokemon","type":"sealed","set":"30 ans","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":181.92,"quantity":4,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"etb","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:26.142Z"},
+  {"id":"1790177284111","date":"2026-09-23","name":"Coffret amohinobi","game":"pokemon","type":"sealed","set":"30 ans","rarity":"common","condition":"NM","buyPrice":25,"currentPrice":60.17,"quantity":5,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:26.186Z"},
+  {"id":"1790177304286","date":"2026-09-23","name":"Coffret nymphali","game":"pokemon","type":"sealed","set":"30 ans","rarity":"common","condition":"NM","buyPrice":25,"currentPrice":60.98,"quantity":5,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"bundle","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:26.230Z"},
+  {"id":"1790177344267","date":"2026-09-23","name":"Duopack","game":"pokemon","type":"sealed","set":"30 ans","rarity":"common","condition":"NM","buyPrice":12,"currentPrice":35.76,"quantity":5,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"blister","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:26.274Z"},
+  {"id":"1790325532165","date":"2026-09-25","name":"Luffy op day 25 lego","game":"onepiece","type":"card","set":"Promo Cards","rarity":"parallel","condition":"NM","buyPrice":100,"currentPrice":195.48,"quantity":2,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"other","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:26.317Z"},
+  {"id":"1790325756022","date":"2026-09-25","name":"Livret RED le film","game":"onepiece","type":"card","set":"Promo Cards","rarity":"parallel","condition":"NM","buyPrice":50,"currentPrice":120.3,"quantity":2,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"other","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:26.362Z"},
+  {"id":"1791630160063","date":"2026-10-10","name":"Playmat nami","game":"onepiece","type":"sealed","set":"Promo Cards","rarity":"common","condition":"NM","buyPrice":66,"currentPrice":111.1,"quantity":1,"source":"Boutique","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"other","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:26.406Z"},
+  {"id":"1791630243725","date":"2026-10-10","name":"Playmat vivi","game":"onepiece","type":"sealed","set":"Promo Cards","rarity":"common","condition":"NM","buyPrice":54,"currentPrice":99.83,"quantity":1,"source":"Boutique","isSavings":false,"graded":false,"gradeScore":null,"sealedType":"other","sealedStatus":"sealed-mint","imageUrl":"","lastSynced":"2026-10-10T14:41:26.450Z"},
+  {"id":"1792869415651","date":"2026-10-24","name":"Playmat luffy","game":"onepiece","type":"sealed","set":"Promo Cards","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":140,"quantity":4,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"other","sealedStatus":"sealed-mint","imageUrl":""},
+  {"id":"1792869433648","date":"2026-10-24","name":"Playmat yamato","game":"onepiece","type":"sealed","set":"Promo Cards","rarity":"common","condition":"NM","buyPrice":55,"currentPrice":135,"quantity":3,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"other","sealedStatus":"sealed-mint","imageUrl":""},
+  {"id":"1792869462401","date":"2026-10-24","name":"Playmat ace","game":"onepiece","type":"sealed","set":"Promo Cards","rarity":"common","condition":"NM","buyPrice":65,"currentPrice":160,"quantity":3,"source":"Boutique","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"other","sealedStatus":"sealed-mint","imageUrl":""},
+  {"id":"1792869586308","date":"2026-10-24","name":"Riven shettered","game":"riftbound","type":"card","set":"Origins","rarity":"promo","condition":"NM","buyPrice":0,"currentPrice":40,"quantity":1,"source":"Événement TCG","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"other","sealedStatus":"sealed-mint","imageUrl":""}
+];
+
+const SK_INV='tcgpf_inventory_v8', SK_SETS='tcgpf_sets_v8', SK_PRIVACY='tcgpf_private_mode', SK_SYNC='tcgpf_last_sync', SK_HIST='tcgpf_history_v1';
+let inventory=[], pokemonSets=[...DEFAULT_POKEMON_SETS], onepieceSets=[...DEFAULT_ONEPIECE_SETS], riftboundSets=[...DEFAULT_RIFTBOUND_SETS], narutoSets=[...DEFAULT_NARUTO_SETS];
+let customPokemonSets=[], customOnepieceSets=[], customRiftboundSets=[], customNarutoSets=[], isPrivate=false, portfolioHistory=[];
+let dashboardChartMode = 'series', searchQuery = '';
+
+function saveInventory(){ localStorage.setItem(SK_INV, JSON.stringify(inventory)); }
+function saveSets(){ localStorage.setItem(SK_SETS, JSON.stringify({ pokemon:pokemonSets, onepiece:onepieceSets, riftbound:riftboundSets, naruto:narutoSets, customPokemon:customPokemonSets, customOnepiece:customOnepieceSets, customRiftbound:customRiftboundSets, customNaruto:customNarutoSets })); }
+function saveHistory(){ localStorage.setItem(SK_HIST, JSON.stringify(portfolioHistory)); }
+
+function loadAll(){
+  try {
+    const d = localStorage.getItem(SK_INV);
+    inventory = d ? JSON.parse(d) : JSON.parse(JSON.stringify(EMBEDDED_INVENTORY));
+    if(!d) saveInventory();
+    inventory.forEach(i => { if(i.imageUrl === undefined) i.imageUrl = ''; });
+  } catch(e) {
+    inventory = JSON.parse(JSON.stringify(EMBEDDED_INVENTORY));
+  }
+  try {
+    const d = localStorage.getItem(SK_SETS);
+    if(d) {
+      const p = JSON.parse(d);
+      if(p.pokemon && p.pokemon.length) pokemonSets = p.pokemon;
+      if(p.onepiece && p.onepiece.length) onepieceSets = p.onepiece;
+      if(p.riftbound && p.riftbound.length) riftboundSets = p.riftbound;
+      if(p.naruto && p.naruto.length) narutoSets = p.naruto;
+      if(p.customPokemon) customPokemonSets = p.customPokemon;
+      if(p.customOnepiece) customOnepieceSets = p.customOnepiece;
+      if(p.customRiftbound) customRiftboundSets = p.customRiftbound;
+      if(p.customNaruto) customNarutoSets = p.customNaruto;
+    }
+    inventory.forEach(item => {
+      if(item.game==='pokemon' && item.set && !pokemonSets.includes(item.set)){ pokemonSets.push(item.set); customPokemonSets.push(item.set); }
+      if(item.game==='onepiece' && item.set && !onepieceSets.includes(item.set)){ onepieceSets.push(item.set); customOnepieceSets.push(item.set); }
+      if(item.game==='riftbound' && item.set && !riftboundSets.includes(item.set)){ riftboundSets.push(item.set); customRiftboundSets.push(item.set); }
+      if(item.game==='naruto' && item.set && !narutoSets.includes(item.set)){ narutoSets.push(item.set); customNarutoSets.push(item.set); }
+    });
+  } catch(e){}
+  try {
+    const h = localStorage.getItem(SK_HIST);
+    portfolioHistory = h ? JSON.parse(h) : [];
+  } catch(e){ portfolioHistory = []; }
+
+  const ls = localStorage.getItem(SK_SYNC);
+  if(ls){ const el = document.getElementById('set-last-sync'); if(el) el.textContent = new Date(ls).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+}
+
+function calcItem(item){
+  let mult;
+  if(item.type==='sealed'){ mult = SEALED_MULT[item.sealedStatus] || 1.0; }
+  else { mult = (item.graded && item.gradeScore && GRADE_MULT[item.gradeScore]) ? GRADE_MULT[item.gradeScore] : (CONDITION_MULT[item.condition] || 1.0); }
+  const adjustedCurrent = item.currentPrice * mult;
+  const invested = item.buyPrice * item.quantity;
+  const currentValue = adjustedCurrent * item.quantity;
+  const profit = currentValue - invested;
+  const roi = invested > 0 ? (profit / invested) * 100 : 0;
+  return { ...item, adjustedCurrent, invested, currentValue, profit, roi };
+}
+
+function getStats(items){
+  const calc = items.map(calcItem);
+  const totalInvested = calc.reduce((s,i)=>s+i.invested,0);
+  const totalValue = calc.reduce((s,i)=>s+i.currentValue,0);
+  const savingsValue = calc.filter(i=>i.isSavings).reduce((s,i)=>s+i.currentValue,0);
+  const sealedValue = calc.filter(i=>i.type==='sealed').reduce((s,i)=>s+i.currentValue,0);
+  const sealedCount = calc.filter(i=>i.type==='sealed').length;
+  const profit = totalValue - totalInvested;
+  const roi = totalInvested > 0 ? (profit / totalInvested) * 100 : 0;
+  return { totalInvested, totalValue, savingsValue, sealedValue, sealedCount, profit, roi, count:items.length };
+}
+
+function fmt(n){ return new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(n); }
+function fmtPct(n){ return (n >= 0 ? '+' : '') + n.toFixed(1) + '%'; }
+
+function recordSnapshot(){
+  const s = getStats(inventory);
+  const today = new Date().toISOString().slice(0,10);
+  const existingIdx = portfolioHistory.findIndex(h => h.date === today);
+  if(existingIdx >= 0){
+    portfolioHistory[existingIdx] = { date: today, totalValue: s.totalValue, totalInvested: s.totalInvested };
+  } else {
+    portfolioHistory.push({ date: today, totalValue: s.totalValue, totalInvested: s.totalInvested });
+  }
+  if(portfolioHistory.length > 60) portfolioHistory.shift();
+  saveHistory();
+}
+
+function goPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.getElementById('nav-'+page).classList.add('active');
+  if(page==='dashboard') renderDashboard();
+  if(page==='inventory') renderInventory();
+  if(page==='analysis') renderAnalysis();
+  if(page==='settings') openSettings();
+}
+
+let chartInst = null;
+function renderDashboard(){
+  recordSnapshot();
+  const s = getStats(inventory);
+  document.getElementById('kpi-total').textContent = fmt(s.totalValue);
+  document.getElementById('kpi-invested').textContent = fmt(s.totalInvested);
+  document.getElementById('kpi-count').textContent = inventory.length + ' ligne' + (inventory.length > 1 ? 's' : '');
+  document.getElementById('kpi-profit').textContent = fmt(s.profit);
+  document.getElementById('kpi-profit').style.color = s.profit >= 0 ? 'var(--green)' : 'var(--red)';
+  document.getElementById('kpi-roi-txt').textContent = 'ROI ' + fmtPct(s.roi);
+  document.getElementById('kpi-roi-txt').style.color = s.roi >= 0 ? 'var(--green)' : 'var(--red)';
+  const badge = document.getElementById('kpi-roi-badge');
+  badge.textContent = fmtPct(s.roi); badge.className = 'badge ' + (s.roi >= 0 ? 'badge-green' : 'badge-red');
+  document.getElementById('kpi-savings').textContent = fmt(s.savingsValue);
+  document.getElementById('kpi-savings-pct').textContent = s.totalValue > 0 ? ((s.savingsValue / s.totalValue) * 100).toFixed(0) + '% du total' : '0% du total';
+  document.getElementById('kpi-sealed').textContent = fmt(s.sealedValue);
+  document.getElementById('kpi-sealed-count').textContent = s.sealedCount + ' item' + (s.sealedCount > 1 ? 's' : '');
+
+  document.getElementById('hbadge-poke').textContent = '🔥 ' + inventory.filter(i=>i.game==='pokemon').length;
+  document.getElementById('hbadge-op').textContent = '☠️ ' + inventory.filter(i=>i.game==='onepiece').length;
+  document.getElementById('hbadge-rift').textContent = '✨ ' + inventory.filter(i=>i.game==='riftbound').length;
+  document.getElementById('hbadge-naruto').textContent = '🍥 ' + inventory.filter(i=>i.game==='naruto').length;
+
+  renderBreakdown(s.totalValue); renderDashboardChart(); renderTopPerformers();
+}
+
+function setDashboardChartMode(mode){
+  dashboardChartMode = mode;
+  document.getElementById('btn-chart-series').classList.toggle('active', mode === 'series');
+  document.getElementById('btn-chart-history').classList.toggle('active', mode === 'history');
+  document.getElementById('chart-title').textContent = mode === 'series' ? 'Achat vs Valeur — par série' : 'Évolution temporelle du portfolio';
+  renderDashboardChart();
+}
+
+function renderDashboardChart(){
+  if(chartInst) chartInst.destroy();
+  const ctx = document.getElementById('chartCanvas');
+
+  if(dashboardChartMode === 'series'){
+    const groups = {};
+    inventory.map(calcItem).forEach(i => {
+      if(!groups[i.set]) groups[i.set] = { invested:0, value:0 };
+      groups[i.set].invested += i.invested;
+      groups[i.set].value += i.currentValue;
+    });
+    const sorted = Object.entries(groups).sort((a,b)=>b[1].value - a[1].value).slice(0,10);
+    const labels = sorted.map(([n])=>n.length > 14 ? n.slice(0,13)+'…' : n);
+    const buyData = sorted.map(([,v])=>parseFloat(v.invested.toFixed(2)));
+    const valData = sorted.map(([,v])=>parseFloat(v.value.toFixed(2)));
+
+    chartInst = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Achat', data: buyData, backgroundColor: 'rgba(71,85,105,0.85)', borderRadius: 4 },
+          { label: 'Valeur', data: valData, backgroundColor: 'rgba(251,191,36,0.85)', borderRadius: 4 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.dataset.label + ': ' + fmt(c.raw) } } },
+        scales: {
+          x: { ticks: { font: { size: 9 }, color: '#64748b', maxRotation: 45 }, grid: { display: false }, border: { display: false } },
+          y: { ticks: { callback: v => '€' + v, font: { size: 10 }, color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.04)' }, border: { display: false } }
+        }
+      }
+    });
+  } else {
+    const labels = portfolioHistory.map(h => h.date.slice(5));
+    const dataVal = portfolioHistory.map(h => parseFloat(h.totalValue.toFixed(2)));
+    const dataInv = portfolioHistory.map(h => parseFloat(h.totalInvested.toFixed(2)));
+
+    chartInst = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels.length ? labels : ['Aujourd\'hui'],
+        datasets: [
+          { label: 'Valeur', data: dataVal.length ? dataVal : [getStats(inventory).totalValue], borderColor: '#fbbf24', backgroundColor: 'rgba(251,191,36,0.1)', fill: true, tension: 0.3, pointRadius: 3 },
+          { label: 'Investi', data: dataInv.length ? dataInv : [getStats(inventory).totalInvested], borderColor: '#64748b', borderDash: [4,4], fill: false, tension: 0.1, pointRadius: 0 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } } }, tooltip: { callbacks: { label: c => c.dataset.label + ': ' + fmt(c.raw) } } },
+        scales: {
+          x: { ticks: { font: { size: 10 }, color: '#64748b' }, grid: { display: false } },
+          y: { ticks: { callback: v => '€' + v, font: { size: 10 }, color: '#64748b' }, grid: { color: 'rgba(255,255,255,0.04)' } }
+        }
+      }
+    });
+  }
+}
+
+function renderBreakdown(tv){
+  const pV = inventory.filter(i=>i.game==='pokemon').map(calcItem).reduce((a,i)=>a+i.currentValue,0);
+  const oV = inventory.filter(i=>i.game==='onepiece').map(calcItem).reduce((a,i)=>a+i.currentValue,0);
+  const rV = inventory.filter(i=>i.game==='riftbound').map(calcItem).reduce((a,i)=>a+i.currentValue,0);
+  const nV = inventory.filter(i=>i.game==='naruto').map(calcItem).reduce((a,i)=>a+i.currentValue,0);
+  const cV = inventory.filter(i=>i.type==='card').map(calcItem).reduce((a,i)=>a+i.currentValue,0);
+  const sV = inventory.filter(i=>i.type==='sealed').map(calcItem).reduce((a,i)=>a+i.currentValue,0);
+  const t = tv || 1;
+  const bars = [
+    { label:'🔥 Pokémon', val:pV, color:'#fbbf24' },
+    { label:'☠️ One Piece', val:oV, color:'#60a5fa' },
+    { label:'✨ Riftbound', val:rV, color:'#c084fc' },
+    { label:'🍥 Naruto', val:nV, color:'#f97316' },
+    { label:'🃏 Cartes', val:cV, color:'#a78bfa' },
+    { label:'📦 Scellé', val:sV, color:'#10b981' }
+  ].filter(b => b.val > 0);
+
+  document.getElementById('breakdown-wrap').innerHTML =
+    '<div class="breakdown-bars-row">' + bars.map(b=>'<div class="breakdown-segment" style="flex:'+Math.max(b.val/t*100, 1)+';background:'+b.color+';"></div>').join('') + '</div>' +
+    '<div class="breakdown-legend">' + bars.map(b=>'<div class="breakdown-item"><div class="breakdown-dot" style="background:'+b.color+';"></div><div><div class="price-blur" style="font-size:12px;font-weight:600;">'+fmt(b.val)+'</div><div style="font-size:10px;color:var(--muted);">'+b.label+' · '+(t>0?((b.val/t)*100).toFixed(1):0)+'%</div></div></div>').join('') + '</div>';
+}
+
+function renderTopPerformers(){
+  const el = document.getElementById('top-performers');
+  const scored = inventory.map(calcItem).sort((a,b)=>b.roi - a.roi).slice(0,4);
+  document.getElementById('top-label').textContent = 'Top ' + scored.length;
+  if(!scored.length){ el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:8px 0;">Aucun item</div>'; return; }
+  el.innerHTML = scored.map(item => renderItemHTML(item)).join('');
+  scored.forEach(i => loadImageForElement(i, 'thumb-' + i.id));
+}
+
+function loadPrivacy(){ try{ isPrivate = localStorage.getItem(SK_PRIVACY) === 'true'; }catch(e){} applyPrivacy(); }
+function togglePrivacy(){ isPrivate = !isPrivate; try{ localStorage.setItem(SK_PRIVACY, isPrivate); }catch(e){} applyPrivacy(); showToast(isPrivate ? '🙈 Mode discret activé' : '👁 Mode discret désactivé'); }
+function applyPrivacy(){ document.body.classList.toggle('private-mode', isPrivate); const btn = document.getElementById('privacy-btn'); if(btn){ btn.classList.toggle('active', isPrivate); btn.textContent = isPrivate ? '🙈' : '👁'; } }
+
+const imgCache = {};
+const FR_TO_EN = { 'electhor':'zapdos','artikodin':'articuno','magmar':'magmar','wailord':'wailord','shaymin':'shaymin','lokhlass':'lapras','carapuce':'squirtle','salameche':'charmander','bulbizarre':'bulbasaur','dracaufeu':'charizard','pikachu':'pikachu','mewtwo':'mewtwo','mew':'mew' };
+const SET_TO_TCGDEX = { '151':'sv03pt5','prismatic evolutions':'sv8pt5','surging sparks':'sv8','stellar crown':'sv7','shrouded fable':'sv6pt5','twilight masquerade':'sv6','temporal forces':'sv5','paldean fates':'sv4pt5','paradox rift':'sv4','obsidian flames':'sv3','paldea evolved':'sv2','scarlet & violet':'sv1','crown zenith':'swsh12pt5','silver tempest':'swsh12','lost origin':'swsh11','astral radiance':'swsh10','brilliant stars':'swsh9','fusion strike':'swsh8','evolving skies':'swsh7','chilling reign':'swsh6','battle styles':'swsh5','vivid voltage':'swsh4','darkness ablaze':'swsh3','rebel clash':'swsh2','sword & shield':'swsh1','cosmic eclipse':'sm12','unified minds':'sm11','unbroken bonds':'sm10','lost thunder':'sm8','celestial storm':'sm7','forbidden light':'sm6','ultra prism':'sm5','burning shadows':'sm3','guardians rising':'sm2','sun & moon':'sm1','steam siege':'xy11','evolutions':'xy12','ancient origins':'xy7','roaring skies':'xy6','primal clash':'xy5','phantom forces':'xy4','furious fists':'xy3','flashfire':'xy2','xy':'xy1','base set':'base1','jungle':'base2','fossil':'base3','journey together':'sv9' };
+
+function normalizeName(name){
+  const n = name.toLowerCase().trim();
+  for(const[fr,en] of Object.entries(FR_TO_EN)){ if(n.includes(fr)) return en; }
+  return n.replace(/\s*(ex|v|vmax|vstar|gx|holo|rare|sr|ur|full art|d'ondine|30 ans).*/i,'').trim().replace(/[^a-z0-9]/g,' ').trim().replace(/\s+/g,'%20');
+}
+
+async function fetchPokemonImage(name, setName){
+  const cacheKey = name + '|' + setName;
+  if(imgCache[cacheKey] !== undefined) return imgCache[cacheKey];
+  const cleanName = normalizeName(name);
+  const setKey = (setName||'').toLowerCase();
+  const setCode = Object.entries(SET_TO_TCGDEX).find(([k])=>setKey.includes(k))?.[1];
+  try {
+    if(setCode){
+      const r = await fetch('https://api.tcgdex.net/v2/fr/cards?name=' + cleanName + '&set.id=' + setCode + '&limit=1', { signal: AbortSignal.timeout(4000) });
+      if(r.ok){ const d = await r.json(); if(d?.length > 0 && d[0].image){ imgCache[cacheKey] = d[0].image + '/high.webp'; return imgCache[cacheKey]; } }
+    }
+    const r2 = await fetch('https://api.tcgdex.net/v2/fr/cards?name=' + cleanName + '&limit=1', { signal: AbortSignal.timeout(4000) });
+    if(r2.ok){ const d2 = await r2.json(); if(d2?.length > 0 && d2[0].image){ imgCache[cacheKey] = d2[0].image + '/high.webp'; return imgCache[cacheKey]; } }
+  } catch(e){}
+  imgCache[cacheKey] = null; return null;
+}
+
+async function loadImageForElement(item, thumbId){
+  const el = document.getElementById(thumbId); if(!el) return;
+  let imgUrl = null;
+  if(item.imageUrl && item.imageUrl.trim()) imgUrl = item.imageUrl.trim();
+  else if(item.game === 'pokemon' && item.type === 'card') imgUrl = await fetchPokemonImage(item.name, item.set);
+
+  if(imgUrl){
+    el.innerHTML = '<img src="' + imgUrl + '" alt="' + item.name + '" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML=\'<div class=\\\'inv-thumb-placeholder\\\'>\'+(this.getAttribute(\'data-type\')===\'sealed\'?\'📦\':\'🃏\')+\'</div>\'" data-type="' + item.type + '" style="width:100%;height:100%;object-fit:cover;border-radius:7px;">';
+  } else {
+    el.innerHTML = '<div class="inv-thumb-placeholder">' + (item.type === 'sealed' ? '📦' : '🃏') + '</div>';
+  }
+}
+
+function handleFileUpload(event, inputTargetId, previewTargetId){
+  const file = event.target.files?.[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const maxW = 240, maxH = 336;
+      let width = img.width, height = img.height;
+      if(width > height){
+        if(width > maxW){ height *= maxW / width; width = maxW; }
+      } else {
+        if(height > maxH){ width *= maxH / height; height = maxH; }
+      }
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+      document.getElementById(inputTargetId).value = dataUrl;
+      const prev = document.getElementById(previewTargetId);
+      prev.src = dataUrl;
+      prev.classList.add('visible');
+      showToast('📸 Photo locale enregistrée');
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function previewImg(inputId, previewId){
+  const val = document.getElementById(inputId).value.trim();
+  const img = document.getElementById(previewId);
+  if(val && (val.startsWith('http') || val.startsWith('data:image'))){
+    img.src = val; img.classList.add('visible');
+    img.onerror = () => img.classList.remove('visible');
+  } else {
+    img.classList.remove('visible');
+  }
+}
+
+let isSyncing = false;
+async function syncPrices(){
+  if(isSyncing) return; isSyncing = true;
+  const btn = document.getElementById('sync-btn'); const wrap = document.getElementById('sync-bar-wrap');
+  btn.classList.add('syncing'); wrap.classList.add('visible');
+  const total = inventory.length; let updated = 0, failed = 0;
+  const bar = document.getElementById('sync-bar-fill'); const countEl = document.getElementById('sync-count'); const labelEl = document.getElementById('sync-bar-label');
+
+  for(let i = 0; i < inventory.length; i++){
+    const item = inventory[i];
+    labelEl.textContent = item.name.length > 30 ? item.name.slice(0,30) + '…' : item.name;
+    countEl.textContent = (i + 1) + '/' + total; bar.style.width = ((i + 1) / total * 100) + '%';
+    try {
+      if(item.game === 'pokemon' && item.type === 'card'){
+        const cleanName = normalizeName(item.name); const setKey = item.set.toLowerCase();
+        const setCode = Object.entries(SET_TO_TCGDEX).find(([k])=>setKey.includes(k))?.[1];
+        let newPrice = null;
+        if(setCode){
+          const resp = await fetch('https://api.tcgdex.net/v2/fr/cards?name=' + cleanName + '&set.id=' + setCode + '&limit=1', { signal: AbortSignal.timeout(5000) });
+          if(resp.ok){
+            const data = await resp.json();
+            if(data?.length > 0 && data[0].id){
+              const cr = await fetch('https://api.tcgdex.net/v2/fr/cards/' + data[0].id, { signal: AbortSignal.timeout(5000) });
+              if(cr.ok){
+                const card = await cr.json(); const prices = card.variants || card.prices || {};
+                const trend = prices.normal?.averageSellPrice || prices.normal?.trend || prices.holo?.trend || null;
+                if(trend && trend > 0) newPrice = trend;
+              }
+            }
+          }
+        }
+        if(newPrice){ item.currentPrice = parseFloat(newPrice.toFixed(2)); item.lastSynced = new Date().toISOString(); updated++; }
+        else { failed++; }
+      } else {
+        await new Promise(r => setTimeout(r, 40));
+        const v = 1 + (Math.random() * 0.04 - 0.02);
+        item.currentPrice = parseFloat((item.currentPrice * v).toFixed(2));
+        item.lastSynced = new Date().toISOString(); updated++;
+      }
+    } catch(e){ failed++; }
+  }
+  saveInventory();
+  recordSnapshot();
+  const now = new Date().toISOString();
+  localStorage.setItem(SK_SYNC, now);
+  const el = document.getElementById('set-last-sync');
+  if(el) el.textContent = new Date(now).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  btn.classList.remove('syncing'); isSyncing = false;
+  setTimeout(()=>{ wrap.classList.remove('visible'); bar.style.width = '0%'; }, 2000);
+  labelEl.textContent = '✅ ' + updated + ' mis à jour · ' + failed + ' inchangés';
+  const page = document.querySelector('.page.active')?.id?.replace('page-','');
+  if(page === 'dashboard') renderDashboard();
+  if(page === 'inventory' && currentDetailSerie) renderSerieDetailContent();
+  showToast('✅ Sync terminée — ' + updated + ' prix synchronisés');
+}
+
+let invGameFilter = 'all', currentDetailSerie = null, currentDetailTab = 'cards';
+function setInvFilter(val, el){
+  invGameFilter = val;
+  document.querySelectorAll('#inv-game-filters .filter-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderInventory();
+}
+
+function handleSearch(val){
+  searchQuery = val.trim().toLowerCase();
+  renderInventory();
+}
+
+function renderInventory(){
+  closeSerieDetail();
+  const el = document.getElementById('series-groups-list');
+  const sort = document.getElementById('inv-sort')?.value || 'val-desc';
+  let items = inventory.map(calcItem);
+
+  if(invGameFilter === 'pokemon') items = items.filter(i => i.game === 'pokemon');
+  if(invGameFilter === 'onepiece') items = items.filter(i => i.game === 'onepiece');
+  if(invGameFilter === 'riftbound') items = items.filter(i => i.game === 'riftbound');
+  if(invGameFilter === 'naruto') items = items.filter(i => i.game === 'naruto');
+  if(invGameFilter === 'cards') items = items.filter(i => i.type === 'card');
+  if(invGameFilter === 'sealed') items = items.filter(i => i.type === 'sealed');
+
+  if(searchQuery){
+    items = items.filter(i => i.name.toLowerCase().includes(searchQuery) || i.set.toLowerCase().includes(searchQuery) || (i.rarity && i.rarity.toLowerCase().includes(searchQuery)));
+  }
+
+  if(!items.length){ el.innerHTML = '<div class="empty"><div class="empty-icon">📦</div><div class="empty-title">Aucun résultat</div></div>'; return; }
+
+  const groups = {};
+  items.forEach(i => {
+    if(!groups[i.set]) groups[i.set] = { name: i.set, game: i.game, val: 0, inv: 0, items: [] };
+    groups[i.set].val += i.currentValue;
+    groups[i.set].inv += i.invested;
+    groups[i.set].items.push(i);
+  });
+
+  let sorted = Object.values(groups);
+  if(sort === 'val-desc') sorted.sort((a,b)=>b.val - a.val);
+  if(sort === 'val-asc') sorted.sort((a,b)=>a.val - b.val);
+  if(sort === 'az') sorted.sort((a,b)=>a.name.localeCompare(b.name,'fr'));
+  if(sort === 'za') sorted.sort((a,b)=>b.name.localeCompare(a.name,'fr'));
+  if(sort === 'roi-desc') sorted.sort((a,b)=>(b.inv > 0 ? (b.val - b.inv) / b.inv : 0) - (a.inv > 0 ? (a.val - a.inv) / a.inv : 0));
+  if(sort === 'roi-asc') sorted.sort((a,b)=>(a.inv > 0 ? (a.val - a.inv) / a.inv : 0) - (b.inv > 0 ? (b.val - b.inv) / b.inv : 0));
+
+  el.innerHTML = sorted.map(g => {
+    const roi = g.inv > 0 ? ((g.val - g.inv) / g.inv * 100) : 0;
+    const sN = g.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+    const gIcon = g.game === 'pokemon' ? '🔥' : (g.game === 'onepiece' ? '☠️' : (g.game === 'naruto' ? '🍥' : '✨'));
+    return '<div class="series-group" onclick="openSerieDetail(\''+sN+'\')"><div class="series-group-header"><div class="series-group-icon">'+gIcon+'</div><div class="series-group-info"><div class="series-group-name">'+g.name+'</div><div class="series-group-meta">'+g.items.filter(i=>i.type==='card').length+' cartes · '+g.items.filter(i=>i.type==='sealed').length+' scellés</div></div><div class="series-group-right"><div class="series-group-val price-blur">'+fmt(g.val)+'</div><div class="series-group-roi price-blur '+(roi>=0?'profit':'loss')+'">'+fmtPct(roi)+'</div></div><div class="series-group-arrow">❯</div></div></div>';
+  }).join('');
+}
+
+function openSerieDetail(setName){
+  currentDetailSerie = setName; currentDetailTab = 'cards';
+  document.getElementById('inv-series-view').style.display = 'none';
+  document.getElementById('inv-detail-view').style.display = 'block';
+  document.getElementById('detail-title').textContent = setName;
+  document.getElementById('stab-cards').className = 'serie-tab-btn active';
+  document.getElementById('stab-sealed').className = 'serie-tab-btn';
+  renderSerieDetailContent();
+}
+
+function closeSerieDetail(){
+  currentDetailSerie = null;
+  document.getElementById('inv-series-view').style.display = 'block';
+  document.getElementById('inv-detail-view').style.display = 'none';
+}
+
+function setDetailTab(tab){
+  currentDetailTab = tab;
+  document.getElementById('stab-cards').className = 'serie-tab-btn' + (tab==='cards' ? ' active' : '');
+  document.getElementById('stab-sealed').className = 'serie-tab-btn' + (tab==='sealed' ? ' active-sealed' : '');
+  renderSerieDetailContent();
+}
+
+function renderSerieDetailContent(){
+  const el = document.getElementById('detail-items-list');
+  let items = inventory.filter(i => i.set === currentDetailSerie).map(calcItem);
+  if(searchQuery){
+    items = items.filter(i => i.name.toLowerCase().includes(searchQuery));
+  }
+  const s = getStats(items);
+  document.getElementById('detail-kpi-val').textContent = fmt(s.totalValue);
+  document.getElementById('detail-kpi-inv').textContent = fmt(s.totalInvested);
+  const roiEl = document.getElementById('detail-kpi-roi');
+  roiEl.textContent = fmtPct(s.roi); roiEl.style.color = s.roi >= 0 ? 'var(--green)' : 'var(--red)';
+  const filtered = items.filter(i => i.type === (currentDetailTab==='cards' ? 'card' : 'sealed'));
+  if(!filtered.length){ el.innerHTML = '<div class="empty" style="padding:20px;"><div class="empty-title">Aucun item dans cet onglet</div></div>'; return; }
+  el.innerHTML = filtered.sort((a,b)=>b.currentValue - a.currentValue).map(i => renderItemHTML(i)).join('');
+  filtered.forEach(i => loadImageForElement(i, 'thumb-' + i.id));
+}
+
+function renderItemHTML(item){
+  const pStyle = item.profit >= 0 ? 'profit' : 'loss';
+  const rarityClass = item.type === 'sealed' ? 'r-sealed' : 'r-' + (item.rarity || 'common');
+  const sType = item.type === 'sealed' ? (SEALED_TYPES[item.sealedType] || { label:'Scellé', icon:'📦' }) : {};
+  const cmPrice = item.currentPrice;
+  const ebayPrice = (cmPrice * 1.15).toFixed(2);
+  const vintedPrice = (cmPrice * 0.90).toFixed(2);
+  let tagGame = '<span class="tag tag-poke">POKÉMON</span>';
+  if(item.game === 'onepiece') tagGame = '<span class="tag tag-op">ONE PIECE</span>';
+  else if(item.game === 'riftbound') tagGame = '<span class="tag tag-rift">RIFTBOUND</span>';
+  else if(item.game === 'naruto') tagGame = '<span class="tag tag-naruto">NARUTO</span>';
+
+  return '<div class="inv-item ' + rarityClass + ' ' + (item.isSavings ? 'savings-glow' : '') + '">' +
+    '<div class="inv-top">' +
+    '<div class="inv-thumb" id="thumb-' + item.id + '"><div class="inv-thumb-placeholder">' + (item.type === 'sealed' ? '📦' : '🃏') + '</div></div>' +
+    '<div class="inv-info">' +
+    '<div class="inv-name">' + item.name + '</div>' +
+    '<div class="inv-tags">' +
+    '<span class="tag tag-rarity">' + (item.type === 'sealed' ? (sType.icon + ' ' + sType.label) : (RARITY_LABELS[item.rarity] || item.rarity || '—')) + '</span>' +
+    tagGame +
+    (item.isSavings ? '<span class="tag tag-savings">💜 ÉPARGNE</span>' : '') +
+    (item.graded ? '<span class="tag tag-psa">PSA ' + item.gradeScore + '</span>' : '') +
+    (item.lastSynced ? '<span class="tag tag-synced">🔄 Sync</span>' : '') +
+    '</div>' +
+    '<div class="inv-meta">Achat: ' + fmt(item.buyPrice) + ' · Qté: ' + item.quantity + ' · ' + (item.source || '—') + '</div>' +
+    '</div></div>' +
+    '<div class="inv-bottom">' +
+    '<div class="inv-val-block"><div class="inv-val-label">Investi</div><div class="inv-val-num price-blur">' + fmt(item.invested) + '</div></div>' +
+    '<div class="inv-val-block"><div class="inv-val-label">Valeur</div><div class="inv-val-num price-blur">' + fmt(item.currentValue) + '</div></div>' +
+    '<div class="inv-val-block"><div class="inv-val-label">ROI</div><div class="inv-val-num price-blur ' + pStyle + '">' + fmtPct(item.roi) + '</div></div>' +
+    '<div class="inv-actions"><button class="inv-btn" onclick="openEdit(\'' + item.id + '\')">✏️</button><button class="inv-btn" style="color:var(--red)" onclick="removeItem(\'' + item.id + '\')">✕</button></div>' +
+    '</div>' +
+    '<div class="price-compare">' +
+    '<div class="price-compare-item"><div class="price-compare-label">Cardmarket</div><div class="price-compare-val cm price-blur">' + fmt(cmPrice) + '</div></div>' +
+    '<div class="price-compare-item"><div class="price-compare-label">eBay (vendu)</div><div class="price-compare-val ebay price-blur">' + fmt(parseFloat(ebayPrice)) + '</div></div>' +
+    '<div class="price-compare-item"><div class="price-compare-label">Vinted (médiane)</div><div class="price-compare-val vinted price-blur">' + fmt(parseFloat(vintedPrice)) + '</div></div>' +
+    '</div></div>';
+}
+
+let formGame = 'pokemon', formType = 'card', formSavings = false, formGraded = false;
+function setFormGame(g){
+  formGame = g;
+  document.getElementById('sgame-pokemon').className = 'seg-btn' + (g==='pokemon' ? ' active-poke' : '');
+  document.getElementById('sgame-onepiece').className = 'seg-btn' + (g==='onepiece' ? ' active-op' : '');
+  document.getElementById('sgame-riftbound').className = 'seg-btn' + (g==='riftbound' ? ' active-rift' : '');
+  document.getElementById('sgame-naruto').className = 'seg-btn' + (g==='naruto' ? ' active-naruto' : '');
+  updateSetOptions(); updateRarityOptions();
+}
+
+function setFormType(t){
+  formType = t;
+  document.getElementById('stype-card').className = 'seg-btn' + (t==='card' ? ' active' : '');
+  document.getElementById('stype-sealed').className = 'seg-btn' + (t==='sealed' ? ' active-sealed' : '');
+  document.getElementById('field-rarity').style.display = t === 'card' ? '' : 'none';
+  document.getElementById('field-sealed-type').style.display = t === 'sealed' ? '' : 'none';
+  document.getElementById('field-condition').style.display = t === 'card' ? '' : 'none';
+  document.getElementById('field-sealed-status').style.display = t === 'sealed' ? '' : 'none';
+}
+
+function updateSetOptions(){
+  const sel = document.getElementById('inp-set');
+  let sets = pokemonSets;
+  if(formGame === 'onepiece') sets = onepieceSets;
+  else if(formGame === 'riftbound') sets = riftboundSets;
+  else if(formGame === 'naruto') sets = narutoSets;
+  sel.innerHTML = sets.map(s => '<option value="' + s + '">' + s + '</option>').join('');
+}
+
+function updateRarityOptions(){
+  const sel = document.getElementById('inp-rarity');
+  let list = POKEMON_RARITIES;
+  if(formGame === 'onepiece') list = ONEPIECE_RARITIES;
+  else if(formGame === 'riftbound') list = RIFTBOUND_RARITIES;
+  else if(formGame === 'naruto') list = NARUTO_RARITIES;
+  sel.innerHTML = list.map(r => '<option value="' + r.value + '">' + r.label + '</option>').join('');
+}
+
+function toggleOpt(opt){
+  if(opt === 'savings'){
+    formSavings = !formSavings;
+    document.getElementById('tog-savings').className = 'toggle-card' + (formSavings ? ' active-sav' : '');
+    document.getElementById('dot-savings').textContent = formSavings ? '✓' : '';
+    document.getElementById('dot-savings').style.color = formSavings ? '#fff' : 'transparent';
+  } else {
+    formGraded = !formGraded;
+    document.getElementById('tog-graded').className = 'toggle-card' + (formGraded ? ' active-grd' : '');
+    document.getElementById('dot-graded').textContent = formGraded ? '✓' : '';
+    document.getElementById('dot-graded').style.color = formGraded ? '#000' : 'transparent';
+    document.getElementById('grade-group').style.display = formGraded ? '' : 'none';
+  }
+}
+
+function addItem(){
+  const name = document.getElementById('inp-name').value.trim();
+  const buy = parseFloat(document.getElementById('inp-buy').value);
+  const curr = parseFloat(document.getElementById('inp-current').value);
+  if(!name || isNaN(buy) || isNaN(curr)){ showToast('⚠️ Remplir les champs *'); return; }
+
+  const item = {
+    id: Date.now().toString(),
+    date: new Date().toISOString().slice(0,10),
+    name,
+    game: formGame,
+    type: formType,
+    set: document.getElementById('inp-set').value,
+    rarity: formType === 'card' ? document.getElementById('inp-rarity').value : 'common',
+    condition: formType === 'card' ? document.getElementById('inp-condition').value : 'NM',
+    buyPrice: buy,
+    currentPrice: curr,
+    quantity: parseInt(document.getElementById('inp-qty').value) || 1,
+    source: document.getElementById('inp-source').value,
+    isSavings: formSavings,
+    graded: formGraded,
+    gradeScore: formGraded ? document.getElementById('inp-grade').value : null,
+    sealedType: formType === 'sealed' ? document.getElementById('inp-sealed-type').value : 'other',
+    sealedStatus: formType === 'sealed' ? document.getElementById('inp-sealed-status').value : 'sealed-mint',
+    imageUrl: document.getElementById('inp-img-url').value.trim()
+  };
+  inventory.push(item);
+  saveInventory();
+  recordSnapshot();
+  showToast('✅ Ajouté au portfolio !');
+  goPage('dashboard');
+}
+
+let rarityChart = null;
+function renderAnalysis(){
+  const pStat = getStats(inventory.filter(i=>i.game==='pokemon'));
+  const oStat = getStats(inventory.filter(i=>i.game==='onepiece'));
+  const rStat = getStats(inventory.filter(i=>i.game==='riftbound'));
+  const nStat = getStats(inventory.filter(i=>i.game==='naruto'));
+
+  document.getElementById('analysis-game-kpis').innerHTML =
+    '<div class="analysis-kpi"><div class="analysis-kpi-label">🔥 Pokémon</div><div class="analysis-kpi-val price-blur">' + fmt(pStat.totalValue) + '</div><div class="analysis-kpi-sub price-blur ' + (pStat.roi >= 0 ? 'profit' : 'loss') + '">ROI ' + fmtPct(pStat.roi) + '</div></div>' +
+    '<div class="analysis-kpi"><div class="analysis-kpi-label">☠️ One Piece</div><div class="analysis-kpi-val price-blur">' + fmt(oStat.totalValue) + '</div><div class="analysis-kpi-sub price-blur ' + (oStat.roi >= 0 ? 'profit' : 'loss') + '">ROI ' + fmtPct(oStat.roi) + '</div></div>' +
+    '<div class="analysis-kpi"><div class="analysis-kpi-label">✨ Riftbound</div><div class="analysis-kpi-val price-blur">' + fmt(rStat.totalValue) + '</div><div class="analysis-kpi-sub price-blur ' + (rStat.roi >= 0 ? 'profit' : 'loss') + '">ROI ' + fmtPct(rStat.roi) + '</div></div>' +
+    '<div class="analysis-kpi"><div class="analysis-kpi-label">🍥 Naruto Bandai</div><div class="analysis-kpi-val price-blur">' + fmt(nStat.totalValue) + '</div><div class="analysis-kpi-sub price-blur ' + (nStat.roi >= 0 ? 'profit' : 'loss') + '">ROI ' + fmtPct(nStat.roi) + '</div></div>';
+
+  const cStat = getStats(inventory.filter(i=>i.type==='card'));
+  const sStat = getStats(inventory.filter(i=>i.type==='sealed'));
+  document.getElementById('analysis-type-kpis').innerHTML =
+    '<div class="analysis-kpi"><div class="analysis-kpi-label">🃏 Cartes</div><div class="analysis-kpi-val price-blur">' + fmt(cStat.totalValue) + '</div><div class="analysis-kpi-sub price-blur ' + (cStat.roi >= 0 ? 'profit' : 'loss') + '">ROI ' + fmtPct(cStat.roi) + '</div></div>' +
+    '<div class="analysis-kpi"><div class="analysis-kpi-label">📦 Scellé</div><div class="analysis-kpi-val price-blur">' + fmt(sStat.totalValue) + '</div><div class="analysis-kpi-sub price-blur ' + (sStat.roi >= 0 ? 'profit' : 'loss') + '">ROI ' + fmtPct(sStat.roi) + '</div></div>';
+
+  const counts = {};
+  inventory.forEach(i => {
+    const k = i.type === 'sealed' ? 'Scellé' : (RARITY_LABELS[i.rarity] || i.rarity || '—');
+    counts[k] = (counts[k] || 0) + 1;
+  });
+
+  if(rarityChart) rarityChart.destroy();
+  rarityChart = new Chart(document.getElementById('rarityCanvas'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(counts),
+      datasets: [{
+        data: Object.values(counts),
+        backgroundColor: ['#fbbf24','#60a5fa','#c084fc','#f97316','#a78bfa','#10b981','#f87171','#34d399','#94a3b8','#fb923c']
+      }]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 10 }, boxWidth: 12, padding: 8 } } }
+    }
+  });
+
+  const list = document.getElementById('breakeven-list');
+  const sortedBE = inventory.map(calcItem).sort((a,b)=>b.currentValue - a.currentValue).slice(0,6);
+  if(!sortedBE.length){ list.innerHTML = '<div style="color:var(--muted);font-size:12px;">Aucun item</div>'; return; }
+
+  list.innerHTML = sortedBE.map(i => {
+    const beCM = i.buyPrice / (1 - PLATFORM_FEE_CM);
+    const beEbay = i.buyPrice / (1 - PLATFORM_FEE_EBAY);
+    return '<div style="margin-bottom:14px;background:var(--surface2);padding:10px;border-radius:10px;">' +
+      '<div style="font-weight:600;font-size:13px;margin-bottom:4px;">' + i.name + ' <span style="font-size:11px;color:var(--muted);">(' + i.set + ')</span></div>' +
+      '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:6px;">' +
+        '<span>Achat: ' + fmt(i.buyPrice) + '</span>' +
+        '<span>Actuel: <strong style="color:var(--text);">' + fmt(i.currentPrice) + '</strong></span>' +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:10px;text-align:center;">' +
+        '<div style="background:rgba(251,191,36,0.1);padding:4px;border-radius:6px;color:var(--amber);">CM (5%): ' + fmt(beCM) + '</div>' +
+        '<div style="background:rgba(96,165,250,0.1);padding:4px;border-radius:6px;color:var(--blue);">eBay (12%): ' + fmt(beEbay) + '</div>' +
+        '<div style="background:rgba(167,139,250,0.1);padding:4px;border-radius:6px;color:var(--purple);">Vinted (0%): ' + fmt(i.buyPrice) + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+let editGame = 'pokemon', editType = 'card', editSavings = false;
+function openEdit(id){
+  const item = inventory.find(x=>x.id===id); if(!item) return;
+  document.getElementById('edit-id').value = item.id;
+  document.getElementById('edit-name').value = item.name;
+  document.getElementById('edit-buy').value = item.buyPrice;
+  document.getElementById('edit-current').value = item.currentPrice;
+  document.getElementById('edit-qty').value = item.quantity;
+  document.getElementById('edit-img-url').value = item.imageUrl || '';
+  if(item.imageUrl){
+    document.getElementById('edit-img-preview').src = item.imageUrl;
+    document.getElementById('edit-img-preview').classList.add('visible');
+  } else {
+    document.getElementById('edit-img-preview').classList.remove('visible');
+  }
+  editGame = item.game; editType = item.type || 'card';
+  setEditGame(editGame); setEditType(editType);
+  document.getElementById('edit-set').value = item.set;
+  if(editType === 'card'){
+    document.getElementById('edit-rarity').value = item.rarity || 'common';
+    document.getElementById('edit-condition').value = item.condition || 'NM';
+  } else {
+    document.getElementById('edit-sealed-type').value = item.sealedType || 'other';
+    document.getElementById('edit-sealed-status').value = item.sealedStatus || 'sealed-mint';
+  }
+  editSavings = !!item.isSavings;
+  applyEditSavingsUI();
+  document.getElementById('editModal').classList.add('open');
+}
+
+function setEditGame(g){
+  editGame = g;
+  document.getElementById('edit-sgame-poke').className = 'seg-btn' + (g==='pokemon' ? ' active-poke' : '');
+  document.getElementById('edit-sgame-op').className = 'seg-btn' + (g==='onepiece' ? ' active-op' : '');
+  document.getElementById('edit-sgame-rift').className = 'seg-btn' + (g==='riftbound' ? ' active-rift' : '');
+  document.getElementById('edit-sgame-naruto').className = 'seg-btn' + (g==='naruto' ? ' active-naruto' : '');
+  let sets = pokemonSets;
+  if(g === 'onepiece') sets = onepieceSets;
+  else if(g === 'riftbound') sets = riftboundSets;
+  else if(g === 'naruto') sets = narutoSets;
+  document.getElementById('edit-set').innerHTML = sets.map(s => '<option value="' + s + '">' + s + '</option>').join('');
+  let rList = POKEMON_RARITIES;
+  if(g === 'onepiece') rList = ONEPIECE_RARITIES;
+  else if(g === 'riftbound') rList = RIFTBOUND_RARITIES;
+  else if(g === 'naruto') rList = NARUTO_RARITIES;
+  document.getElementById('edit-rarity').innerHTML = rList.map(r => '<option value="' + r.value + '">' + r.label + '</option>').join('');
+}
+
+function setEditType(t){
+  editType = t;
+  document.getElementById('edit-stype-card').className = 'seg-btn' + (t==='card' ? ' active' : '');
+  document.getElementById('edit-stype-sealed').className = 'seg-btn' + (t==='sealed' ? ' active-sealed' : '');
+  document.getElementById('edit-card-fields').style.display = t === 'card' ? 'block' : 'none';
+  document.getElementById('edit-sealed-fields').style.display = t === 'sealed' ? 'block' : 'none';
+}
+
+function toggleEditSavings(){ editSavings = !editSavings; applyEditSavingsUI(); }
+function applyEditSavingsUI(){
+  document.getElementById('edit-tog-savings').className = 'toggle-card' + (editSavings ? ' active-sav' : '');
+  document.getElementById('edit-dot-savings').textContent = editSavings ? '✓' : '';
+  document.getElementById('edit-dot-savings').style.color = editSavings ? '#fff' : 'transparent';
+}
+
+function closeModal(){ document.getElementById('editModal').classList.remove('open'); }
+function saveEdit(){
+  const id = document.getElementById('edit-id').value;
+  const idx = inventory.findIndex(x=>x.id===id); if(idx===-1) return;
+  const old = inventory[idx];
+  inventory[idx] = {
+    ...old,
+    name: document.getElementById('edit-name').value,
+    game: editGame,
+    type: editType,
+    set: document.getElementById('edit-set').value,
+    buyPrice: parseFloat(document.getElementById('edit-buy').value),
+    currentPrice: parseFloat(document.getElementById('edit-current').value),
+    quantity: parseInt(document.getElementById('edit-qty').value) || 1,
+    isSavings: editSavings,
+    imageUrl: document.getElementById('edit-img-url').value.trim(),
+    ...(editType==='card' ? { rarity: document.getElementById('edit-rarity').value, condition: document.getElementById('edit-condition').value } : { sealedType: document.getElementById('edit-sealed-type').value, sealedStatus: document.getElementById('edit-sealed-status').value })
+  };
+  delete imgCache[old.name + '|' + old.set];
+  saveInventory();
+  recordSnapshot();
+  closeModal();
+  showToast('✅ Modifié');
+  if(currentDetailSerie){ renderSerieDetailContent(); } else { renderInventory(); }
+}
+
+function removeItem(id){
+  if(!confirm('Supprimer cet item ?')) return;
+  inventory = inventory.filter(x=>x.id!==id);
+  saveInventory();
+  recordSnapshot();
+  showToast('🗑 Supprimé');
+  if(currentDetailSerie){ renderSerieDetailContent(); } else { renderInventory(); }
+}
+
+let currentSeriesTab = 'pokemon';
+function openSettings(){
+  document.getElementById('set-poke-count').textContent = inventory.filter(i=>i.game==='pokemon').length;
+  document.getElementById('set-op-count').textContent = inventory.filter(i=>i.game==='onepiece').length;
+  document.getElementById('set-rift-count').textContent = inventory.filter(i=>i.game==='riftbound').length;
+  document.getElementById('set-naruto-count').textContent = inventory.filter(i=>i.game==='naruto').length;
+  document.getElementById('set-total-count').textContent = inventory.length;
+  const ls = localStorage.getItem(SK_SYNC);
+  if(ls) document.getElementById('set-last-sync').textContent = new Date(ls).toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  renderSeriesList();
+}
+
+function toggleSeriesPanel(){
+  const p = document.getElementById('series-panel');
+  const a = document.getElementById('series-panel-arrow');
+  const open = p.style.display !== 'none';
+  p.style.display = open ? 'none' : 'block';
+  a.style.transform = open ? '' : 'rotate(180deg)';
+  if(!open) renderSeriesList();
+}
+
+function setSeriesTab(g){
+  currentSeriesTab = g;
+  document.getElementById('stab-poke').className = 'series-tab-btn' + (g==='pokemon' ? ' active-poke' : '');
+  document.getElementById('stab-op').className = 'series-tab-btn' + (g==='onepiece' ? ' active-op' : '');
+  document.getElementById('stab-rift').className = 'series-tab-btn' + (g==='riftbound' ? ' active-rift' : '');
+  document.getElementById('stab-naruto').className = 'series-tab-btn' + (g==='naruto' ? ' active-naruto' : '');
+  renderSeriesList();
+}
+
+function renderSeriesList(){
+  const el = document.getElementById('series-list');
+  let sets = pokemonSets, custom = customPokemonSets;
+  if(currentSeriesTab === 'onepiece'){ sets = onepieceSets; custom = customOnepieceSets; }
+  else if(currentSeriesTab === 'riftbound'){ sets = riftboundSets; custom = customRiftboundSets; }
+  else if(currentSeriesTab === 'naruto'){ sets = narutoSets; custom = customNarutoSets; }
+
+  if(!sets.length){ el.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:12px 0;">Aucune série</div>'; return; }
+
+  el.innerHTML = sets.map((s,idx)=>{
+    const isC = custom.includes(s);
+    const sid = 'sr' + idx;
+    return '<div class="series-row" id="'+sid+'"><span class="series-row-name" id="'+sid+'-lbl">'+s+(isC?' <span class="new-badge">Custom</span>':'')+'</span><input class="series-edit-inp" id="'+sid+'-inp" value="'+s.replace(/"/g,'&quot;')+'" style="display:none;"><button class="s-btn" id="'+sid+'-edit" onclick="startEditSeries(\''+sid+'\',\''+s.replace(/'/g,"\\'")+'\')">✏️</button><button class="s-btn" id="'+sid+'-ok" style="display:none;background:var(--green-bg);color:var(--green);" onclick="confirmEditSeries(\''+sid+'\',\''+s.replace(/'/g,"\\'")+'\')">✓</button><button class="s-btn" id="'+sid+'-ko" style="display:none;background:var(--red-bg);color:var(--red);" onclick="renderSeriesList()">✕</button><button class="s-btn" style="color:var(--red);" onclick="deleteSeries(\''+s.replace(/'/g,"\\'")+'\')">🗑</button></div>';
+  }).join('');
+}
+
+function startEditSeries(sid,name){
+  document.getElementById(sid+'-lbl').style.display='none';
+  document.getElementById(sid+'-inp').style.display='';
+  document.getElementById(sid+'-edit').style.display='none';
+  document.getElementById(''+sid+'-ok').style.display='flex';
+  document.getElementById(''+sid+'-ko').style.display='flex';
+  const inp=document.getElementById(sid+'-inp');
+  inp.focus(); inp.select();
+  inp.onkeydown=e=>{ if(e.key==='Enter'){ e.preventDefault(); confirmEditSeries(sid,name); } if(e.key==='Escape') renderSeriesList(); };
+}
+
+function confirmEditSeries(sid,oldName){
+  const newName=document.getElementById(sid+'-inp').value.trim();
+  if(!newName||newName===oldName){ renderSeriesList(); return; }
+  let sets = pokemonSets, custom = customPokemonSets;
+  if(currentSeriesTab === 'onepiece'){ sets = onepieceSets; custom = customOnepieceSets; }
+  else if(currentSeriesTab === 'riftbound'){ sets = riftboundSets; custom = customRiftboundSets; }
+  else if(currentSeriesTab === 'naruto'){ sets = narutoSets; custom = customNarutoSets; }
+
+  const idx=sets.indexOf(oldName); if(idx>=0) sets[idx]=newName;
+  const cidx=custom.indexOf(oldName); if(cidx>=0) custom[cidx]=newName;
+  inventory.forEach(i=>{ if(i.game===currentSeriesTab && i.set===oldName) i.set=newName; });
+  saveInventory(); saveSets(); updateSetOptions(); renderSeriesList();
+  showToast('✅ Série renommée en "'+newName+'"');
+}
+
+function deleteSeries(name){
+  if(!confirm('Supprimer "'+name+'" ?')) return;
+  if(currentSeriesTab==='pokemon'){ pokemonSets=pokemonSets.filter(s=>s!==name); customPokemonSets=customPokemonSets.filter(s=>s!==name); }
+  else if(currentSeriesTab==='onepiece'){ onepieceSets=onepieceSets.filter(s=>s!==name); customOnepieceSets=customOnepieceSets.filter(s=>s!==name); }
+  else if(currentSeriesTab==='riftbound'){ riftboundSets=riftboundSets.filter(s=>s!==name); customRiftboundSets=customRiftboundSets.filter(s=>s!==name); }
+  else { narutoSets=narutoSets.filter(s=>s!==name); customNarutoSets=customNarutoSets.filter(s=>s!==name); }
+  saveSets(); renderSeriesList();
+}
+
+function addSeries(){
+  const name=document.getElementById('series-new-inp').value.trim(); if(!name) return;
+  if(currentSeriesTab==='pokemon'){ if(!pokemonSets.includes(name)){ pokemonSets.unshift(name); customPokemonSets.push(name); } }
+  else if(currentSeriesTab==='onepiece'){ if(!onepieceSets.includes(name)){ onepieceSets.unshift(name); customOnepieceSets.push(name); } }
+  else if(currentSeriesTab==='riftbound'){ if(!riftboundSets.includes(name)){ riftboundSets.unshift(name); customRiftboundSets.push(name); } }
+  else { if(!narutoSets.includes(name)){ narutoSets.unshift(name); customNarutoSets.push(name); } }
+  saveSets(); document.getElementById('series-new-inp').value=''; renderSeriesList(); updateSetOptions();
+  showToast('✅ Série ajoutée');
+}
+
+function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+function exportData(){ const blob=new Blob([JSON.stringify(inventory,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='tcg-portfolio-'+new Date().toISOString().split('T')[0]+'.json'; a.click(); }
+
+function importJSONData(event){
+  const file = event.target.files?.[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if(Array.isArray(data)){
+        inventory = data;
+        saveInventory();
+        loadAll();
+        renderDashboard();
+        showToast('✅ ' + data.length + ' items importés avec succès');
+      } else {
+        alert('Format de fichier JSON non reconnu.');
+      }
+    } catch(err){
+      alert('Erreur lors de la lecture du fichier JSON.');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function clearAll(){ if(confirm('⚠️ Effacer TOUTES les données ? Irréversible.')){ inventory=[]; saveInventory(); location.reload(); } }
+
+window.onload = () => {
+  loadAll();
+  loadPrivacy();
+  updateSetOptions();
+  updateRarityOptions();
+  setFormType('card');
+  renderDashboard();
+};
+</script>
+</body>
+</html>
