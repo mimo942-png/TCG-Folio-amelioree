@@ -219,6 +219,53 @@
     .upload-btn-wrap { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
     .upload-btn { background: var(--surface2); border: 1px dashed var(--border2); color: var(--muted); padding: 8px 12px; border-radius: var(--radius-sm); font-size: 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
     .upload-btn:hover { color: var(--text); border-color: var(--amber); }
+
+    /* Ajustements responsive : conserver le rendu desktop et optimiser les petits écrans */
+    html { width: 100%; overflow-x: hidden; }
+    body { width: 100%; overflow-x: hidden; }
+    img, canvas, input, select, textarea, button { max-width: 100%; }
+    @media (max-width: 700px) {
+      .header { padding: 10px 12px; }
+      .header-inner { flex-wrap: wrap; align-items: center; gap: 10px; }
+      .logo { flex: 1 1 100%; min-width: 0; }
+      .logo-title { font-size: 16px; }
+      .logo-sub { font-size: 11px; line-height: 1.35; }
+      .header-badges { width: 100%; max-width: 100%; min-width: 0; overflow-x: auto; padding: 1px 0 4px; scrollbar-width: none; }
+      .header-badges::-webkit-scrollbar { display: none; }
+      .header-badges .icon-btn { width: 38px; height: 38px; }
+      .hbadge { flex: 0 0 auto; }
+      main { padding: 12px 12px calc(78px + env(safe-area-inset-bottom)); width: 100%; }
+      .kpi-grid, .analysis-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+      .kpi { min-width: 0; padding: 13px; }
+      .kpi-label { font-size: 10px; line-height: 1.35; }
+      .kpi-val { font-size: clamp(19px, 5.4vw, 24px); overflow-wrap: anywhere; }
+      .kpi-sub { font-size: 11px; }
+      .card { min-width: 0; padding: 14px; margin-bottom: 10px; }
+      .chart-wrap { height: 205px; width: 100%; }
+      .breakdown-legend { grid-template-columns: minmax(0, 1fr); }
+      .nav-bottom { padding-top: 5px; }
+      .nav-item { min-width: 0; padding: 8px 2px calc(7px + env(safe-area-inset-bottom)); gap: 4px; font-size: 10px; }
+      .nav-icon { font-size: 20px; }
+      .nav-add-btn { width: 44px; height: 44px; margin-top: -9px; font-size: 25px; }
+      .toast { width: calc(100% - 28px); max-width: 440px; white-space: normal; text-align: center; line-height: 1.4; padding: 11px 14px; bottom: calc(72px + env(safe-area-inset-bottom)); }
+      .settings-row { gap: 10px; font-size: 13px; }
+      .settings-row > span { min-width: 0; overflow-wrap: anywhere; }
+      .settings-btn { flex-shrink: 0; padding: 8px 11px; }
+      .series-tabs { max-width: 100%; }
+      .modal-sheet { max-height: 88dvh; padding-left: 15px; padding-right: 15px; }
+    }
+    @media (max-width: 390px) {
+      .header { padding-left: 10px; padding-right: 10px; }
+      main { padding-left: 10px; padding-right: 10px; }
+      .kpi-grid { gap: 7px; }
+      .kpi { padding: 11px; }
+      .kpi-val { font-size: clamp(18px, 5vw, 21px); }
+      .card { padding: 12px; }
+      .nav-item { font-size: 9px; }
+      .nav-icon { font-size: 19px; }
+      .nav-add-btn { width: 41px; height: 41px; }
+      .chart-wrap { height: 185px; }
+    }
   </style>
 </head>
 <body>
@@ -423,6 +470,11 @@
           <option>&#xC9;v&#xe9;nement TCG</option><option>&#xC9;change</option><option>Boutique</option><option>Kickstarter</option>
         </select>
       </div>
+      <div class="form-group">
+        <label class="form-label">URL Cardmarket personnalisée <span style="color:var(--muted2);font-weight:400;">(facultatif)</span></label>
+        <input class="form-input" id="inp-cardmarket-url" type="url" placeholder="https://www.cardmarket.com/…">
+        <div style="font-size:11px;color:var(--muted);margin-top:5px;">Si renseignée, cette adresse sera utilisée pour le bouton Cardmarket et sauvegardée avec l'item.</div>
+      </div>
       <div class="form-group" id="field-img-url">
         <label class="form-label">Visuel / Photo <span style="color:var(--muted2);font-weight:400;">(URL ou fichier local)</span></label>
         <input class="form-input" id="inp-img-url" type="url" placeholder="https://&#x2026; ou importer un fichier ci-dessous" oninput="previewImg('inp-img-url','inp-img-preview')">
@@ -591,6 +643,11 @@
     <div class="form-row">
       <div class="form-group"><label class="form-label">Quantit&#xe9;</label><input class="form-input" id="edit-qty" type="number" min="1" inputmode="numeric"></div>
     </div>
+    <div class="form-group">
+      <label class="form-label">URL Cardmarket personnalisée <span style="color:var(--muted2);font-weight:400;">(facultatif)</span></label>
+      <input class="form-input" id="edit-cardmarket-url" type="url" placeholder="https://www.cardmarket.com/…">
+      <div style="font-size:11px;color:var(--muted);margin-top:5px;">Cette URL sera enregistrée avec l'item et utilisée par le bouton Cardmarket.</div>
+    </div>
     <div style="display:flex;gap:8px;margin-bottom:12px;">
       <button type="button" class="settings-btn" style="flex:1;" onclick="openMarketSearch(document.getElementById('edit-id').value, 'cardmarket')">🔗 Voir Cardmarket</button>
       <button type="button" class="settings-btn" style="flex:1;" onclick="openMarketSearch(document.getElementById('edit-id').value, 'ebay')">🔗 Ventes eBay Sold</button>
@@ -745,6 +802,37 @@ function validateInventory(data){
   const ids = data.map(item => String(item.id));
   return new Set(ids).size === ids.length;
 }
+// Répare les différences de format entre anciennes versions sans supprimer les données d'origine.
+function normalizeInventory(data){
+  if(!Array.isArray(data) || data.length > 10000) return null;
+  const usedIds = new Set();
+  const result = [];
+  for(const raw of data){
+    if(!raw || typeof raw !== 'object' || Array.isArray(raw)) continue;
+    const name = typeof raw.name === 'string' ? raw.name.trim() : '';
+    const gameAliases = {pokemon:'pokemon',onepiece:'onepiece','one-piece':'onepiece',riftbound:'riftbound',naruto:'naruto','naruto-bandai':'naruto'};
+    const game = gameAliases[String(raw.game || '').toLowerCase()];
+    if(!name || name.length > 300 || !game) continue;
+    const price = v => { if(v === '' || v === null || v === undefined) return 0; const n = Number(v); return Number.isFinite(n) && n >= 0 && n <= 100000000 ? n : 0; };
+    let id = String(raw.id ?? ('recovered-' + result.length)).replace(/[^A-Za-z0-9_-]/g,'-').slice(0,80) || ('recovered-' + result.length);
+    while(usedIds.has(id)) id = (id.slice(0,65) + '-' + result.length).slice(0,80);
+    usedIds.add(id);
+    const quantityRaw = Number(raw.quantity ?? 1);
+    const item = {
+      ...raw, id, name, game,
+      type: raw.type === 'sealed' ? 'sealed' : 'card',
+      set: typeof raw.set === 'string' ? raw.set.slice(0,300) : '',
+      buyPrice: price(raw.buyPrice ?? raw.purchasePrice ?? raw.buy),
+      currentPrice: price(raw.currentPrice ?? raw.marketPrice ?? raw.value),
+      quantity: Number.isInteger(quantityRaw) && quantityRaw >= 1 && quantityRaw <= 100000 ? quantityRaw : 1,
+      imageUrl: typeof raw.imageUrl === 'string' ? raw.imageUrl.slice(0,5000) : '',
+      source: typeof raw.source === 'string' ? raw.source : '',
+      cardmarketUrl: typeof (raw.cardmarketUrl ?? raw.cardmarketURL ?? raw.cardmarket_url) === 'string' ? (raw.cardmarketUrl ?? raw.cardmarketURL ?? raw.cardmarket_url).slice(0,5000) : ''
+    };
+    result.push(item);
+  }
+  return result;
+}
 function escapeHTML(value){
   return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
@@ -754,8 +842,11 @@ function loadAll(){
     const d = localStorage.getItem(SK_INV);
     if(d){
       const parsed = JSON.parse(d);
-      if(!validateInventory(parsed)) throw new Error('Inventaire sauvegardé invalide');
-      inventory = parsed;
+      const normalized = normalizeInventory(parsed);
+      if(!normalized) throw new Error('Inventaire sauvegardé illisible : format non reconnu');
+      inventory = normalized;
+      // Réécrit uniquement après récupération valide; la sauvegarde brute reste dans localStorage si JSON invalide.
+      if(JSON.stringify(parsed) !== JSON.stringify(normalized)) saveInventory();
     } else {
       inventory = JSON.parse(JSON.stringify(EMBEDDED_INVENTORY));
       // Les données intégrées sont conservées pour la première ouverture seulement.
@@ -1139,6 +1230,21 @@ function openMarketSearch(id, platform = 'cardmarket') {
   const query = encodeURIComponent(`${item.name} ${item.set} ${extraKeyword}`.trim());
 
   if (platform === 'cardmarket') {
+    const customUrl = String(item.cardmarketUrl || '').trim();
+    if (customUrl) {
+      try {
+        const parsedUrl = new URL(customUrl);
+        if (parsedUrl.protocol === 'https:' || parsedUrl.protocol === 'http:') {
+          window.open(parsedUrl.href, '_blank', 'noopener');
+          return;
+        }
+        showToast('⚠️ L’URL Cardmarket doit commencer par http:// ou https://');
+        return;
+      } catch(error) {
+        showToast('⚠️ URL Cardmarket invalide. Vérifie l’adresse.');
+        return;
+      }
+    }
     if (item.game === 'naruto') {
       window.open(`https://www.ebay.fr/sch/i.html?_nkw=${query}&_sacat=0&LH_Complete=1&LH_Sold=1`, '_blank');
       return;
@@ -1496,6 +1602,7 @@ function addItem(){
     currentPrice: curr,
     quantity: qty,
     source: document.getElementById('inp-source').value,
+    cardmarketUrl: document.getElementById('inp-cardmarket-url').value.trim(),
     acquisitionMode: document.getElementById('inp-acquisition-mode').value,
     isMonetaryInvestment: document.getElementById('inp-is-investment').value === 'true',
     isSavings: formSavings,
@@ -1586,6 +1693,7 @@ function openEdit(id){
   document.getElementById('edit-acquisition-mode').value = item.acquisitionMode || 'achat';
   document.getElementById('edit-is-investment').value = item.isMonetaryInvestment !== undefined ? String(item.isMonetaryInvestment) : 'true';
   document.getElementById('edit-img-url').value = item.imageUrl || '';
+  document.getElementById('edit-cardmarket-url').value = item.cardmarketUrl || '';
   if(item.imageUrl){
     document.getElementById('edit-img-preview').src = item.imageUrl;
     document.getElementById('edit-img-preview').classList.add('visible');
@@ -1665,6 +1773,7 @@ function saveEdit(){
     isMonetaryInvestment: document.getElementById('edit-is-investment').value === 'true',
     isSavings: editSavings,
     imageUrl: document.getElementById('edit-img-url').value.trim(),
+    cardmarketUrl: document.getElementById('edit-cardmarket-url').value.trim(),
     ...(editType==='card' ? { rarity: document.getElementById('edit-rarity').value, condition: document.getElementById('edit-condition').value } : { sealedType: document.getElementById('edit-sealed-type').value, sealedStatus: document.getElementById('edit-sealed-status').value })
   };
   delete imgCache[old.name + '|' + old.set];
