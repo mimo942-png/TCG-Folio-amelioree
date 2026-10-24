@@ -12,23 +12,14 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body { margin: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
-      background: #0f172a; color: #e2e8f0; min-height: 100dvh; overscroll-behavior: none;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100dvh; overscroll-behavior: none; }
     ::-webkit-scrollbar { width: 0; height: 0; }
     :root {
-      --bg: #0f172a; --surface: #1e293b; --surface2: #263045;
-      --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.15);
-      --text: #e2e8f0; --muted: #94a3b8; --muted2: #64748b;
-      --amber: #fbbf24; --amber-bg: rgba(251,191,36,0.12);
-      --green: #34d399; --green-bg: rgba(52,211,153,0.12);
-      --red: #f87171; --red-bg: rgba(248,113,113,0.12);
-      --purple: #a78bfa; --purple-bg: rgba(167,139,250,0.15);
-      --blue: #60a5fa; --blue-bg: rgba(96,165,250,0.12);
-      --emerald: #10b981; --emerald-bg: rgba(16,185,129,0.12);
-      --rift: #c084fc; --rift-bg: rgba(192,132,252,0.15);
-      --naruto: #f97316; --naruto-bg: rgba(249,115,22,0.15);
+      --bg: #0f172a; --surface: #1e293b; --surface2: #263045; --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.15);
+      --text: #e2e8f0; --muted: #94a3b8; --muted2: #64748b; --amber: #fbbf24; --amber-bg: rgba(251,191,36,0.12);
+      --green: #34d399; --green-bg: rgba(52,211,153,0.12); --red: #f87171; --red-bg: rgba(248,113,113,0.12); --purple: #a78bfa; --purple-bg: rgba(167,139,250,0.15);
+      --blue: #60a5fa; --blue-bg: rgba(96,165,250,0.12); --emerald: #10b981; --emerald-bg: rgba(16,185,129,0.12);
+      --rift: #c084fc; --rift-bg: rgba(192,132,252,0.15); --naruto: #f97316; --naruto-bg: rgba(249,115,22,0.15);
       --radius: 16px; --radius-sm: 10px; --nav-h: calc(60px + env(safe-area-inset-bottom));
     }
     body.private-mode .price-blur { filter: blur(6px); user-select: none; }
@@ -258,7 +249,6 @@
   <div class="page" id="page-add">
     <div class="card">
       <div class="sec-title" style="margin-bottom:14px;">Ajouter un item</div>
-
       <div class="form-divider" style="margin-top:0;border-top:none;padding-top:0;">Jeu</div>
       <div class="seg">
         <button class="seg-btn active-poke" id="sgame-pokemon" onclick="setFormGame('pokemon')">🔥 Pokémon</button>
@@ -266,17 +256,14 @@
         <button class="seg-btn" id="sgame-riftbound" onclick="setFormGame('riftbound')">✨ Riftbound</button>
         <button class="seg-btn" id="sgame-naruto" onclick="setFormGame('naruto')">🍥 Naruto Bandai</button>
       </div>
-
       <div class="seg">
         <button class="seg-btn active" id="stype-card" onclick="setFormType('card')">🃏 Carte</button>
         <button class="seg-btn" id="stype-sealed" onclick="setFormType('sealed')">📦 Produit Scellé</button>
       </div>
-
       <div class="form-group">
         <label class="form-label">Nom *</label>
         <input class="form-input" id="inp-name" type="text" placeholder="Ex: Naruto Uzumaki / Display Series 1 / Box T1" autocomplete="off" />
       </div>
-
       <div class="form-row">
         <div class="form-group"><label class="form-label">Set</label><select class="form-select" id="inp-set"></select></div>
         <div class="form-group" id="field-rarity"><label class="form-label">Rareté</label><select class="form-select" id="inp-rarity"></select></div>
@@ -298,107 +285,35 @@
           </select>
         </div>
       </div>
-
       <div class="form-divider">Acquisition</div>
       <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Mode acquisition</label>
-          <select class="form-select" id="inp-acquisition-mode">
-            <option value="achat">Achat</option>
-            <option value="cadeau">Cadeau</option>
-            <option value="initiation">Initiation</option>
-            <option value="concours">Concours</option>
-            <option value="echange">Échange</option>
-            <option value="promo">Promo</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Investissement monétaire</label>
-          <select class="form-select" id="inp-is-investment">
-            <option value="true">Oui</option>
-            <option value="false">Non (offert / cadeau / initiation / concours)</option>
-          </select>
-        </div>
+        <div class="form-group"><label class="form-label">Mode acquisition</label><select class="form-select" id="inp-acquisition-mode"><option value="achat">Achat</option><option value="cadeau">Cadeau</option><option value="initiation">Initiation</option><option value="concours">Concours</option><option value="echange">Échange</option><option value="promo">Promo</option></select></div>
+        <div class="form-group"><label class="form-label">Investissement monétaire</label><select class="form-select" id="inp-is-investment"><option value="true">Oui</option><option value="false">Non (offert / cadeau / initiation / concours)</option></select></div>
       </div>
-
       <div class="form-row">
         <div class="form-group"><label class="form-label">Prix achat (€) *</label><input class="form-input" id="inp-buy" type="number" step="0.01" min="0" placeholder="0.00" inputmode="decimal" /></div>
         <div class="form-group"><label class="form-label">Prix actuel (€) *</label><input class="form-input" id="inp-current" type="number" step="0.01" min="0" placeholder="0.00" inputmode="decimal" /></div>
       </div>
-
       <div class="form-row">
-        <div class="form-group" id="field-condition"><label class="form-label">Condition</label>
-          <select class="form-select" id="inp-condition">
-            <option value="MINT">MINT</option>
-            <option value="NM" selected>NM</option>
-            <option value="LP">LP</option>
-            <option value="MP">MP</option>
-            <option value="HP">HP</option>
-          </select>
-        </div>
-        <div class="form-group" id="field-sealed-status" style="display:none;"><label class="form-label">État scellé</label>
-          <select class="form-select" id="inp-sealed-status">
-            <option value="sealed-mint">Scellé — Mint</option>
-            <option value="sealed-nm">Scellé — NM</option>
-            <option value="sealed-lp">Scellé — LP</option>
-            <option value="resealed">⚠️ Rescellé</option>
-          </select>
-        </div>
+        <div class="form-group" id="field-condition"><label class="form-label">Condition</label><select class="form-select" id="inp-condition"><option value="MINT">MINT</option><option value="NM" selected>NM</option><option value="LP">LP</option><option value="MP">MP</option><option value="HP">HP</option></select></div>
+        <div class="form-group" id="field-sealed-status" style="display:none;"><label class="form-label">État scellé</label><select class="form-select" id="inp-sealed-status"><option value="sealed-mint">Scellé — Mint</option><option value="sealed-nm">Scellé — NM</option><option value="sealed-lp">Scellé — LP</option><option value="resealed">⚠️ Rescellé</option></select></div>
         <div class="form-group"><label class="form-label">Quantité</label><input class="form-input" id="inp-qty" type="number" min="1" value="1" inputmode="numeric" /></div>
       </div>
-
-      <div class="form-group"><label class="form-label">Source</label>
-        <select class="form-select" id="inp-source">
-          <option>Cardmarket</option>
-          <option>eBay</option>
-          <option>Booster</option>
-          <option>Événement TCG</option>
-          <option>Échange</option>
-          <option>Boutique</option>
-          <option>Kickstarter</option>
-        </select>
-      </div>
-
+      <div class="form-group"><label class="form-label">Source</label><select class="form-select" id="inp-source"><option>Cardmarket</option><option>eBay</option><option>Booster</option><option>Événement TCG</option><option>Échange</option><option>Boutique</option><option>Kickstarter</option></select></div>
       <div class="form-group" id="field-img-url">
         <label class="form-label">Visuel / Photo <span style="color:var(--muted2);font-weight:400;">(URL ou fichier local)</span></label>
         <input class="form-input" id="inp-img-url" type="url" placeholder="https://… ou importer un fichier ci-dessous" />
         <div style="display:flex;gap:8px;align-items:center;margin-top:6px;">
-          <label class="settings-btn" style="padding:8px 10px;cursor:pointer;">
-            📷 Choisir une image
-            <input type="file" accept="image/*" style="display:none" onchange="handleFileUpload(event, 'inp-img-url', 'inp-img-preview')" />
-          </label>
+          <label class="settings-btn" style="padding:8px 10px;cursor:pointer;">📷 Choisir une image<input type="file" accept="image/*" style="display:none" onchange="handleFileUpload(event, 'inp-img-url', 'inp-img-preview')" /></label>
         </div>
         <img id="inp-img-preview" alt="preview" referrerpolicy="no-referrer" style="width:60px;height:84px;border-radius:8px;object-fit:cover;border:1px solid var(--border);display:none;margin-top:8px;" />
       </div>
-
       <div class="form-divider">Options</div>
       <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Gains / économies</label>
-          <select class="form-select" id="inp-savings-opt">
-            <option value="false">Non</option>
-            <option value="true">Oui</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Grading PSA</label>
-          <select class="form-select" id="inp-graded-opt">
-            <option value="false">Non</option>
-            <option value="true">Oui</option>
-          </select>
-        </div>
+        <div class="form-group"><label class="form-label">Gains / économies</label><select class="form-select" id="inp-savings-opt"><option value="false">Non</option><option value="true">Oui</option></select></div>
+        <div class="form-group"><label class="form-label">Grading PSA</label><select class="form-select" id="inp-graded-opt"><option value="false">Non</option><option value="true">Oui</option></select></div>
       </div>
-
-      <div id="grade-group" style="display:none;" class="form-group">
-        <label class="form-label">Score PSA / BGS</label>
-        <select class="form-select" id="inp-grade">
-          <option value="10">PSA 10 — Gem Mint (×3.5)</option>
-          <option value="9">PSA 9 — Mint (×2.0)</option>
-          <option value="8">PSA 8 — NM-MT (×1.4)</option>
-          <option value="7">PSA 7 — Near Mint (×1.1)</option>
-        </select>
-      </div>
-
+      <div id="grade-group" style="display:none;" class="form-group"><label class="form-label">Score PSA / BGS</label><select class="form-select" id="inp-grade"><option value="10">PSA 10 — Gem Mint (×3.5)</option><option value="9">PSA 9 — Mint (×2.0)</option><option value="8">PSA 8 — NM-MT (×1.4)</option><option value="7">PSA 7 — Near Mint (×1.1)</option></select></div>
       <button class="btn-submit" onclick="addItem()">Ajouter au portfolio</button>
     </div>
   </div>
@@ -406,12 +321,10 @@
   <div class="page" id="page-analysis">
     <div class="kpi-grid" id="analysis-game-kpis"></div>
     <div class="kpi-grid" id="analysis-type-kpis"></div>
-
     <div class="card" style="margin-bottom:12px;">
       <div class="sec-title">Répartition globale</div>
       <div class="chart-wrap" style="height:170px;"><canvas id="rarityCanvas"></canvas></div>
     </div>
-
     <div class="card">
       <div class="sec-title">Break-even Plateformes <span>(CM 5%, eBay 12%, Vinted 0%)</span></div>
       <div id="breakeven-list"></div>
@@ -431,11 +344,7 @@
 
     <div class="card">
       <div class="sec-title">Sauvegarde &amp; Données</div>
-      <div class="settings-row">
-        <span>Importer un backup (JSON)</span>
-        <button class="settings-btn" onclick="document.getElementById('import-file-input').click()">Importer</button>
-        <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="importJSONData(event)" />
-      </div>
+      <div class="settings-row"><span>Importer un backup (JSON)</span><button class="settings-btn" onclick="document.getElementById('import-file-input').click()">Importer</button><input type="file" id="import-file-input" accept=".json" style="display:none" onchange="importJSONData(event)" /></div>
       <div class="settings-row"><span>Exporter le portfolio (JSON)</span><button class="settings-btn" onclick="exportData()">Exporter</button></div>
       <div class="settings-row"><span>Tout effacer</span><button class="settings-btn danger" onclick="clearAll()">Effacer</button></div>
     </div>
@@ -461,53 +370,14 @@
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-title">Modifier l’item</div>
-
     <input type="hidden" id="edit-id" />
     <div class="form-group"><label class="form-label">Nom</label><input class="form-input" id="edit-name" type="text" /></div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Set</label><select class="form-select" id="edit-set"></select></div>
-      <div class="form-group"><label class="form-label">Rareté</label><select class="form-select" id="edit-rarity"></select></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Prix achat (€)</label><input class="form-input" id="edit-buy" type="number" step="0.01" min="0" /></div>
-      <div class="form-group"><label class="form-label">Prix actuel (€)</label><input class="form-input" id="edit-current" type="number" step="0.01" min="0" /></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Mode acquisition</label>
-        <select class="form-select" id="edit-acquisition-mode">
-          <option value="achat">Achat</option>
-          <option value="cadeau">Cadeau</option>
-          <option value="initiation">Initiation</option>
-          <option value="concours">Concours</option>
-          <option value="echange">Échange</option>
-          <option value="promo">Promo</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Investissement monétaire</label>
-        <select class="form-select" id="edit-is-investment">
-          <option value="true">Oui</option>
-          <option value="false">Non</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label class="form-label">Quantité</label><input class="form-input" id="edit-qty" type="number" min="1" /></div>
-      <div class="form-group"><label class="form-label">Condition</label><select class="form-select" id="edit-condition">
-        <option value="MINT">MINT</option><option value="NM">NM</option><option value="LP">LP</option><option value="MP">MP</option><option value="HP">HP</option>
-      </select></div>
-    </div>
-
-    <div class="quick-price-row">
-      <button class="quick-price-btn" type="button" onclick="openPriceSearch('cardmarket')">🔎 Cardmarket</button>
-      <button class="quick-price-btn secondary" type="button" onclick="openPriceSearch('ebay')">🔎 eBay</button>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn-cancel" type="button" onclick="closeEditModal()">Annuler</button>
-      <button class="btn-save" type="button" onclick="saveEditedItem()">Enregistrer</button>
-    </div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Set</label><select class="form-select" id="edit-set"></select></div><div class="form-group"><label class="form-label">Rareté</label><select class="form-select" id="edit-rarity"></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Prix achat (€)</label><input class="form-input" id="edit-buy" type="number" step="0.01" min="0" /></div><div class="form-group"><label class="form-label">Prix actuel (€)</label><input class="form-input" id="edit-current" type="number" step="0.01" min="0" /></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Mode acquisition</label><select class="form-select" id="edit-acquisition-mode"><option value="achat">Achat</option><option value="cadeau">Cadeau</option><option value="initiation">Initiation</option><option value="concours">Concours</option><option value="echange">Échange</option><option value="promo">Promo</option></select></div><div class="form-group"><label class="form-label">Investissement monétaire</label><select class="form-select" id="edit-is-investment"><option value="true">Oui</option><option value="false">Non</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">Quantité</label><input class="form-input" id="edit-qty" type="number" min="1" /></div><div class="form-group"><label class="form-label">Condition</label><select class="form-select" id="edit-condition"><option value="MINT">MINT</option><option value="NM">NM</option><option value="LP">LP</option><option value="MP">MP</option><option value="HP">HP</option></select></div></div>
+    <div class="quick-price-row"><button class="quick-price-btn" type="button" onclick="openPriceSearch('cardmarket')">🔎 Cardmarket</button><button class="quick-price-btn secondary" type="button" onclick="openPriceSearch('ebay')">🔎 eBay</button></div>
+    <div class="modal-actions"><button class="btn-cancel" type="button" onclick="closeEditModal()">Annuler</button><button class="btn-save" type="button" onclick="saveEditedItem()">Enregistrer</button></div>
   </div>
 </div>
 
@@ -516,13 +386,15 @@
 <script>
   const STORAGE_KEY = 'tcgPortfolio_v2_5_0';
   const defaultPortfolio = [];
+  const CONDITION_MULT = { MINT: 1.25, NM: 1.1, LP: 0.9, MP: 0.8, HP: 0.65 };
+  const SEALED_MULT = { 'sealed-mint': 1.35, 'sealed-nm': 1.12, 'sealed-lp': 0.92, resealed: 0.7 };
+  const GRADE_MULT = { '10': 3.5, '9': 2.0, '8': 1.4, '7': 1.1 };
   const state = {
     currentPage: 'dashboard',
     currentGameFilter: 'all',
     currentSearch: '',
     currentSort: 'val-desc',
     chartMode: 'series',
-    chartSeries: 'pokemon',
     editItemId: null,
     portfolio: loadPortfolio(),
   };
@@ -534,37 +406,29 @@
     naruto: { label: 'Naruto Bandai', icon: '🍥', color: '#f97316' }
   };
 
-  function loadPortfolio() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      const parsed = raw ? JSON.parse(raw) : defaultPortfolio;
-      return Array.isArray(parsed) ? parsed.map(normalizeItem) : defaultPortfolio;
-    } catch {
-      return defaultPortfolio;
-    }
-  }
-
-  function savePortfolio() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.portfolio));
-  }
-
-  function toSafeNumber(value, fallback = 0) {
+  function safeNumber(value, fallback = 0) {
     const n = Number(value);
     return Number.isFinite(n) ? Math.max(0, n) : fallback;
   }
 
   function normalizeItem(item = {}) {
     const qty = Math.max(1, Number(item.quantity) || 1);
-    const buyPrice = toSafeNumber(item.buyPrice, 0);
-    const currentPrice = toSafeNumber(item.currentPrice, 0);
+    const buyPrice = safeNumber(item.buyPrice, 0);
+    const currentPrice = safeNumber(item.currentPrice, 0);
     const acquisitionMode = item.acquisitionMode || 'achat';
-    const isMonetaryInvestment = item.isMonetaryInvestment !== undefined ? Boolean(item.isMonetaryInvestment === true || item.isMonetaryInvestment === 'true') : (acquisitionMode === 'achat');
-    const normalized = {
+    const isMonetaryInvestment = item.isMonetaryInvestment !== undefined
+      ? Boolean(item.isMonetaryInvestment === true || item.isMonetaryInvestment === 'true')
+      : (
+          acquisitionMode === 'achat' ||
+          acquisitionMode === 'echange' ||
+          buyPrice > 0
+        );
+    return {
       ...item,
       id: item.id || `item-${Date.now()}-${Math.random().toString(16).slice(2,8)}`,
       game: item.game || 'pokemon',
       type: item.type || 'card',
-      name: item.name || 'Sans nom',
+      name: String(item.name || 'Sans nom').trim(),
       set: item.set || 'Non défini',
       rarity: item.rarity || 'Common',
       buyPrice,
@@ -582,7 +446,20 @@
       sealedStatus: item.sealedStatus || '',
       addedAt: item.addedAt || new Date().toISOString(),
     };
-    return normalized;
+  }
+
+  function loadPortfolio() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : defaultPortfolio;
+      return Array.isArray(parsed) ? parsed.map(normalizeItem) : defaultPortfolio;
+    } catch (error) {
+      return defaultPortfolio;
+    }
+  }
+
+  function savePortfolio() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.portfolio));
   }
 
   function formatMoney(value) {
@@ -591,58 +468,100 @@
 
   function formatSignedMoney(value) {
     const v = Number(value) || 0;
-    const sign = v >= 0 ? '+' : '-';
-    return `${sign}${formatMoney(Math.abs(v))}`;
+    return `${v >= 0 ? '+' : '-'}${formatMoney(Math.abs(v))}`;
   }
 
   function formatPct(value) {
-    return `${Number(value || 0).toFixed(1)}%`;
+    if (value === null || value === undefined || Number.isNaN(value)) return 'Gratuit';
+    return `${Number(value).toFixed(1)}%`;
+  }
+
+  function getAdjustedCurrentPrice(item) {
+    const normalized = normalizeItem(item);
+    const base = safeNumber(normalized.currentPrice, 0);
+    if (normalized.type === 'sealed') {
+      const sealedKey = normalized.sealedStatus || 'sealed-nm';
+      return base * (SEALED_MULT[sealedKey] || 1.0);
+    }
+    if (normalized.isGraded && normalized.grade && GRADE_MULT[normalized.grade]) {
+      return base * GRADE_MULT[normalized.grade];
+    }
+    return base * (CONDITION_MULT[normalized.condition] || 1.0);
+  }
+
+  function calcItem(item) {
+    const normalized = normalizeItem(item);
+    const qty = Math.max(1, Number(normalized.quantity) || 1);
+    const buyPrice = safeNumber(normalized.buyPrice, 0);
+    const currentPrice = safeNumber(normalized.currentPrice, 0);
+    const adjustedCurrent = getAdjustedCurrentPrice(normalized);
+
+    const isMonetaryInvestment = normalized.isMonetaryInvestment ?? (
+      normalized.acquisitionMode === 'achat' ||
+      (normalized.acquisitionMode === 'echange' && buyPrice > 0) ||
+      buyPrice > 0
+    );
+
+    const invested = isMonetaryInvestment ? buyPrice * qty : 0;
+    const currentValue = adjustedCurrent * qty;
+    const profit = currentValue - invested;
+    const roi = invested > 0 ? (profit / invested) * 100 : null;
+
+    return {
+      ...normalized,
+      quantity: qty,
+      buyPrice,
+      currentPrice,
+      adjustedCurrent,
+      invested,
+      currentValue,
+      profit,
+      roi,
+      isMonetaryInvestment
+    };
   }
 
   function sanitizeText(value) {
     return String(value || '').trim();
   }
 
+  function formatAcquisitionMode(mode) {
+    const labels = { achat: 'Achat', cadeau: 'Cadeau', initiation: 'Initiation', concours: 'Concours', echange: 'Échange', promo: 'Promo' };
+    return labels[mode] || 'Achat';
+  }
+
+  function buildPriceSearchUrl(item, site) {
+    const query = encodeURIComponent([item.name, item.set].filter(Boolean).join(' '));
+    if (site === 'cardmarket') {
+      return `https://www.cardmarket.com/fr/Products/Search?searchString=${query}`;
+    }
+    return `https://www.ebay.fr/sch/i.html?_nkw=${query}&_sacat=0&LH_Complete=1&LH_Sold=1`;
+  }
+
   function getPortfolioSummary(items = state.portfolio) {
-    let totalValue = 0;
+    let totalCurrent = 0;
     let investedCash = 0;
-    let totalQty = 0;
+    let totalProfit = 0;
     let sealedCount = 0;
     let giftValue = 0;
 
     items.forEach(item => {
-      const normalized = normalizeItem(item);
-      const qty = normalized.quantity || 1;
-      const currentValue = normalized.currentPrice * qty;
-      totalValue += currentValue;
-      totalQty += qty;
-      if (normalized.type === 'sealed') sealedCount += qty;
-
-      const effectiveInvested = normalized.isMonetaryInvestment ? normalized.buyPrice * qty : 0;
-      investedCash += effectiveInvested;
-
-      if (!normalized.isMonetaryInvestment && normalized.currentPrice > 0) {
-        giftValue += currentValue;
-      }
+      const data = calcItem(item);
+      totalCurrent += data.currentValue;
+      investedCash += data.invested;
+      totalProfit += data.profit;
+      if (data.type === 'sealed') sealedCount += data.quantity;
+      if (!data.isMonetaryInvestment && data.currentValue > 0) giftValue += data.currentValue;
     });
 
-    const profit = totalValue - investedCash;
-    const roi = investedCash > 0 ? (profit / investedCash) * 100 : 0;
-    const savings = totalValue > 0 ? (($('#kpi-savings') && 0) || 0) : 0;
-
-    return { totalValue, investedCash, profit, roi, totalQty, sealedCount, giftValue, savings };
+    const roi = investedCash > 0 ? (totalProfit / investedCash) * 100 : null;
+    return { totalValue: totalCurrent, investedCash, profit: totalProfit, roi, totalQty: items.length, sealedCount, giftValue };
   }
 
   function arraySum(arr) { return arr.reduce((a, b) => a + (Number(b) || 0), 0); }
 
   function getItemMetrics(item) {
-    const normalized = normalizeItem(item);
-    const qty = normalized.quantity || 1;
-    const invested = normalized.isMonetaryInvestment ? normalized.buyPrice * qty : 0;
-    const currentValue = normalized.currentPrice * qty;
-    const profit = currentValue - invested;
-    const roi = invested > 0 ? (profit / invested) * 100 : 0;
-    return { ...normalized, invested, currentValue, profit, roi };
+    return calcItem(item);
   }
 
   function setPage(page) {
@@ -668,55 +587,17 @@
     showToast.timer = setTimeout(() => toast.classList.remove('show'), 1700);
   }
 
-  function formatAcquisitionMode(mode) {
-    const labels = {
-      achat: 'Achat',
-      cadeau: 'Cadeau',
-      initiation: 'Initiation',
-      concours: 'Concours',
-      echange: 'Échange',
-      promo: 'Promo'
-    };
-    return labels[mode] || 'Achat';
-  }
-
-  function buildPriceSearchUrl(item, site) {
-    const base = [item.name, item.set, item.rarity].filter(Boolean).join(' ');
-    const q = normalizeSearchQuery(base);
-    if (!q) return 'https://www.google.com/search?q=' + encodeURIComponent((item.name || 'tcg card') + ' ' + (item.set || ''));
-    if (site === 'cardmarket') return `https://www.cardmarket.com/fr/Search?search=${encodeURIComponent(q)}`;
-    return `https://www.ebay.fr/sch/i.html?_nkw=${encodeURIComponent(q)}`;
-  }
-
-  function normalizeSearchQuery(value) {
-    return String(value || '')
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-zA-Z0-9\s]/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
-
-  function openPriceSearch(site) {
-    const itemId = document.getElementById('edit-id').value;
-    const item = state.portfolio.find(entry => entry.id === itemId);
-    if (!item) return;
-    const url = buildPriceSearchUrl(item, site);
-    window.open(url, '_blank', 'noopener');
-  }
-
   function setFormGame(game) {
     const choices = ['pokemon', 'onepiece', 'riftbound', 'naruto'];
-    const setButtons = choices.map(key => document.getElementById(`sgame-${key}`));
-    setButtons.forEach(btn => btn.classList.toggle('active-poke', btn.id === `sgame-${game}` && game === 'pokemon'));
-    setButtons.forEach(btn => btn.classList.toggle('active-op', btn.id === `sgame-${game}` && game === 'onepiece'));
-    setButtons.forEach(btn => btn.classList.toggle('active-rift', btn.id === `sgame-${game}` && game === 'riftbound'));
-    setButtons.forEach(btn => btn.classList.toggle('active-naruto', btn.id === `sgame-${game}` && game === 'naruto'));
-    document.getElementById('sgame-pokemon').classList.remove('active');
-    document.getElementById('sgame-onepiece').classList.remove('active');
-    document.getElementById('sgame-riftbound').classList.remove('active');
-    document.getElementById('sgame-naruto').classList.remove('active');
-    document.getElementById(`sgame-${game}`).classList.add('active');
+    choices.forEach(key => {
+      const btn = document.getElementById(`sgame-${key}`);
+      if (!btn) return;
+      btn.classList.remove('active', 'active-poke', 'active-op', 'active-rift', 'active-naruto');
+      if (game === 'pokemon' && key === 'pokemon') btn.classList.add('active-poke');
+      if (game === 'onepiece' && key === 'onepiece') btn.classList.add('active-op');
+      if (game === 'riftbound' && key === 'riftbound') btn.classList.add('active-rift');
+      if (game === 'naruto' && key === 'naruto') btn.classList.add('active-naruto');
+    });
     bindSetOptionsByGame(game);
   }
 
@@ -758,37 +639,17 @@
     select.innerHTML = values.map(v => `<option value="${v}">${v}</option>`).join('');
   }
 
-  function renderDashboard() {
-    const summary = getPortfolioSummary();
-    document.getElementById('kpi-total').textContent = formatMoney(summary.totalValue);
-    document.getElementById('kpi-invested').textContent = formatMoney(summary.investedCash);
-    document.getElementById('kpi-profit').textContent = formatMoney(summary.profit);
-    document.getElementById('kpi-savings').textContent = formatMoney(summary.giftValue);
-    document.getElementById('kpi-sealed').textContent = formatMoney(getGamesSummary().sealedValue || 0);
-    document.getElementById('kpi-count').textContent = `${state.portfolio.length} items`;
-    document.getElementById('kpi-roi-badge').textContent = `${summary.roi >= 0 ? '+' : ''}${summary.roi.toFixed(1)}%`;
-    document.getElementById('kpi-roi-badge').className = `badge ${summary.roi >= 0 ? 'badge-green' : 'badge-red'} price-blur`;
-    document.getElementById('kpi-roi-txt').textContent = `ROI ${summary.roi.toFixed(1)}%`;
-    document.getElementById('kpi-savings-pct').textContent = summary.totalValue > 0 ? `${((summary.giftValue / summary.totalValue) * 100).toFixed(0)}% du total` : '0% du total';
-    document.getElementById('kpi-sealed-count').textContent = `${summary.sealedCount} items`;
-
-    renderBreakdown();
-    renderTopPerformers();
-    renderChart();
-    renderStats();
-  }
-
   function getGamesSummary() {
     const gameNames = ['pokemon', 'onepiece', 'riftbound', 'naruto'];
     const result = {};
     gameNames.forEach(game => {
       const entries = state.portfolio.filter(item => normalizeItem(item).game === game);
-      const total = entries.reduce((sum, item) => sum + getItemMetrics(item).currentValue, 0);
-      const invested = entries.reduce((sum, item) => sum + (getItemMetrics(item).invested), 0);
+      const total = entries.reduce((sum, item) => sum + calcItem(item).currentValue, 0);
+      const invested = entries.reduce((sum, item) => sum + calcItem(item).invested, 0);
       const profit = total - invested;
       result[game] = { total, invested, profit };
     });
-    result.sealedValue = state.portfolio.filter(item => normalizeItem(item).type === 'sealed').reduce((sum, item) => sum + getItemMetrics(item).currentValue, 0);
+    result.sealedValue = state.portfolio.filter(item => normalizeItem(item).type === 'sealed').reduce((sum, item) => sum + calcItem(item).currentValue, 0);
     return result;
   }
 
@@ -817,46 +678,78 @@
       </div>
     `).join('');
 
-    wrap.innerHTML = `
-      <div class="breakdown-bars-row">${bars}</div>
-      <div class="breakdown-legend">${legend}</div>
-    `;
+    wrap.innerHTML = `<div class="breakdown-bars-row">${bars}</div><div class="breakdown-legend">${legend}</div>`;
   }
 
   function renderTopPerformers() {
-    const items = state.portfolio.map(getItemMetrics).sort((a, b) => (b.roi || 0) - (a.roi || 0)).slice(0, 3);
+    const items = state.portfolio.map(getItemMetrics).sort((a, b) => (b.currentValue - a.currentValue) || (b.roi ?? -Infinity) - (a.roi ?? -Infinity)).slice(0, 3);
     const wrap = document.getElementById('top-performers');
     if (!items.length) {
       wrap.innerHTML = '<div class="empty"><div class="empty-title">Aucun perf</div><div>Le top des meilleures performances apparaîtra ici.</div></div>';
       return;
     }
-    const html = items.map(item => `
-      <div class="inv-item ${item.isSavings ? 'savings-glow' : ''}">
-        <div class="inv-top">
-          <div class="inv-thumb">${item.image ? `<img src="${item.image}" alt="${item.name}" referrerpolicy="no-referrer" />` : `<div class="inv-thumb-placeholder">🎴</div>`}</div>
-          <div class="inv-info">
-            <div class="inv-name">${item.name}</div>
-            <div class="inv-tags">
-              <span class="tag tag-rarity">${item.rarity}</span>
-              <span class="tag ${item.game === 'pokemon' ? 'tag-poke' : item.game === 'onepiece' ? 'tag-op' : item.game === 'riftbound' ? 'tag-rift' : 'tag-naruto'}">${gameMeta[item.game]?.icon || '🎴'} ${gameMeta[item.game]?.label || item.game}</span>
-              ${!item.isMonetaryInvestment ? '<span class="tag tag-gift">'+formatAcquisitionMode(item.acquisitionMode)+'</span>' : ''}
+    const html = items.map(item => {
+      const roiText = item.roi === null ? 'Gratuit' : `${item.roi >= 0 ? '+' : ''}${item.roi.toFixed(1)}%`;
+      const roiClass = item.roi === null ? '' : (item.roi >= 0 ? 'profit' : 'loss');
+      return `
+        <div class="inv-item ${item.isSavings ? 'savings-glow' : ''}">
+          <div class="inv-top">
+            <div class="inv-thumb">${item.image ? `<img src="${item.image}" alt="${item.name}" referrerpolicy="no-referrer" />` : `<div class="inv-thumb-placeholder">🎴</div>`}</div>
+            <div class="inv-info">
+              <div class="inv-name">${item.name}</div>
+              <div class="inv-tags">
+                <span class="tag tag-rarity">${item.rarity}</span>
+                <span class="tag ${item.game === 'pokemon' ? 'tag-poke' : item.game === 'onepiece' ? 'tag-op' : item.game === 'riftbound' ? 'tag-rift' : 'tag-naruto'}">${gameMeta[item.game]?.icon || '🎴'} ${gameMeta[item.game]?.label || item.game}</span>
+                ${!item.isMonetaryInvestment ? '<span class="tag tag-gift">'+formatAcquisitionMode(item.acquisitionMode)+'</span>' : ''}
+              </div>
+              <div class="inv-meta">${item.set} • ${item.condition} • ${item.quantity}x</div>
             </div>
-            <div class="inv-meta">${item.set} • ${item.condition} • ${item.quantity}x</div>
+          </div>
+          <div class="inv-bottom">
+            <div class="inv-val-block"><div class="inv-val-label">Valeur</div><div class="inv-val-num ${item.profit >= 0 ? 'profit' : 'loss'}">${formatMoney(item.currentValue)}</div></div>
+            <div class="inv-val-block"><div class="inv-val-label">ROI</div><div class="inv-val-num ${roiClass}">${roiText}</div></div>
           </div>
         </div>
-        <div class="inv-bottom">
-          <div class="inv-val-block"><div class="inv-val-label">Valeur</div><div class="inv-val-num ${item.profit >= 0 ? 'profit' : 'loss'}">${formatMoney(item.currentValue)}</div></div>
-          <div class="inv-val-block"><div class="inv-val-label">ROI</div><div class="inv-val-num ${item.roi >= 0 ? 'profit' : 'loss'}">${item.roi.toFixed(1)}%</div></div>
-        </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
     wrap.innerHTML = html;
+  }
+
+  function renderDashboard() {
+    const summary = getPortfolioSummary();
+    document.getElementById('kpi-total').textContent = formatMoney(summary.totalValue);
+    document.getElementById('kpi-invested').textContent = formatMoney(summary.investedCash);
+    document.getElementById('kpi-profit').textContent = formatMoney(summary.profit);
+    document.getElementById('kpi-savings').textContent = formatMoney(summary.giftValue);
+    document.getElementById('kpi-sealed').textContent = formatMoney(getGamesSummary().sealedValue || 0);
+    document.getElementById('kpi-count').textContent = `${state.portfolio.length} items`;
+
+    const roiBadge = document.getElementById('kpi-roi-badge');
+    const roiText = document.getElementById('kpi-roi-txt');
+    if (summary.roi === null) {
+      roiBadge.textContent = 'Gratuit';
+      roiBadge.className = 'badge badge-green price-blur';
+      roiText.textContent = 'ROI gratuit';
+    } else {
+      roiBadge.textContent = `${summary.roi >= 0 ? '+' : ''}${summary.roi.toFixed(1)}%`;
+      roiBadge.className = `badge ${summary.roi >= 0 ? 'badge-green' : 'badge-red'} price-blur`;
+      roiText.textContent = `ROI ${summary.roi.toFixed(1)}%`;
+    }
+
+    document.getElementById('kpi-savings-pct').textContent = summary.totalValue > 0 ? `${((summary.giftValue / summary.totalValue) * 100).toFixed(0)}% du total` : '0% du total';
+    document.getElementById('kpi-sealed-count').textContent = `${summary.sealedCount} items`;
+
+    renderBreakdown();
+    renderTopPerformers();
+    renderChart();
+    renderStats();
   }
 
   function renderChart() {
     const canvas = document.getElementById('chartCanvas');
+    if (!canvas) return;
     const labels = ['Pokémon', 'One Piece', 'Riftbound', 'Naruto'];
-    const data = ['pokemon', 'onepiece', 'riftbound', 'naruto'].map(game => getGamesSummary()[game].total || 0);
+    const values = ['pokemon', 'onepiece', 'riftbound', 'naruto'].map(game => getGamesSummary()[game].total || 0);
     const invested = ['pokemon', 'onepiece', 'riftbound', 'naruto'].map(game => getGamesSummary()[game].invested || 0);
     if (window.chartInstance) window.chartInstance.destroy();
     window.chartInstance = new Chart(canvas.getContext('2d'), {
@@ -864,12 +757,34 @@
       data: {
         labels,
         datasets: [
-          { label: 'Valeur', data, backgroundColor: ['#fbbf24', '#60a5fa', '#c084fc', '#f97316'], borderRadius: 8 },
+          { label: 'Valeur', data: values, backgroundColor: ['#fbbf24', '#60a5fa', '#c084fc', '#f97316'], borderRadius: 8 },
           { label: 'Investi', data: invested, backgroundColor: 'rgba(148,163,184,0.35)', borderRadius: 8 }
         ]
       },
       options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#e2e8f0' } } }, scales: { x: { ticks: { color: '#cbd5e1' }, grid: { display: false } }, y: { ticks: { color: '#cbd5e1', callback: v => `€${v}` }, grid: { color: 'rgba(148,163,184,0.15)' } } } }
     });
+  }
+
+  function filterAndSortPortfolio() {
+    let items = state.portfolio.filter(item => {
+      const normalized = normalizeItem(item);
+      const text = `${normalized.name} ${normalized.set} ${normalized.rarity} ${normalized.game}`.toLowerCase();
+      if (state.currentSearch && !text.includes(state.currentSearch.toLowerCase())) return false;
+      if (state.currentGameFilter !== 'all') {
+        if (state.currentGameFilter === 'cards' && normalized.type !== 'card') return false;
+        if (state.currentGameFilter === 'sealed' && normalized.type !== 'sealed') return false;
+        if (state.currentGameFilter !== 'cards' && state.currentGameFilter !== 'sealed' && normalized.game !== state.currentGameFilter) return false;
+      }
+      return true;
+    });
+
+    if (state.currentSort === 'az') items.sort((a, b) => a.name.localeCompare(b.name));
+    else if (state.currentSort === 'za') items.sort((a, b) => b.name.localeCompare(a.name));
+    else if (state.currentSort === 'val-desc') items.sort((a, b) => calcItem(b).currentValue - calcItem(a).currentValue);
+    else if (state.currentSort === 'val-asc') items.sort((a, b) => calcItem(a).currentValue - calcItem(b).currentValue);
+    else if (state.currentSort === 'roi-desc') items.sort((a, b) => (calcItem(b).roi ?? -Infinity) - (calcItem(a).roi ?? -Infinity));
+    else if (state.currentSort === 'roi-asc') items.sort((a, b) => (calcItem(a).roi ?? Infinity) - (calcItem(b).roi ?? Infinity));
+    return items;
   }
 
   function renderInventory() {
@@ -888,9 +803,9 @@
     });
 
     const html = Object.entries(groups).map(([setName, groupItems]) => {
-      const totalValue = groupItems.reduce((sum, item) => sum + getItemMetrics(item).currentValue, 0);
-      const totalInvested = groupItems.reduce((sum, item) => sum + getItemMetrics(item).invested, 0);
-      const roi = totalInvested > 0 ? ((totalValue - totalInvested) / totalInvested) * 100 : 0;
+      const totalValue = groupItems.reduce((sum, item) => sum + calcItem(item).currentValue, 0);
+      const totalInvested = groupItems.reduce((sum, item) => sum + calcItem(item).invested, 0);
+      const roi = totalInvested > 0 ? ((totalValue - totalInvested) / totalInvested) * 100 : null;
       const game = groupItems[0].game;
 
       return `
@@ -901,7 +816,7 @@
               <div style="font-size:12px;color:var(--muted);margin-top:4px;">${groupItems.length} article(s) • ${formatMoney(totalValue)}</div>
             </div>
             <div style="text-align:right;">
-              <div style="font-size:15px;font-weight:700;color:${roi >= 0 ? 'var(--green)' : 'var(--red)'};">${roi >= 0 ? '+' : ''}${roi.toFixed(1)}%</div>
+              <div style="font-size:15px;font-weight:700;color:${roi === null ? 'var(--amber)' : (roi >= 0 ? 'var(--green)' : 'var(--red)')};">${roi === null ? 'Gratuit' : `${roi >= 0 ? '+' : ''}${roi.toFixed(1)}%`}</div>
               <div style="font-size:12px;color:var(--muted);">${formatMoney(totalInvested)}</div>
             </div>
           </div>
@@ -909,7 +824,11 @@
             <button class="quick-price-btn" type="button" onclick="window.open('${buildPriceSearchUrl(groupItems[0], 'cardmarket')}', '_blank')">Cardmarket</button>
             <button class="quick-price-btn secondary" type="button" onclick="window.open('${buildPriceSearchUrl(groupItems[0], 'ebay')}', '_blank')">eBay</button>
           </div>
-          ${groupItems.map(item => `
+          ${groupItems.map(item => {
+            const metrics = calcItem(item);
+            const roiText = metrics.roi === null ? 'Gratuit' : `${metrics.roi >= 0 ? '+' : ''}${metrics.roi.toFixed(1)}%`;
+            const roiClass = metrics.roi === null ? '' : (metrics.roi >= 0 ? 'profit' : 'loss');
+            return `
             <div class="inv-item" style="margin-top:10px;">
               <div class="inv-top">
                 <div class="inv-thumb">${item.image ? `<img src="${item.image}" alt="${item.name}" referrerpolicy="no-referrer" />` : '<div class="inv-thumb-placeholder">🎴</div>'}</div>
@@ -920,43 +839,25 @@
                     <span class="tag tag-rarity">${item.rarity}</span>
                     ${!item.isMonetaryInvestment ? '<span class="tag tag-gift">Offert</span>' : ''}
                   </div>
-                  <div class="inv-meta">${item.set} • ${item.condition} • ${item.quantity}x • ${formatMoney(item.currentPrice)} actuel</div>
+                  <div class="inv-meta">${item.set} • ${item.condition} • ${item.quantity}x • ${formatMoney(metrics.currentValue)} actuel</div>
                 </div>
               </div>
               <div class="inv-bottom">
-                <div class="inv-val-block"><div class="inv-val-label">Valeur</div><div class="inv-val-num ${getItemMetrics(item).profit >= 0 ? 'profit' : 'loss'}">${formatMoney(getItemMetrics(item).currentValue)}</div></div>
+                <div class="inv-val-block"><div class="inv-val-label">Valeur</div><div class="inv-val-num ${metrics.profit >= 0 ? 'profit' : 'loss'}">${formatMoney(metrics.currentValue)}</div></div>
                 <div class="inv-actions">
                   <button class="inv-btn primary" title="Rechercher sur Cardmarket" onclick="window.open('${buildPriceSearchUrl(item, 'cardmarket')}', '_blank')">🔎</button>
                   <button class="inv-btn" title="Modifier" onclick="openEditModal('${item.id}')">✏️</button>
                   <button class="inv-btn" title="Supprimer" onclick="deleteItem('${item.id}')">🗑️</button>
                 </div>
               </div>
+              <div class="inv-val-block" style="margin-top:8px;text-align:left;"><div class="inv-val-label">ROI</div><div class="inv-val-num ${roiClass}">${roiText}</div></div>
             </div>
-          `).join('')}
+          `;}).join('')}
         </div>
       `;
     }).join('');
 
     list.innerHTML = html;
-  }
-
-  function filterAndSortPortfolio() {
-    let items = state.portfolio.filter(item => {
-      const normalized = normalizeItem(item);
-      const text = `${normalized.name} ${normalized.set} ${normalized.rarity} ${normalized.game}`.toLowerCase();
-      if (state.currentSearch && !text.includes(state.currentSearch.toLowerCase())) return false;
-      if (state.currentGameFilter !== 'all' && normalized.game !== state.currentGameFilter) return false;
-      return true;
-    });
-
-    if (state.currentSort === 'az') items.sort((a, b) => a.name.localeCompare(b.name));
-    else if (state.currentSort === 'za') items.sort((a, b) => b.name.localeCompare(a.name));
-    else if (state.currentSort === 'val-desc') items.sort((a, b) => getItemMetrics(b).currentValue - getItemMetrics(a).currentValue);
-    else if (state.currentSort === 'val-asc') items.sort((a, b) => getItemMetrics(a).currentValue - getItemMetrics(b).currentValue);
-    else if (state.currentSort === 'roi-desc') items.sort((a, b) => getItemMetrics(b).roi - getItemMetrics(a).roi);
-    else if (state.currentSort === 'roi-asc') items.sort((a, b) => getItemMetrics(a).roi - getItemMetrics(b).roi);
-
-    return items;
   }
 
   function setInvFilter(filter, btn) {
@@ -1023,7 +924,6 @@
     const id = document.getElementById('edit-id').value;
     const idx = state.portfolio.findIndex(item => item.id === id);
     if (idx === -1) return;
-
     state.portfolio[idx] = normalizeItem({
       ...state.portfolio[idx],
       name: sanitizeText(document.getElementById('edit-name').value) || state.portfolio[idx].name,
@@ -1036,7 +936,6 @@
       acquisitionMode: document.getElementById('edit-acquisition-mode').value,
       isMonetaryInvestment: document.getElementById('edit-is-investment').value === 'true',
     });
-
     savePortfolio();
     renderAll();
     closeEditModal();
@@ -1051,17 +950,18 @@
   }
 
   function getSelectedGame() {
-    return document.getElementById('sgame-pokemon').classList.contains('active') ? 'pokemon' :
-      document.getElementById('sgame-onepiece').classList.contains('active') ? 'onepiece' :
-      document.getElementById('sgame-riftbound').classList.contains('active') ? 'riftbound' : 'naruto';
+    if (document.getElementById('sgame-pokemon').classList.contains('active-poke') || document.getElementById('sgame-pokemon').classList.contains('active')) return 'pokemon';
+    if (document.getElementById('sgame-onepiece').classList.contains('active-op')) return 'onepiece';
+    if (document.getElementById('sgame-riftbound').classList.contains('active-rift')) return 'riftbound';
+    return 'naruto';
   }
 
   function addItem() {
     const name = sanitizeText(document.getElementById('inp-name').value);
     const game = getSelectedGame();
     const type = document.getElementById('stype-card').classList.contains('active') ? 'card' : 'sealed';
-    const current = toSafeNumber(document.getElementById('inp-current').value, 0);
-    const buy = toSafeNumber(document.getElementById('inp-buy').value, 0);
+    const current = safeNumber(document.getElementById('inp-current').value, 0);
+    const buy = safeNumber(document.getElementById('inp-buy').value, 0);
     const qty = Number(document.getElementById('inp-qty').value) || 1;
     const acquisitionMode = document.getElementById('inp-acquisition-mode').value || 'achat';
     const isMonetaryInvestment = document.getElementById('inp-is-investment').value === 'true';
@@ -1129,19 +1029,10 @@
     document.getElementById('set-total-count').textContent = state.portfolio.length;
     document.getElementById('set-last-sync').textContent = 'Aujourd’hui';
 
-    const badgeContainers = ['hbadge-poke', 'hbadge-op', 'hbadge-rift', 'hbadge-naruto'];
-    badgeContainers.forEach((id, idx) => {
-      const game = ['pokemon', 'onepiece', 'riftbound', 'naruto'][idx];
-      const box = document.getElementById(id);
-      box.textContent = `${gameMeta[game].icon} ${state.portfolio.filter(item => normalizeItem(item).game === game).length}`;
+    ['pokemon', 'onepiece', 'riftbound', 'naruto'].forEach((game, idx) => {
+      const box = document.getElementById(['hbadge-poke', 'hbadge-op', 'hbadge-rift', 'hbadge-naruto'][idx]);
+      if (box) box.textContent = `${gameMeta[game].icon} ${state.portfolio.filter(item => normalizeItem(item).game === game).length}`;
     });
-  }
-
-  function renderAll() {
-    renderDashboard();
-    renderInventory();
-    renderStats();
-    renderAnalysis();
   }
 
   function renderAnalysis() {
@@ -1150,7 +1041,7 @@
     const gameWrap = document.getElementById('analysis-game-kpis');
     const typeWrap = document.getElementById('analysis-type-kpis');
 
-    const gameHtml = cards.map(game => {
+    gameWrap.innerHTML = cards.map(game => {
       const data = itemSummary[game] || { total: 0, invested: 0, profit: 0 };
       return `
         <div class="kpi">
@@ -1165,8 +1056,8 @@
       card: state.portfolio.filter(item => normalizeItem(item).type === 'card'),
       sealed: state.portfolio.filter(item => normalizeItem(item).type === 'sealed')
     };
-    const typeHtml = Object.entries(types).map(([key, arr]) => {
-      const total = arr.reduce((sum, item) => sum + getItemMetrics(item).currentValue, 0);
+    typeWrap.innerHTML = Object.entries(types).map(([key, arr]) => {
+      const total = arr.reduce((sum, item) => sum + calcItem(item).currentValue, 0);
       return `
         <div class="kpi">
           <div class="kpi-label">${key === 'card' ? 'Cartes' : 'Scellés'}</div>
@@ -1175,9 +1066,6 @@
         </div>
       `;
     }).join('');
-
-    gameWrap.innerHTML = gameHtml;
-    typeWrap.innerHTML = typeHtml;
 
     const ctx = document.getElementById('rarityCanvas');
     if (ctx && window.rarityChart) window.rarityChart.destroy();
@@ -1253,15 +1141,19 @@
     reader.readAsDataURL(file);
   }
 
-  function toggleOpt(option) {
-    if (option === 'savings') {
-      document.getElementById('inp-savings-opt').value = document.getElementById('inp-savings-opt').value === 'true' ? 'false' : 'true';
-    }
-    if (option === 'graded') {
-      const current = document.getElementById('inp-graded-opt').value === 'true';
-      document.getElementById('inp-graded-opt').value = current ? 'false' : 'true';
-      document.getElementById('grade-group').style.display = current ? 'none' : 'block';
-    }
+  function openPriceSearch(site) {
+    const itemId = document.getElementById('edit-id').value;
+    const item = state.portfolio.find(entry => entry.id === itemId);
+    if (!item) return;
+    const url = buildPriceSearchUrl(item, site);
+    window.open(url, '_blank', 'noopener');
+  }
+
+  function renderAll() {
+    renderDashboard();
+    renderInventory();
+    renderStats();
+    renderAnalysis();
   }
 
   function bindDefaultFormState() {
