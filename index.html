@@ -1803,7 +1803,7 @@ async function scanTopCardText(file,OCR){
  }finally{img.close();}
 }
 
-function scanCardImage(event){
+async function scanCardImage(event){
  const file=event.target.files&&event.target.files[0];event.target.value='';
  if(!file)return;
  if(!file.type.startsWith('image/')){scanStatus('Choisis une image.');return;}
@@ -1842,7 +1842,6 @@ function applyCardScan(){
  document.getElementById('inp-name').value=name;
  const select=document.getElementById('inp-set');
  if(set&&[...select.options].some(x=>x.value===set))select.value=set;
- setFormGame(scanLastGame);
  scanStatus('✅ Fiche préremplie. Vérifie les informations puis utilise le bouton d’ajout habituel.');
  showToast('📷 Nom et extension proposés');
 }
