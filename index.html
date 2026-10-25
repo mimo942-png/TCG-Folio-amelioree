@@ -575,6 +575,14 @@
   <div id="catalog-preview" style="max-height:330px;overflow:auto;margin-top:8px"></div>
   <button class="series-add-btn" id="catalog-apply-btn" style="display:none;margin-top:8px" onclick="applyExternalSets()">✓ Confirmer les modifications</button>
 </div>
+<div id="bulk-set-cleaner" style="padding:12px;border:1px solid var(--border);border-radius:12px;margin:12px 0">
+ <div style="font-weight:700">🧹 Nettoyage groupé Pokémon + One Piece</div>
+ <p style="font-size:12px;color:var(--muted)">Analyse les deux catalogues en une fois. Seules les correspondances sûres sont présélectionnées ; tu peux décocher chaque fusion avant validation.</p>
+ <button class="series-add-btn" onclick="previewBulkSetCleanup()">🔎 Analyser tous les doublons</button>
+ <div id="bulk-clean-status" role="status" style="font-size:12px;color:var(--muted);margin:8px 0"></div>
+ <div id="bulk-clean-preview" style="max-height:350px;overflow:auto"></div>
+ <button id="bulk-clean-apply" class="series-add-btn" style="display:none;margin-top:8px" onclick="applyBulkSetCleanup()">✓ Fusionner les doublons sélectionnés</button>
+</div>
 <div id="pokemon-cleaner" style="padding:12px;border:1px solid var(--border);border-radius:12px;margin:12px 0">
   <div style="font-weight:700">🧹 Nettoyer / fusionner les extensions Pokémon</div>
   <p style="font-size:12px;color:var(--muted)">Choisis l'ancien nom et le nom à conserver. Un aperçu indique les articles déplacés. Aucune suppression automatique.</p>
@@ -2064,7 +2072,7 @@ function canonicalSetLabel(x){return '['+x.lang.toUpperCase()+'] '+x.name+' ('+x
 function cleanSetForMatch(s){return normalizeSetName(s).replace(/^(en|ja|jp|fr) /,'').replace(/\\b(op|eb|st|prb|ogn|sfd|unl)\\s*0*(\\d+)\\b/g,' ').replace(/\\s+/g,' ').trim();}
 function onePieceSetCode(value){
   // Reconnaît OP13, OP-13, OP 013, OP_13 sans confondre OP-13 et ST-13.
-  const match=String(value||'').toUpperCase().match(/(?:^|[^A-Z0-9])(OP|ST|EB|PRB)\\s*[-_ ]?\\s*0*(\\d{1,3})(?!\\d)/);
+  const match=String(value||'').toUpperCase().match(/(?:^|[^A-Z0-9])(OP|ST|EB|PRB)\s*[-_ ]?\s*0*(\d{1,3})(?!\d)/);
   return match?match[1]+'-'+String(Number(match[2])).padStart(2,'0'):'';
 }
 function findCatalogMatches(sets,x,game){
@@ -2247,6 +2255,96 @@ function mergePokemonSets(){
  }
  refreshPokemonMergeSelectors();renderSeriesList();updateSetOptions();suggestPokemonDuplicates();
  showToast('✅ Extension fusionnée : '+impacted.length+' article(s) transféré(s)');
+}
+
+
+let bulkSetCleanupPairs=[];
+function bulkSetKey(game,name){
+ const code=game==='onepiece'?onePieceSetCode(name):pokemonSetCode(name);
+ const lang=game==='pokemon'?pokemonSetLanguage(name):(String(name).match(/^\[(FR|JA|JP|EN)\]/i)||[])[1]||'';
+ if(!code)return null;
+ return {code,lang:lang.toUpperCase().replace('JP','JA')};
+}
+function bulkSetPreferred(a,b){
+ const priority=n=>(/^\[(FR|JA|EN)\]/i.test(n)?10:0)+( /\([^)]*\)\s*$/.test(n)?3:0);
+ return priority(a)>=priority(b)?a:b;
+}
+function previewBulkSetCleanup(){
+ const pairs=[],uncertain=[];
+ for(const [game,sets] of [['pokemon',pokemonSets],['onepiece',onepieceSets]]){
+   const names=[...new Set(sets)];
+   const groups=new Map();
+   for(const name of names){
+     const k=bulkSetKey(game,name);
+     if(!k)continue;
+     // Absence de langue ne signifie pas que la langue est identique : fusion manuelle uniquement.
+     const groupKey=k.code+'|'+(k.lang||'?');
+     if(!groups.has(groupKey))groups.set(groupKey,[]);
+     groups.get(groupKey).push(name);
+   }
+   for(const group of groups.values()){
+     if(group.length<2)continue;
+     let preferred=group[0];
+     for(const name of group.slice(1))preferred=bulkSetPreferred(preferred,name);
+     for(const old of group.filter(x=>x!==preferred))pairs.push({game,old,target:preferred,reason:'Même code et même langue indiquée'});
+   }
+   // Les noms sans code ou sans langue explicite sont seulement signalés.
+   for(let i=0;i<names.length;i++)for(let j=i+1;j<names.length;j++){
+     const a=names[i],b=names[j],ka=bulkSetKey(game,a),kb=bulkSetKey(game,b);
+     if(ka&&kb&&ka.code===kb.code&&ka.lang&&kb.lang&&ka.lang===kb.lang)continue;
+     const sameName=game==='pokemon'?pokemonSetComparable(a)===pokemonSetComparable(b):cleanSetForMatch(a)===cleanSetForMatch(b);
+     const sameCode=ka&&kb&&ka.code===kb.code;
+     const conflict=ka&&kb&&ka.code!==kb.code;
+     if(!conflict&&(sameCode||sameName)&&a!==b)uncertain.push({game,a,b});
+   }
+ }
+ bulkSetCleanupPairs=pairs;
+ const root=document.getElementById('bulk-clean-preview'),apply=document.getElementById('bulk-clean-apply');
+ root.replaceChildren();
+ const status=document.getElementById('bulk-clean-status');
+ status.textContent=pairs.length+' fusion(s) à code/langue identiques · '+uncertain.length+' rapprochement(s) à vérifier manuellement.';
+ for(let i=0;i<pairs.length;i++){
+   const p=pairs[i],count=inventory.filter(x=>x.game===p.game&&x.set===p.old).length;
+   const row=document.createElement('label');row.style.cssText='display:flex;gap:8px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px;';
+   const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=true;checkbox.dataset.bulk=String(i);
+   const desc=document.createElement('span');desc.textContent=(p.game==='pokemon'?'Pokémon':'One Piece')+': '+p.old+' → '+p.target+' ('+count+' article(s))';
+   row.append(checkbox,desc);root.appendChild(row);
+ }
+ if(uncertain.length){
+   const note=document.createElement('details');note.style.marginTop='10px';
+   const title=document.createElement('summary');title.textContent='Correspondances incertaines (non fusionnées)';note.appendChild(title);
+   uncertain.slice(0,100).forEach(p=>{const line=document.createElement('div');line.style.cssText='font-size:12px;padding:4px';line.textContent=p.game+': '+p.a+' / '+p.b;note.appendChild(line);});
+   root.appendChild(note);
+ }
+ apply.style.display=pairs.length?'':'none';
+}
+function applyBulkSetCleanup(){
+ const chosen=[...document.querySelectorAll('#bulk-clean-preview input[data-bulk]:checked')].map(x=>bulkSetCleanupPairs[Number(x.dataset.bulk)]).filter(Boolean);
+ if(!chosen.length){showToast('Aucune fusion sélectionnée');return;}
+ const affected=chosen.reduce((n,p)=>n+inventory.filter(x=>x.game===p.game&&x.set===p.old).length,0);
+ if(!confirm('Fusionner '+chosen.length+' doublon(s) Pokémon / One Piece et déplacer '+affected+' ligne(s) d’inventaire ?\nUne sauvegarde JSON sera téléchargée avant les changements.\nLes ventes et prix resteront inchangés.'))return;
+ exportData();
+ const snapshot={pokemon:pokemonSets.slice(),onepiece:onepieceSets.slice(),customPokemon:customPokemonSets.slice(),customOnepiece:customOnepieceSets.slice(),inventory:inventory.map(x=>({...x})),sets:localStorage.getItem(SK_SETS),inv:localStorage.getItem(SK_INV)};
+ for(const p of chosen){
+   const keyOld=bulkSetKey(p.game,p.old),keyTarget=bulkSetKey(p.game,p.target);
+   if(!keyOld||!keyTarget||keyOld.code!==keyTarget.code||!keyOld.lang||keyOld.lang!==keyTarget.lang)continue;
+   if(p.game==='pokemon'){
+     if(!pokemonSets.includes(p.target))continue;
+     pokemonSets=pokemonSets.filter(x=>x!==p.old);customPokemonSets=customPokemonSets.filter(x=>x!==p.old);
+   }else{
+     if(!onepieceSets.includes(p.target))continue;
+     onepieceSets=onepieceSets.filter(x=>x!==p.old);customOnepieceSets=customOnepieceSets.filter(x=>x!==p.old);
+   }
+   inventory.forEach(x=>{if(x.game===p.game&&x.set===p.old)x.set=p.target;});
+ }
+ if(!saveInventory()||!saveSets()){
+   pokemonSets=snapshot.pokemon;onepieceSets=snapshot.onepiece;customPokemonSets=snapshot.customPokemon;customOnepieceSets=snapshot.customOnepiece;inventory=snapshot.inventory;
+   try{if(snapshot.inv===null)localStorage.removeItem(SK_INV);else localStorage.setItem(SK_INV,snapshot.inv);if(snapshot.sets===null)localStorage.removeItem(SK_SETS);else localStorage.setItem(SK_SETS,snapshot.sets);}catch(e){}
+   alert('Erreur de sauvegarde : nettoyage annulé.');return;
+ }
+ bulkSetCleanupPairs=[];document.getElementById('bulk-clean-preview').replaceChildren();document.getElementById('bulk-clean-apply').style.display='none';
+ document.getElementById('bulk-clean-status').textContent='✅ '+chosen.length+' fusion(s) sélectionnée(s) traitée(s).';
+ renderSeriesList();updateSetOptions();showToast('✅ Nettoyage terminé');
 }
 
 function renderSeriesList(){
