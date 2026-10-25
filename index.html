@@ -593,7 +593,7 @@
       <div class="settings-row"><span>Tout effacer</span><button class="settings-btn danger" onclick="clearAll()">Effacer</button></div>
     </div>
     <div class="card" style="font-size:12px;color:var(--muted);line-height:1.8;">
-      <strong style="color:var(--text);">TCG Portfolio v3.0.0 Pro</strong><br>
+      <strong style="color:var(--text);">TCG Portfolio v3.0.1 Pro</strong><br>
       Pok&#xe9;mon, One Piece, Riftbound &amp; Naruto Bandai &#xB7; Cartes + Scell&#xe9;s<br>
       Calculs financiers stricts (Cadeaux/Dons) &#xB7; Liens Cardmarket / eBay directs.<br>
       Donn&#xe9;es sauvegard&#xe9;es localement sur cet appareil.
@@ -2048,7 +2048,23 @@ let externalCandidates=[];
 function externalStatus(t){document.getElementById('catalog-status').textContent=t;}
 function gameSetArrays(game){return game==='onepiece'?[onepieceSets,customOnepieceSets]:[riftboundSets,customRiftboundSets];}
 function canonicalSetLabel(x){return '['+x.lang.toUpperCase()+'] '+x.name+' ('+x.code+')';}
-function cleanSetForMatch(s){return normalizeSetName(s).replace(/^(en|ja|jp|fr) /,'').replace(/ (op|eb|st|prb|ogn|sfd|unl) ?\d+$/,'').trim();}
+function cleanSetForMatch(s){return normalizeSetName(s).replace(/^(en|ja|jp|fr) /,'').replace(/\\b(op|eb|st|prb|ogn|sfd|unl)\\s*0*(\\d+)\\b/g,' ').replace(/\\s+/g,' ').trim();}
+function onePieceSetCode(value){
+  // Reconnaît OP13, OP-13, OP 013, OP_13 sans confondre OP-13 et ST-13.
+  const match=String(value||'').toUpperCase().match(/(?:^|[^A-Z0-9])(OP|ST|EB|PRB)\\s*[-_ ]?\\s*0*(\\d{1,3})(?!\\d)/);
+  return match?match[1]+'-'+String(Number(match[2])).padStart(2,'0'):'';
+}
+function findCatalogMatches(sets,x,game){
+  const code=game==='onepiece'?onePieceSetCode(x.code):'';
+  const title=cleanSetForMatch(x.name);
+  return sets.filter(existing=>{
+    const oldCode=game==='onepiece'?onePieceSetCode(existing):'';
+    if(code&&oldCode)return code===oldCode;
+    // Ne pas associer deux éditions distinctes simplement parce que le titre se ressemble.
+    if(code&&oldCode&&code!==oldCode)return false;
+    return title.length>=5&&cleanSetForMatch(existing)===title;
+  });
+}
 function getCatalogMeta(){try{return JSON.parse(localStorage.getItem(SK_CATALOG_META)||'{}')||{};}catch(e){return {};}}
 async function fetchCatalogJSON(url){
  const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),16000);
@@ -2082,7 +2098,7 @@ async function fetchExternalSets(){
     .filter(x=>{const key=game+':'+x.lang+':'+x.code;if(seen.has(key)||meta[key])return false;seen.add(key);return true;})
     .map(x=>{
       const label=canonicalSetLabel(x),norm=cleanSetForMatch(x.name);
-      const matches=sets.filter(s=>cleanSetForMatch(s)===norm || (x.code.length>=4&&s.toLowerCase().includes(x.code.toLowerCase())));
+      const matches=findCatalogMatches(sets,x,game);
       const already=known.has(normalizeSetName(label));
       return {...x,game,label,key:game+':'+x.lang+':'+x.code,matches,already};
     }).filter(x=>!x.already).sort((a,b)=>a.code.localeCompare(b.code));
