@@ -2164,15 +2164,15 @@ function applyExternalSets(){
 
 function pokemonSetCode(s){
   const text=String(s||'').toLowerCase();
-  const code=text.match(/(?:^|[^a-z0-9])(sv\\d+[a-z]?|sm\\d+[a-z]?|swsh\\d+|mew|sv2a|me\\d+|xy\\d+|bw\\d+)(?:[^a-z0-9]|$)/i);
+  const code=text.match(/(?:^|[^a-z0-9])(sv\d+[a-z]?|sm\d+[a-z]?|swsh\d+|mew|sv2a|me\d+|xy\d+|bw\d+)(?:[^a-z0-9]|$)/i);
   return code?code[1].toLowerCase():'';
 }
 function pokemonSetLanguage(s){
-  const match=String(s||'').match(/^\\[(FR|JA|JP|EN)\\]/i);
+  const match=String(s||'').match(/^\[(FR|JA|JP|EN)\]/i);
   return match?match[1].toUpperCase().replace('JP','JA'):'';
 }
 function pokemonSetComparable(s){
-  return normalizeSetName(String(s||'').replace(/^\\[(FR|JA|JP|EN)\\]\\s*/i,'').replace(/\\s*\\([^)]*\\)\\s*$/,''));
+  return normalizeSetName(String(s||'').replace(/^\[(FR|JA|JP|EN)\]\s*/i,'').replace(/\s*\([^)]*\)\s*$/,''));
 }
 function pokemonSetMatchScore(a,b){
   const la=pokemonSetLanguage(a),lb=pokemonSetLanguage(b);
@@ -2233,7 +2233,7 @@ function mergePokemonSets(){
    alert('Fusion bloquée : les langues ou codes d’édition sont différents.');return;
  }
  const impacted=inventory.filter(i=>i.game==='pokemon'&&i.set===old);
- if(!confirm('Remplacer « '+old+' » par « '+target+' » ?\\n'+impacted.length+' ligne(s) seront transférées.\\nLes prix, quantités, ventes et photos restent inchangés.\\nUne sauvegarde JSON va être téléchargée avant la modification.'))return;
+ if(!confirm('Remplacer « '+old+' » par « '+target+' » ?\n'+impacted.length+' ligne(s) seront transférées.\nLes prix, quantités, ventes et photos restent inchangés.\nUne sauvegarde JSON va être téléchargée avant la modification.'))return;
  exportData();
  const beforeSets=pokemonSets.slice(),beforeCustom=customPokemonSets.slice(),beforeInv=inventory.map(i=>({...i}));
  const oldStoredSets=localStorage.getItem(SK_SETS),oldStoredInv=localStorage.getItem(SK_INV);
