@@ -281,6 +281,7 @@
       <div><div class="logo-title">TCG Portfolio Pro</div><div class="logo-sub">Pok&#xe9;mon, One Piece, Riftbound &amp; Naruto</div></div>
     </div>
     <div class="header-badges">
+      <button class="icon-btn" id="undo-btn" onclick="undoLastAction()" title="Annuler la dernière action" disabled aria-label="Annuler la dernière action">↩️</button>
       <button class="icon-btn" id="sync-btn" onclick="syncPrices()" title="Synchroniser les prix">&#x1F504;</button>
       <button class="icon-btn" id="privacy-btn" onclick="togglePrivacy()" title="Mode discret">&#x1F441;</button>
       <span class="hbadge poke" id="hbadge-poke">&#x1F525; 0</span>
@@ -573,7 +574,7 @@
       <div class="settings-row"><span>Tout effacer</span><button class="settings-btn danger" onclick="clearAll()">Effacer</button></div>
     </div>
     <div class="card" style="font-size:12px;color:var(--muted);line-height:1.8;">
-      <strong style="color:var(--text);">TCG Portfolio v2.7.0 Pro</strong><br>
+      <strong style="color:var(--text);">TCG Portfolio v2.8.0 Pro</strong><br>
       Pok&#xe9;mon, One Piece, Riftbound &amp; Naruto Bandai &#xB7; Cartes + Scell&#xe9;s<br>
       Calculs financiers stricts (Cadeaux/Dons) &#xB7; Liens Cardmarket / eBay directs.<br>
       Donn&#xe9;es sauvegard&#xe9;es localement sur cet appareil.
@@ -807,7 +808,7 @@ const EMBEDDED_INVENTORY = [
 const SK_INV='tcgpf_inventory_v9', SK_SETS='tcgpf_sets_v9', SK_PRIVACY='tcgpf_private_mode', SK_SYNC='tcgpf_last_sync', SK_HIST='tcgpf_history_v1', SK_SALES='tcgpf_sales_v1';
 let inventory=[], pokemonSets=[...DEFAULT_POKEMON_SETS], onepieceSets=[...DEFAULT_ONEPIECE_SETS], riftboundSets=[...DEFAULT_RIFTBOUND_SETS], narutoSets=[...DEFAULT_NARUTO_SETS];
 let customPokemonSets=[], customOnepieceSets=[], customRiftboundSets=[], customNarutoSets=[], isPrivate=false, portfolioHistory=[];
-let dashboardChartMode = 'series', searchQuery = '', salesHistory=[];
+let dashboardChartMode = 'series', searchQuery = '', salesHistory=[], undoStack=[];
 
 // Stockage centralisé : une erreur de quota ne doit pas casser l'application.
 function safeStorageSet(key, value){
@@ -824,6 +825,63 @@ function saveSets(){
 }
 function saveHistory(){ return safeStorageSet(SK_HIST, JSON.stringify(portfolioHistory)); }
 function saveSales(){ return safeStorageSet(SK_SALES, JSON.stringify(salesHistory)); }
+// Historique des 10 dernières modifications, conservé sur cet appareil.
+const SK_UNDO='tcgpf_undo_v1';
+function updateUndoButton(){
+  const btn=document.getElementById('undo-btn');
+  if(btn){btn.disabled=!undoStack.length;btn.title=undoStack.length?'Annuler : '+undoStack[undoStack.length-1].label:'Aucune action à annuler';}
+}
+function rememberAction(label, itemId, before, after, saleId){
+  undoStack.push({label,itemId:String(itemId),before:before?JSON.parse(JSON.stringify(before)):null,after:after?JSON.parse(JSON.stringify(after)):null,saleId:saleId||null});
+  if(undoStack.length>10)undoStack.shift();
+  if(!safeStorageSet(SK_UNDO,JSON.stringify(undoStack)))console.warn('Historique annuler non conservé après rechargement');
+  updateUndoButton();
+}
+function restoreActionState(before,after){
+  // Écriture atomique autant que possible : les deux clés sont restaurées si un échec survient.
+  const oldInv=localStorage.getItem(SK_INV),oldSales=localStorage.getItem(SK_SALES);
+  if(!safeStorageSet(SK_INV,JSON.stringify(before)) || !safeStorageSet(SK_SALES,JSON.stringify(after))){
+    try{if(oldInv!==null)localStorage.setItem(SK_INV,oldInv);if(oldSales!==null)localStorage.setItem(SK_SALES,oldSales);}catch(e){console.error('Restauration stockage échouée',e);}
+    return false;
+  }
+  inventory=before;salesHistory=after;return true;
+}
+function undoLastAction(){
+  if(!undoStack.length){showToast('Aucune action à annuler');return;}
+  const a=undoStack[undoStack.length-1], current=inventory.find(x=>String(x.id)===a.itemId)||null;
+  if(JSON.stringify(current)!==JSON.stringify(a.after)){
+    showToast('⚠️ Article modifié depuis cette action : annulation bloquée');return;
+  }
+  const nextInv=inventory.map(x=>JSON.parse(JSON.stringify(x)));
+  const idx=nextInv.findIndex(x=>String(x.id)===a.itemId);
+  if(a.before){if(idx>=0)nextInv[idx]=a.before;else nextInv.push(a.before);}
+  else if(idx>=0)nextInv.splice(idx,1);
+  const nextSales=salesHistory.slice();
+  if(a.saleId){
+    const si=nextSales.findIndex(x=>x.id===a.saleId);
+    if(si<0){showToast('⚠️ Vente déjà annulée : action bloquée');return;}
+    nextSales.splice(si,1);
+  }
+  if(!validateInventory(nextInv)||!validateSales(nextSales)){showToast('⚠️ Annulation invalide');return;}
+  if(!confirm('Annuler : '+a.label+' ?'))return;
+  if(!restoreActionState(nextInv,nextSales)){showToast('⚠️ Sauvegarde impossible, aucune modification');return;}
+  undoStack.pop();safeStorageSet(SK_UNDO,JSON.stringify(undoStack));updateUndoButton();
+  recordSnapshot();showToast('↩️ Action annulée');
+  closeSaleModal();closeModal();goPage('dashboard');
+}
+function cancelSale(id){
+  const sale=salesHistory.find(x=>x.id===id);
+  if(!sale)return;
+  const item=inventory.find(x=>String(x.id)===sale.itemId);
+  if(!item){showToast('⚠️ Article d’origine introuvable : annulation impossible');return;}
+  if(item.quantity+sale.quantity>100000){showToast('⚠️ Stock maximal dépassé');return;}
+  if(!confirm('Annuler la vente de '+sale.quantity+' × '+sale.name+' ? Le stock sera rétabli et le bénéfice recalculé.'))return;
+  const nextInv=inventory.map(x=>x.id===item.id?{...x,quantity:x.quantity+sale.quantity}:x);
+  const nextSales=salesHistory.filter(x=>x.id!==id);
+  if(!restoreActionState(nextInv,nextSales)){showToast('⚠️ Annulation impossible : stockage indisponible');return;}
+  undoStack=[];safeStorageSet(SK_UNDO,'[]');updateUndoButton();
+  recordSnapshot();renderSales();showToast('↩️ Vente annulée et stock restauré');
+}
 
 function validateItem(item){
   if(!item || typeof item !== 'object' || Array.isArray(item)) return false;
@@ -930,6 +988,11 @@ function loadAll(){
     portfolioHistory = h ? JSON.parse(h) : [];
   } catch(e){ portfolioHistory = []; }
 
+  try {
+    const u=JSON.parse(localStorage.getItem(SK_UNDO)||'[]');
+    undoStack=Array.isArray(u)?u.filter(a=>a&&typeof a.itemId==='string'&&typeof a.label==='string').slice(-10):[];
+  }catch(e){undoStack=[];}
+  updateUndoButton();
   try {
     const salesRaw = localStorage.getItem(SK_SALES);
     const parsedSales = salesRaw ? JSON.parse(salesRaw) : [];
@@ -1664,7 +1727,8 @@ function addItem(){
     imageUrl: document.getElementById('inp-img-url').value.trim()
   };
   inventory.push(item);
-  saveInventory();
+  if(!saveInventory()){inventory.pop();return;}
+  rememberAction('ajout de '+item.name,item.id,null,item);
   recordSnapshot();
   showToast('✅ Ajouté au portfolio !');
   goPage('dashboard');
@@ -1828,7 +1892,8 @@ function saveEdit(){
     ...(editType==='card' ? { rarity: document.getElementById('edit-rarity').value, condition: document.getElementById('edit-condition').value } : { sealedType: document.getElementById('edit-sealed-type').value, sealedStatus: document.getElementById('edit-sealed-status').value })
   };
   delete imgCache[old.name + '|' + old.set];
-  saveInventory();
+  if(!saveInventory()){inventory[idx]=old;return;}
+  rememberAction('modification de '+old.name,old.id,old,inventory[idx]);
   recordSnapshot();
   closeModal();
   showToast('✅ Modifié');
@@ -1837,8 +1902,11 @@ function saveEdit(){
 
 function removeItem(id){
   if(!confirm('Supprimer cet item ?')) return;
-  inventory = inventory.filter(x=>x.id!==id);
-  saveInventory();
+  const removed=inventory.find(x=>String(x.id)===String(id));
+  if(!removed)return;
+  inventory = inventory.filter(x=>String(x.id)!==String(id));
+  if(!saveInventory()){inventory.push(removed);return;}
+  rememberAction('suppression de '+removed.name,removed.id,removed,null);
   recordSnapshot();
   showToast('🗑 Supprimé');
   if(currentDetailSerie){ renderSerieDetailContent(); } else { renderInventory(); }
@@ -1988,6 +2056,7 @@ function confirmSale(){
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||Number.isNaN(Date.parse(date))){showToast('⚠️ Date invalide');return;}
   const unitCost=item.isMonetaryInvestment===false?0:Number(item.buyPrice||0);
   const transaction={id:Date.now().toString(36)+Math.random().toString(36).slice(2,9),itemId:String(item.id),name:item.name,game:item.game,set:item.set||'',date,quantity,unitSalePrice,fees,unitCost,channel,notes};
+  const beforeSale={...item};
   const oldQty=item.quantity;
   item.quantity-=quantity;
   salesHistory.unshift(transaction);
@@ -1996,6 +2065,7 @@ function confirmSale(){
     item.quantity=oldQty;salesHistory.shift();saveInventory();saveSales();
     showToast('⚠️ Vente non sauvegardée : stockage insuffisant');return;
   }
+  rememberAction('vente de '+quantity+' × '+item.name,item.id,beforeSale,item,transaction.id);
   recordSnapshot();closeSaleModal();showToast('✅ Vente enregistrée, historique conservé');
   if(currentDetailSerie){renderSerieDetailContent();}else{renderInventory();}
 }
@@ -2014,7 +2084,8 @@ function renderSales(){
       '<div class="sale-muted">'+escapeHTML(s.date)+' · '+escapeHTML(s.game||'')+' · '+escapeHTML(s.set||'')+' · '+s.quantity+' exemplaire(s)</div>'+
       '<div class="price-blur">Vente : '+fmt(s.quantity*s.unitSalePrice)+' · Frais : '+fmt(s.fees)+' · Coût : '+fmt(s.quantity*s.unitCost)+'</div>'+
       '<strong class="price-blur" style="color:'+(p>=0?'var(--green)':'var(--red)')+'">Bénéfice réalisé : '+fmt(p)+'</strong>'+
-      (s.notes?'<div class="sale-muted">'+escapeHTML(s.notes)+'</div>':'')+'</div>';
+      (s.notes?'<div class="sale-muted">'+escapeHTML(s.notes)+'</div>':'')+
+      '<button class="settings-btn" style="margin-top:8px;color:var(--red)" onclick="cancelSale(\''+escapeHTML(s.id)+'\')">↩️ Annuler cette vente</button></div>';
   }).join(''):'<div class="empty"><div class="empty-icon">💶</div><div class="empty-title">Aucune vente enregistrée</div></div>';
 }
 function exportData(){
@@ -2076,6 +2147,7 @@ function importJSONData(event){
           saveSets();
         }
       }
+      undoStack=[];safeStorageSet(SK_UNDO,'[]');
       loadAll();
       recordSnapshot();
       renderDashboard();
@@ -2096,7 +2168,7 @@ function clearAll(){
   try {
     // Garder une clé d’inventaire vide empêche le rechargement des données de démonstration intégrées.
     localStorage.setItem(SK_INV, '[]');
-    [SK_SETS, SK_HIST, SK_SYNC, SK_SALES].forEach(key => localStorage.removeItem(key));
+    [SK_SETS, SK_HIST, SK_SYNC, SK_SALES, SK_UNDO].forEach(key => localStorage.removeItem(key));
     location.reload();
   } catch(error){
     console.error('Suppression impossible', error);
