@@ -266,6 +266,10 @@
       .nav-add-btn { width: 41px; height: 41px; }
       .chart-wrap { height: 185px; }
     }
+    .sale-muted{color:var(--muted);font-size:12px}
+    .sale-entry{padding:12px 0;border-bottom:1px solid var(--border);line-height:1.65}
+    .sale-entry:last-child{border-bottom:none}
+    .sale-tag{display:inline-block;border-radius:7px;background:var(--emerald-bg);color:var(--green);padding:3px 8px;font-weight:700;font-size:11px}
   </style>
 </head>
 <body>
@@ -344,6 +348,20 @@
     <div id="top-performers"></div>
   </div>
 
+  <!-- VENTES -->
+  <div class="page" id="page-sales">
+    <div class="sec-title">Historique des ventes</div>
+    <div class="kpi-grid" style="margin-bottom:15px;">
+      <div class="kpi"><div class="kpi-label">Chiffre d'affaires net</div><div class="kpi-val price-blur" id="sale-total">0 €</div></div>
+      <div class="kpi"><div class="kpi-label">Bénéfice réalisé</div><div class="kpi-val price-blur" id="sale-profit">0 €</div></div>
+      <div class="kpi"><div class="kpi-label">Exemplaires vendus</div><div class="kpi-val" id="sale-count">0</div></div>
+      <div class="kpi"><div class="kpi-label">Marge nette</div><div class="kpi-val price-blur" id="sale-margin">N/C</div></div>
+    </div>
+    <div class="card">
+      <div class="sec-title">Transactions enregistrées</div>
+      <div id="sales-list"></div>
+    </div>
+  </div>
   <!-- INVENTAIRE -->
   <div class="page" id="page-inventory">
     <div class="search-box">
@@ -555,7 +573,7 @@
       <div class="settings-row"><span>Tout effacer</span><button class="settings-btn danger" onclick="clearAll()">Effacer</button></div>
     </div>
     <div class="card" style="font-size:12px;color:var(--muted);line-height:1.8;">
-      <strong style="color:var(--text);">TCG Portfolio v2.6.0 Pro</strong><br>
+      <strong style="color:var(--text);">TCG Portfolio v2.7.0 Pro</strong><br>
       Pok&#xe9;mon, One Piece, Riftbound &amp; Naruto Bandai &#xB7; Cartes + Scell&#xe9;s<br>
       Calculs financiers stricts (Cadeaux/Dons) &#xB7; Liens Cardmarket / eBay directs.<br>
       Donn&#xe9;es sauvegard&#xe9;es localement sur cet appareil.
@@ -567,6 +585,7 @@
   <div class="nav-item active" id="nav-dashboard" onclick="goPage('dashboard')"><span class="nav-icon">&#x1F4CA;</span><span>Dashboard</span></div>
   <div class="nav-item" id="nav-inventory" onclick="goPage('inventory')"><span class="nav-icon">&#x1F4CB;</span><span>Inventaire</span></div>
   <div class="nav-item" id="nav-add" onclick="goPage('add')"><div class="nav-add-btn">+</div><span>Ajouter</span></div>
+  <div class="nav-item" id="nav-sales" onclick="goPage('sales')"><span class="nav-icon">💶</span><span>Ventes</span></div>
   <div class="nav-item" id="nav-analysis" onclick="goPage('analysis')"><span class="nav-icon">&#x1F50D;</span><span>Analyse</span></div>
   <div class="nav-item" id="nav-settings" onclick="goPage('settings')"><span class="nav-icon">&#x2699;&#xFE0F;</span><span>R&#xe9;glages</span></div>
 </nav>
@@ -641,7 +660,7 @@
       </div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label class="form-label">Quantit&#xe9;</label><input class="form-input" id="edit-qty" type="number" min="1" inputmode="numeric"></div>
+      <div class="form-group"><label class="form-label">Quantit&#xe9;</label><input class="form-input" id="edit-qty" type="number" min="0" inputmode="numeric"></div>
     </div>
     <div class="form-group">
       <label class="form-label">URL Cardmarket personnalisée <span style="color:var(--muted2);font-weight:400;">(facultatif)</span></label>
@@ -676,6 +695,29 @@
   </div>
 </div>
 
+<!-- MODAL VENTE -->
+<div class="modal-overlay" id="saleModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">💶 Enregistrer une vente</div>
+    <div class="sale-muted" id="sale-item-name" style="margin-bottom:14px"></div>
+    <input type="hidden" id="sale-item-id">
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date" id="sale-date"></div>
+      <div class="form-group"><label class="form-label">Quantité vendue</label><input class="form-input" type="number" min="1" step="1" id="sale-qty"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Prix de vente par exemplaire (€)</label><input class="form-input" type="number" min="0" step="0.01" id="sale-unit-price"></div>
+      <div class="form-group"><label class="form-label">Frais totaux (€)</label><input class="form-input" type="number" min="0" step="0.01" id="sale-fees" value="0"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Canal de vente</label><select class="form-select" id="sale-channel">
+      <option>Cardmarket</option><option>eBay</option><option>Vinted</option><option>Leboncoin</option><option>En main propre</option><option>Autre</option>
+    </select></div>
+    <div class="form-group"><label class="form-label">Note (facultatif)</label><input class="form-input" type="text" id="sale-notes" maxlength="300"></div>
+    <div class="sale-muted" id="sale-preview" style="margin-bottom:14px"></div>
+    <div class="modal-actions"><button class="btn-cancel" onclick="closeSaleModal()">Annuler</button><button class="btn-save" onclick="confirmSale()">✅ Confirmer la vente</button></div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -762,10 +804,10 @@ const EMBEDDED_INVENTORY = [
   {"id":"1792869586308","date":"2026-10-24","name":"Riven shettered","game":"riftbound","type":"card","set":"Origins","rarity":"promo","condition":"NM","buyPrice":0,"currentPrice":40,"quantity":1,"source":"Événement TCG","isSavings":true,"graded":false,"gradeScore":null,"sealedType":"other","sealedStatus":"sealed-mint","imageUrl":""}
 ];
 
-const SK_INV='tcgpf_inventory_v9', SK_SETS='tcgpf_sets_v9', SK_PRIVACY='tcgpf_private_mode', SK_SYNC='tcgpf_last_sync', SK_HIST='tcgpf_history_v1';
+const SK_INV='tcgpf_inventory_v9', SK_SETS='tcgpf_sets_v9', SK_PRIVACY='tcgpf_private_mode', SK_SYNC='tcgpf_last_sync', SK_HIST='tcgpf_history_v1', SK_SALES='tcgpf_sales_v1';
 let inventory=[], pokemonSets=[...DEFAULT_POKEMON_SETS], onepieceSets=[...DEFAULT_ONEPIECE_SETS], riftboundSets=[...DEFAULT_RIFTBOUND_SETS], narutoSets=[...DEFAULT_NARUTO_SETS];
 let customPokemonSets=[], customOnepieceSets=[], customRiftboundSets=[], customNarutoSets=[], isPrivate=false, portfolioHistory=[];
-let dashboardChartMode = 'series', searchQuery = '';
+let dashboardChartMode = 'series', searchQuery = '', salesHistory=[];
 
 // Stockage centralisé : une erreur de quota ne doit pas casser l'application.
 function safeStorageSet(key, value){
@@ -781,6 +823,7 @@ function saveSets(){
   return safeStorageSet(SK_SETS, JSON.stringify({ pokemon:pokemonSets, onepiece:onepieceSets, riftbound:riftboundSets, naruto:narutoSets, customPokemon:customPokemonSets, customOnepiece:customOnepieceSets, customRiftbound:customRiftboundSets, customNaruto:customNarutoSets }));
 }
 function saveHistory(){ return safeStorageSet(SK_HIST, JSON.stringify(portfolioHistory)); }
+function saveSales(){ return safeStorageSet(SK_SALES, JSON.stringify(salesHistory)); }
 
 function validateItem(item){
   if(!item || typeof item !== 'object' || Array.isArray(item)) return false;
@@ -792,7 +835,7 @@ function validateItem(item){
   for(const key of ['buyPrice','currentPrice']){
     if(typeof item[key] !== 'number' || !Number.isFinite(item[key]) || item[key] < 0 || item[key] > 100000000) return false;
   }
-  if(item.quantity !== undefined && (!Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 100000)) return false;
+  if(item.quantity !== undefined && (!Number.isInteger(item.quantity) || item.quantity < 0 || item.quantity > 100000)) return false;
   if(item.set !== undefined && (typeof item.set !== 'string' || item.set.length > 300)) return false;
   if(item.imageUrl !== undefined && (typeof item.imageUrl !== 'string' || item.imageUrl.length > 5000)) return false;
   return true;
@@ -824,7 +867,7 @@ function normalizeInventory(data){
       set: typeof raw.set === 'string' ? raw.set.slice(0,300) : '',
       buyPrice: price(raw.buyPrice ?? raw.purchasePrice ?? raw.buy),
       currentPrice: price(raw.currentPrice ?? raw.marketPrice ?? raw.value),
-      quantity: Number.isInteger(quantityRaw) && quantityRaw >= 1 && quantityRaw <= 100000 ? quantityRaw : 1,
+      quantity: Number.isInteger(quantityRaw) && quantityRaw >= 0 && quantityRaw <= 100000 ? quantityRaw : 1,
       imageUrl: typeof raw.imageUrl === 'string' ? raw.imageUrl.slice(0,5000) : '',
       source: typeof raw.source === 'string' ? raw.source : '',
       cardmarketUrl: typeof (raw.cardmarketUrl ?? raw.cardmarketURL ?? raw.cardmarket_url) === 'string' ? (raw.cardmarketUrl ?? raw.cardmarketURL ?? raw.cardmarket_url).slice(0,5000) : ''
@@ -888,6 +931,12 @@ function loadAll(){
   } catch(e){ portfolioHistory = []; }
 
   try {
+    const salesRaw = localStorage.getItem(SK_SALES);
+    const parsedSales = salesRaw ? JSON.parse(salesRaw) : [];
+    salesHistory = validateSales(parsedSales) ? parsedSales : [];
+    if(!validateSales(parsedSales)) console.warn('Historique des ventes invalide, sauvegarde brute conservée.');
+  } catch(error){ console.error('Historique de ventes illisible', error); salesHistory = []; }
+  try {
     const ls = localStorage.getItem(SK_SYNC);
     if(ls){ const d = new Date(ls); const el = document.getElementById('set-last-sync'); if(el && !Number.isNaN(d.getTime())) el.textContent = d.toLocaleString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
   } catch(error){ console.warn('Date de synchronisation indisponible', error); }
@@ -898,7 +947,7 @@ function calcItem(item){
   // Pour une ligne qui nécessite volontairement un multiplicateur, définir
   // applyConditionMultiplier: true sur cette ligne.
   const qtyRaw = Number(item.quantity ?? 1);
-  const qty = Number.isInteger(qtyRaw) && qtyRaw >= 1 ? qtyRaw : 1;
+  const qty = Number.isInteger(qtyRaw) && qtyRaw >= 0 ? qtyRaw : 1;
   const buyRaw = Number(item.buyPrice ?? 0);
   const currentRaw = Number(item.currentPrice ?? 0);
   const buyPrice = Number.isFinite(buyRaw) && buyRaw >= 0 ? buyRaw : 0;
@@ -972,6 +1021,7 @@ function goPage(page){
   if(page==='dashboard') renderDashboard();
   if(page==='inventory') renderInventory();
   if(page==='analysis') renderAnalysis();
+  if(page==='sales') renderSales();
   if(page==='settings') openSettings();
 }
 
@@ -1383,6 +1433,7 @@ function renderInventory(){
     items = items.filter(i => i.name.toLowerCase().includes(searchQuery) || i.set.toLowerCase().includes(searchQuery) || (i.rarity && i.rarity.toLowerCase().includes(searchQuery)));
   }
 
+  items = items.filter(i => i.quantity > 0);
   if(!items.length){ el.innerHTML = '<div class="empty"><div class="empty-icon">📦</div><div class="empty-title">Aucun résultat</div></div>'; return; }
 
   const groups = {};
@@ -1481,7 +1532,7 @@ function renderItemHTML(item){
     '<div class="inv-val-block"><div class="inv-val-label">Investi</div><div class="inv-val-num price-blur">' + fmt(item.invested) + '</div></div>' +
     '<div class="inv-val-block"><div class="inv-val-label">Valeur</div><div class="inv-val-num price-blur">' + fmt(item.currentValue) + '</div></div>' +
     '<div class="inv-val-block"><div class="inv-val-label">ROI</div><div class="inv-val-num price-blur ' + pStyle + '">' + fmtPct(item.roi) + '</div></div>' +
-    '<div class="inv-actions"><button class="inv-btn" onclick="openEdit(\'' + item.id + '\')">✏️</button><button class="inv-btn" style="color:var(--red)" onclick="removeItem(\'' + item.id + '\')">✕</button></div>' +
+    '<div class="inv-actions"><button class="inv-btn" style="color:var(--green)" onclick="openSale(\'' + item.id + '\')" title="Vendre" ' + (item.quantity === 0 ? 'disabled' : '') + '>💶</button><button class="inv-btn" onclick="openEdit(\'' + item.id + '\')">✏️</button><button class="inv-btn" style="color:var(--red)" onclick="removeItem(\'' + item.id + '\')">✕</button></div>' +
     '</div>' +
     '<div class="price-compare">' +
     '<div class="price-compare-item" style="cursor:pointer;" onclick="openMarketSearch(\'' + item.id + '\', \'cardmarket\')" title="Recherche Cardmarket">' +
@@ -1759,7 +1810,7 @@ function saveEdit(){
   const quantity = Number(document.getElementById('edit-qty').value);
   if(!name || name.length > 300){ showToast('⚠️ Nom invalide.'); return; }
   if(!Number.isFinite(buyPrice) || buyPrice < 0 || !Number.isFinite(currentPrice) || currentPrice < 0){ showToast('⚠️ Prix invalides.'); return; }
-  if(!Number.isInteger(quantity) || quantity < 1 || quantity > 100000){ showToast('⚠️ Quantité invalide.'); return; }
+  if(!Number.isInteger(quantity) || quantity < 0 || quantity > 100000){ showToast('⚠️ Quantité invalide.'); return; }
   inventory[idx] = {
     ...old,
     name,
@@ -1901,8 +1952,73 @@ function addSeries(){
 }
 
 function showToast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+function validateSales(data){
+  return Array.isArray(data) && data.length <= 20000 && data.every(s =>
+    s && typeof s==='object' && typeof s.id==='string' && s.id.length<=100 &&
+    typeof s.itemId==='string' && s.itemId.length<=100 && typeof s.name==='string' && s.name.length<=300 &&
+    /^\d{4}-\d{2}-\d{2}$/.test(s.date) && !Number.isNaN(Date.parse(s.date)) &&
+    Number.isInteger(s.quantity) && s.quantity>=1 && s.quantity<=100000 &&
+    ['unitSalePrice','fees','unitCost'].every(k=>typeof s[k]==='number' && Number.isFinite(s[k]) && s[k]>=0 && s[k]<=100000000) &&
+    typeof s.channel==='string' && s.channel.length<=100 && (s.notes===undefined || (typeof s.notes==='string' && s.notes.length<=300))
+  );
+}
+function openSale(id){
+  const item=inventory.find(x=>String(x.id)===String(id));
+  if(!item || item.quantity < 1){ showToast('⚠️ Aucun exemplaire disponible');return; }
+  document.getElementById('sale-item-id').value=item.id;
+  document.getElementById('sale-item-name').textContent=item.name+' · '+item.set+' · '+item.quantity+' disponible(s)';
+  document.getElementById('sale-date').value=localDateKey();
+  document.getElementById('sale-qty').value=1;
+  document.getElementById('sale-qty').max=item.quantity;
+  document.getElementById('sale-unit-price').value=item.currentPrice;
+  document.getElementById('sale-fees').value=0;
+  document.getElementById('sale-notes').value='';
+  document.getElementById('sale-preview').textContent='Prix de revient unitaire : '+fmt(item.isMonetaryInvestment===false?0:item.buyPrice)+' (prix moyen saisi sur la fiche).';
+  document.getElementById('saleModal').classList.add('open');
+}
+function closeSaleModal(){document.getElementById('saleModal').classList.remove('open');}
+function confirmSale(){
+  const id=document.getElementById('sale-item-id').value;
+  const item=inventory.find(x=>String(x.id)===id);
+  if(!item){showToast('Item introuvable');return;}
+  const quantity=Number(document.getElementById('sale-qty').value), unitSalePrice=Number(document.getElementById('sale-unit-price').value), fees=Number(document.getElementById('sale-fees').value);
+  const date=document.getElementById('sale-date').value, channel=document.getElementById('sale-channel').value, notes=document.getElementById('sale-notes').value.trim();
+  if(!Number.isInteger(quantity)||quantity<1||quantity>item.quantity){showToast('⚠️ Quantité supérieure au stock disponible');return;}
+  if(![unitSalePrice,fees].every(v=>Number.isFinite(v)&&v>=0&&v<=100000000)){showToast('⚠️ Prix ou frais invalides');return;}
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||Number.isNaN(Date.parse(date))){showToast('⚠️ Date invalide');return;}
+  const unitCost=item.isMonetaryInvestment===false?0:Number(item.buyPrice||0);
+  const transaction={id:Date.now().toString(36)+Math.random().toString(36).slice(2,9),itemId:String(item.id),name:item.name,game:item.game,set:item.set||'',date,quantity,unitSalePrice,fees,unitCost,channel,notes};
+  const oldQty=item.quantity;
+  item.quantity-=quantity;
+  salesHistory.unshift(transaction);
+  // Enregistrer les deux ensembles : restaurer le stock si la sauvegarde échoue.
+  if(!saveSales()||!saveInventory()){
+    item.quantity=oldQty;salesHistory.shift();saveInventory();saveSales();
+    showToast('⚠️ Vente non sauvegardée : stockage insuffisant');return;
+  }
+  recordSnapshot();closeSaleModal();showToast('✅ Vente enregistrée, historique conservé');
+  if(currentDetailSerie){renderSerieDetailContent();}else{renderInventory();}
+}
+function renderSales(){
+  const net=salesHistory.reduce((a,s)=>a+s.quantity*s.unitSalePrice-s.fees,0);
+  const cost=salesHistory.reduce((a,s)=>a+s.quantity*s.unitCost,0);
+  const profit=net-cost;
+  document.getElementById('sale-total').textContent=fmt(net);
+  document.getElementById('sale-profit').textContent=fmt(profit);
+  document.getElementById('sale-profit').style.color=profit>=0?'var(--green)':'var(--red)';
+  document.getElementById('sale-count').textContent=salesHistory.reduce((a,s)=>a+s.quantity,0);
+  document.getElementById('sale-margin').textContent=net>0?fmtPct(profit/net*100):'N/C';
+  document.getElementById('sales-list').innerHTML=salesHistory.length?salesHistory.slice().sort((a,b)=>b.date.localeCompare(a.date)).map(s=>{
+    const netSale=s.quantity*s.unitSalePrice-s.fees,p=netSale-s.quantity*s.unitCost;
+    return '<div class="sale-entry"><div style="display:flex;justify-content:space-between;gap:8px"><strong>'+escapeHTML(s.name)+'</strong><span class="sale-tag">'+escapeHTML(s.channel)+'</span></div>'+
+      '<div class="sale-muted">'+escapeHTML(s.date)+' · '+escapeHTML(s.game||'')+' · '+escapeHTML(s.set||'')+' · '+s.quantity+' exemplaire(s)</div>'+
+      '<div class="price-blur">Vente : '+fmt(s.quantity*s.unitSalePrice)+' · Frais : '+fmt(s.fees)+' · Coût : '+fmt(s.quantity*s.unitCost)+'</div>'+
+      '<strong class="price-blur" style="color:'+(p>=0?'var(--green)':'var(--red)')+'">Bénéfice réalisé : '+fmt(p)+'</strong>'+
+      (s.notes?'<div class="sale-muted">'+escapeHTML(s.notes)+'</div>':'')+'</div>';
+  }).join(''):'<div class="empty"><div class="empty-icon">💶</div><div class="empty-title">Aucune vente enregistrée</div></div>';
+}
 function exportData(){
-  const blob = new Blob([JSON.stringify(inventory,null,2)], {type:'application/json'});
+  const blob = new Blob([JSON.stringify({version:2,exportedAt:new Date().toISOString(),inventory,sales:salesHistory,portfolioHistory,sets:{pokemon:pokemonSets,onepiece:onepieceSets,riftbound:riftboundSets,naruto:narutoSets,customPokemon:customPokemonSets,customOnepiece:customOnepieceSets,customRiftbound:customRiftboundSets,customNaruto:customNarutoSets}},null,2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -1921,13 +2037,17 @@ function importJSONData(event){
   reader.onload = e => {
     try {
       const data = JSON.parse(e.target.result);
-      if(!validateInventory(data)){
+      const importingBundle = !Array.isArray(data) && data && typeof data==='object' && Array.isArray(data.inventory);
+      const incomingInventory = importingBundle ? data.inventory : data;
+      const incomingSales = importingBundle ? (data.sales ?? []) : null;
+      if(importingBundle && !validateSales(incomingSales)){ alert('Import refusé : historique des ventes invalide.'); return; }
+      if(!validateInventory(incomingInventory)){
         alert('Import refusé : structure invalide, prix/quantités incorrects ou identifiants dupliqués.');
         return;
       }
-      if(!confirm(`Remplacer l’inventaire actuel par ${data.length} items ? Pensez à exporter une sauvegarde avant.`)) return;
-      const previous = inventory;
-      inventory = data.map(item => ({
+      if(!confirm(`Remplacer l’inventaire actuel par ${incomingInventory.length} items ? Pensez à exporter une sauvegarde avant.` + (importingBundle?' Les ventes du fichier remplaceront également votre historique.':''))) return;
+      const previous = inventory, previousSales=salesHistory.slice(), previousHistory=portfolioHistory.slice();
+      inventory = incomingInventory.map(item => ({
         ...item,
         id: String(item.id),
         quantity: item.quantity ?? 1,
@@ -1935,15 +2055,31 @@ function importJSONData(event){
         source: item.source ?? '',
         imageUrl: item.imageUrl ?? ''
       }));
-      if(!saveInventory()){
-        inventory = previous;
+      if(importingBundle) salesHistory=incomingSales.slice();
+      if(!saveInventory() || (importingBundle && !saveSales())){
+        inventory = previous;salesHistory=previousSales;saveInventory();saveSales();
         alert('Sauvegarde impossible : inventaire précédent restauré en mémoire. Libérez de l’espace puis réessayez.');
         return;
+      }
+      if(importingBundle){
+        if(Array.isArray(data.portfolioHistory)){portfolioHistory=data.portfolioHistory;saveHistory();}
+        if(data.sets && typeof data.sets==='object'){
+          const x=data.sets;
+          if(Array.isArray(x.pokemon))pokemonSets=x.pokemon;
+          if(Array.isArray(x.onepiece))onepieceSets=x.onepiece;
+          if(Array.isArray(x.riftbound))riftboundSets=x.riftbound;
+          if(Array.isArray(x.naruto))narutoSets=x.naruto;
+          if(Array.isArray(x.customPokemon))customPokemonSets=x.customPokemon;
+          if(Array.isArray(x.customOnepiece))customOnepieceSets=x.customOnepiece;
+          if(Array.isArray(x.customRiftbound))customRiftboundSets=x.customRiftbound;
+          if(Array.isArray(x.customNaruto))customNarutoSets=x.customNaruto;
+          saveSets();
+        }
       }
       loadAll();
       recordSnapshot();
       renderDashboard();
-      showToast('✅ ' + data.length + ' items importés');
+      showToast('✅ ' + incomingInventory.length + ' items importés');
     } catch(err){
       console.error('Import JSON échoué', err);
       alert('Erreur lors de la lecture du fichier JSON. Les données actuelles ont été conservées.');
@@ -1956,11 +2092,11 @@ function importJSONData(event){
 }
 
 function clearAll(){
-  if(!confirm('⚠️ Effacer l’inventaire, les séries personnalisées, l’historique et la date de synchronisation ? Irréversible.')) return;
+  if(!confirm('⚠️ Effacer l’inventaire, les séries personnalisées, l’historique des ventes et la date de synchronisation ? Irréversible.')) return;
   try {
     // Garder une clé d’inventaire vide empêche le rechargement des données de démonstration intégrées.
     localStorage.setItem(SK_INV, '[]');
-    [SK_SETS, SK_HIST, SK_SYNC].forEach(key => localStorage.removeItem(key));
+    [SK_SETS, SK_HIST, SK_SYNC, SK_SALES].forEach(key => localStorage.removeItem(key));
     location.reload();
   } catch(error){
     console.error('Suppression impossible', error);
