@@ -425,7 +425,27 @@
         <button class="seg-btn active" id="stype-card" onclick="setFormType('card')">&#x1F0CF; Carte</button>
         <button class="seg-btn" id="stype-sealed" onclick="setFormType('sealed')">&#x1F4E6; Produit Scell&#xe9;</button>
       </div>
-      <div class="form-group">
+      <div class="card" style="margin:10px 0;padding:12px;border:1px solid var(--border)">
+ <div style="font-weight:700;margin-bottom:5px">📷 Scanner une carte · Tous les jeux</div>
+ <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Photo ou caméra : lecture du texte et proposition d'extension. Vérifie les champs avant d'ajouter. Aucune donnée de collection modifiée par le scan.</div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap">
+  <button type="button" class="series-add-btn" onclick="document.getElementById('scan-camera-input').click()">📸 Caméra</button>
+  <button type="button" class="series-add-btn" onclick="document.getElementById('scan-file-input').click()">🖼️ Galerie / fichier</button>
+ </div>
+ <input id="scan-camera-input" type="file" accept="image/*" capture="environment" style="display:none" onchange="scanCardImage(event)">
+ <input id="scan-file-input" type="file" accept="image/*" style="display:none" onchange="scanCardImage(event)">
+ <div id="scan-status" role="status" style="font-size:12px;color:var(--muted);margin-top:8px"></div>
+ <div id="scan-result" style="display:none;margin-top:8px">
+  <img id="scan-preview-image" alt="Carte à analyser" style="max-height:180px;max-width:100%;object-fit:contain;border-radius:8px">
+  <label class="form-label" for="scan-detected-name">Nom proposé (modifiable)</label>
+  <input class="form-input" id="scan-detected-name" maxlength="300">
+  <label class="form-label" for="scan-detected-set">Extension proposée</label>
+  <select class="form-select" id="scan-detected-set"></select>
+  <details style="font-size:12px;margin:8px 0"><summary>Texte détecté</summary><pre id="scan-raw-text" style="white-space:pre-wrap;word-break:break-word"></pre></details>
+  <button type="button" class="series-add-btn" onclick="applyCardScan()">✓ Préremplir la fiche (sans enregistrer)</button>
+ </div>
+</div>
+<div class="form-group">
         <label class="form-label">Nom *</label>
         <input class="form-input" id="inp-name" type="text" placeholder="Ex: Charizard ex / ETB Surging Sparks / Naruto Bandai" autocomplete="off">
       </div>
@@ -1731,6 +1751,73 @@ function toggleOpt(opt){
     document.getElementById('dot-graded').style.color = formGraded ? '#000' : 'transparent';
     document.getElementById('grade-group').style.display = formGraded ? '' : 'none';
   }
+}
+
+
+let scanObjectUrl=null;
+function scanStatus(t){document.getElementById('scan-status').textContent=t;}
+async function loadScannerOCR(){
+ if(window.Tesseract&&typeof window.Tesseract.recognize==='function')return window.Tesseract;
+ if(!window._tcgOcrLoader){
+  window._tcgOcrLoader=new Promise((resolve,reject)=>{
+   const script=document.createElement('script');script.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+   script.onload=()=>window.Tesseract?resolve(window.Tesseract):reject(Error('Bibliothèque OCR indisponible'));
+   script.onerror=()=>reject(Error('Impossible de charger le module OCR (connexion requise)'));
+   document.head.appendChild(script);
+  }).catch(err=>{window._tcgOcrLoader=null;throw err;});
+ }
+ return window._tcgOcrLoader;
+}
+function scanGameSets(){
+ return formGame==='onepiece'?onepieceSets:formGame==='riftbound'?riftboundSets:formGame==='naruto'?narutoSets:pokemonSets;
+}
+function scanTextMatchScore(text,set){
+ const full=normalizeSetName(text),label=normalizeSetName(set.replace(/^\[[^\]]+\]\s*/,'').replace(/\([^)]*\)\s*$/,''));
+ if(label.length>=5&&full.includes(label))return 90+Math.min(9,label.length/10);
+ const code=formGame==='onepiece'?onePieceSetCode(set):formGame==='pokemon'?pokemonSetCode(set):'';
+ if(code){
+  const candidate=formGame==='onepiece'?onePieceSetCode(text):pokemonSetCode(text);
+  if(candidate===code)return 85;
+ }
+ const words=label.split(' ').filter(x=>x.length>=4),hits=words.filter(x=>full.includes(x)).length;
+ return words.length>=2&&hits>=2?Math.round(60*hits/words.length):0;
+}
+async function scanCardImage(event){
+ const file=event.target.files&&event.target.files[0];event.target.value='';
+ if(!file)return;
+ if(!file.type.startsWith('image/')){scanStatus('Choisis une image.');return;}
+ if(file.size>12*1024*1024){scanStatus('Image trop volumineuse (12 Mo maximum).');return;}
+ const result=document.getElementById('scan-result');result.style.display='none';
+ if(scanObjectUrl)URL.revokeObjectURL(scanObjectUrl);
+ scanObjectUrl=URL.createObjectURL(file);document.getElementById('scan-preview-image').src=scanObjectUrl;
+ scanStatus('Lecture de la carte… La première analyse peut prendre quelques secondes.');
+ try{
+  const OCR=await loadScannerOCR();
+  const langs=formGame==='pokemon'?'eng+fra+jpn':'eng+fra';
+  let output;
+  try{output=await OCR.recognize(file,langs);}catch(err){output=await OCR.recognize(file,'eng');}
+  const text=String(output?.data?.text||'').trim();
+  if(!text){scanStatus('Aucun texte lisible. Essaie une photo nette et bien éclairée.');return;}
+  const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+  const name=lines.filter(x=>x.length>=3&&x.length<=90&&!/^\d+[\s\/\-\d]*$/.test(x)).sort((a,b)=>b.length-a.length)[0]||lines[0]||'';
+  document.getElementById('scan-detected-name').value=name.slice(0,300);
+  document.getElementById('scan-raw-text').textContent=text;
+  const select=document.getElementById('scan-detected-set');select.replaceChildren();
+  const blank=document.createElement('option');blank.value='';blank.textContent='Choisir manuellement / extension non reconnue';select.appendChild(blank);
+  const ranked=[...new Set(scanGameSets())].map(set=>({set,score:scanTextMatchScore(text,set)})).filter(x=>x.score>=50).sort((a,b)=>b.score-a.score).slice(0,12);
+  for(const x of ranked){const option=document.createElement('option');option.value=x.set;option.textContent=x.set+' · correspondance possible';select.appendChild(option);}
+  if(ranked.length)select.value=ranked[0].set;
+  result.style.display='block';scanStatus('Texte lu. Vérifie le nom et l’extension : la reconnaissance n’est pas garantie.');
+ }catch(err){console.error('OCR scan',err);scanStatus('⚠️ Scan impossible : '+(err.message||'erreur de lecture')+'. Tu peux toujours saisir la fiche manuellement.');}
+}
+function applyCardScan(){
+ const name=document.getElementById('scan-detected-name').value.trim(),set=document.getElementById('scan-detected-set').value;
+ if(!name){showToast('Renseigne le nom de la carte');return;}
+ document.getElementById('inp-name').value=name;
+ const select=document.getElementById('inp-set');
+ if(set&&[...select.options].some(x=>x.value===set))select.value=set;
+ scanStatus('✅ Fiche préremplie. Vérifie les informations puis utilise le bouton d’ajout habituel.');
+ showToast('📷 Nom et extension proposés');
 }
 
 function addItem(){
