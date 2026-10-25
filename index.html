@@ -575,6 +575,18 @@
   <div id="catalog-preview" style="max-height:330px;overflow:auto;margin-top:8px"></div>
   <button class="series-add-btn" id="catalog-apply-btn" style="display:none;margin-top:8px" onclick="applyExternalSets()">✓ Confirmer les modifications</button>
 </div>
+<div id="pokemon-cleaner" style="padding:12px;border:1px solid var(--border);border-radius:12px;margin:12px 0">
+  <div style="font-weight:700">🧹 Nettoyer / fusionner les extensions Pokémon</div>
+  <p style="font-size:12px;color:var(--muted)">Choisis l'ancien nom et le nom à conserver. Un aperçu indique les articles déplacés. Aucune suppression automatique.</p>
+  <button class="series-add-btn" onclick="suggestPokemonDuplicates()">🔍 Détecter les doublons probables</button>
+  <div id="pokemon-duplicate-list" style="font-size:12px;max-height:180px;overflow:auto;margin:8px 0"></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <select id="pokemon-old-set" class="series-add-inp" style="flex:1;min-width:150px"></select>
+    <select id="pokemon-new-set" class="series-add-inp" style="flex:1;min-width:150px"></select>
+  </div>
+  <div id="pokemon-merge-impact" role="status" style="font-size:12px;color:var(--muted);margin:8px 0"></div>
+  <button class="series-add-btn" onclick="mergePokemonSets()">🔁 Remplacer et transférer les articles</button>
+</div>
 <div class="series-list-wrap" id="series-list"></div>
         <div class="series-add-row">
           <input class="series-add-inp" id="series-new-inp" type="text" placeholder="Nom du nouveau set&#x2026;">
@@ -593,7 +605,7 @@
       <div class="settings-row"><span>Tout effacer</span><button class="settings-btn danger" onclick="clearAll()">Effacer</button></div>
     </div>
     <div class="card" style="font-size:12px;color:var(--muted);line-height:1.8;">
-      <strong style="color:var(--text);">TCG Portfolio v3.0.1 Pro</strong><br>
+      <strong style="color:var(--text);">TCG Portfolio v3.1.0 Pro</strong><br>
       Pok&#xe9;mon, One Piece, Riftbound &amp; Naruto Bandai &#xB7; Cartes + Scell&#xe9;s<br>
       Calculs financiers stricts (Cadeaux/Dons) &#xB7; Liens Cardmarket / eBay directs.<br>
       Donn&#xe9;es sauvegard&#xe9;es localement sur cet appareil.
@@ -1959,6 +1971,7 @@ function setSeriesTab(g){
   document.getElementById('stab-rift').className = 'series-tab-btn' + (g==='riftbound' ? ' active-rift' : '');
   document.getElementById('stab-naruto').className = 'series-tab-btn' + (g==='naruto' ? ' active-naruto' : '');
   renderSeriesList();
+  refreshPokemonMergeSelectors();
   document.getElementById('catalog-preview').replaceChildren();
   document.getElementById('catalog-apply-btn').style.display='none';
 }
@@ -2148,6 +2161,94 @@ function applyExternalSets(){
  renderSeriesList();updateSetOptions();showToast('✅ Catalogue actualisé');
 }
 
+
+function pokemonSetCode(s){
+  const text=String(s||'').toLowerCase();
+  const code=text.match(/(?:^|[^a-z0-9])(sv\\d+[a-z]?|sm\\d+[a-z]?|swsh\\d+|mew|sv2a|me\\d+|xy\\d+|bw\\d+)(?:[^a-z0-9]|$)/i);
+  return code?code[1].toLowerCase():'';
+}
+function pokemonSetLanguage(s){
+  const match=String(s||'').match(/^\\[(FR|JA|JP|EN)\\]/i);
+  return match?match[1].toUpperCase().replace('JP','JA'):'';
+}
+function pokemonSetComparable(s){
+  return normalizeSetName(String(s||'').replace(/^\\[(FR|JA|JP|EN)\\]\\s*/i,'').replace(/\\s*\\([^)]*\\)\\s*$/,''));
+}
+function pokemonSetMatchScore(a,b){
+  const la=pokemonSetLanguage(a),lb=pokemonSetLanguage(b);
+  if(la&&lb&&la!==lb)return 0;
+  const ca=pokemonSetCode(a),cb=pokemonSetCode(b);
+  if(ca&&cb&&ca!==cb)return 0;
+  if(ca&&cb&&ca===cb)return 100;
+  const na=pokemonSetComparable(a),nb=pokemonSetComparable(b);
+  if(na===nb&&na.length>2)return 95;
+  if(na.length>=7&&nb.length>=7&&(na.includes(nb)||nb.includes(na)))return 70;
+  return 0;
+}
+function refreshPokemonMergeSelectors(){
+  const old=document.getElementById('pokemon-old-set'),next=document.getElementById('pokemon-new-set');
+  if(!old||!next)return;
+  const prevOld=old.value,prevNew=next.value;
+  for(const select of [old,next]){
+    select.replaceChildren();
+    const blank=document.createElement('option');blank.value='';blank.textContent=select===old?'Ancienne extension à remplacer':'Extension à conserver';select.appendChild(blank);
+    pokemonSets.forEach(name=>{const option=document.createElement('option');option.value=name;option.textContent=name;select.appendChild(option);});
+  }
+  if(pokemonSets.includes(prevOld))old.value=prevOld;
+  if(pokemonSets.includes(prevNew))next.value=prevNew;
+  old.onchange=showPokemonMergeImpact;next.onchange=showPokemonMergeImpact;
+  showPokemonMergeImpact();
+}
+function showPokemonMergeImpact(){
+  const old=document.getElementById('pokemon-old-set')?.value,newName=document.getElementById('pokemon-new-set')?.value;
+  const impact=document.getElementById('pokemon-merge-impact');if(!impact)return;
+  if(!old||!newName||old===newName){impact.textContent='Sélectionne deux extensions différentes.';return;}
+  const items=inventory.filter(i=>i.game==='pokemon'&&i.set===old);
+  const score=pokemonSetMatchScore(old,newName);
+  impact.textContent=items.length+' ligne(s) d’inventaire et '+items.reduce((n,i)=>n+(Number(i.quantity)||0),0)+' exemplaire(s) seront rattachés à « '+newName+' ». '+(score?'Correspondance probable.':'⚠️ Noms différents : vérifie bien l’édition et la langue.');
+}
+function suggestPokemonDuplicates(){
+  const root=document.getElementById('pokemon-duplicate-list');root.replaceChildren();
+  const pairs=[];
+  for(let i=0;i<pokemonSets.length;i++)for(let j=i+1;j<pokemonSets.length;j++){
+    const score=pokemonSetMatchScore(pokemonSets[i],pokemonSets[j]);
+    if(score>=70)pairs.push({a:pokemonSets[i],b:pokemonSets[j],score});
+  }
+  pairs.sort((a,b)=>b.score-a.score);
+  if(!pairs.length){root.textContent='Aucun doublon évident détecté. Tu peux fusionner manuellement avec les menus ci-dessous.';return;}
+  const heading=document.createElement('div');heading.textContent=pairs.length+' paire(s) potentielle(s) · aucune fusion automatique';root.appendChild(heading);
+  pairs.slice(0,100).forEach(pair=>{
+    const btn=document.createElement('button');btn.className='settings-btn';btn.style.cssText='display:block;margin:6px 0;text-align:left;width:100%;white-space:normal;';
+    btn.textContent=pair.a+'  →  '+pair.b+' · '+(pair.score===100?'même code':'nom similaire');
+    btn.onclick=()=>{document.getElementById('pokemon-old-set').value=pair.a;document.getElementById('pokemon-new-set').value=pair.b;showPokemonMergeImpact();};
+    root.appendChild(btn);
+  });
+}
+function mergePokemonSets(){
+ const old=document.getElementById('pokemon-old-set').value,target=document.getElementById('pokemon-new-set').value;
+ if(!old||!target||old===target||!pokemonSets.includes(old)||!pokemonSets.includes(target)){showToast('Choisis deux extensions valides');return;}
+ const langA=pokemonSetLanguage(old),langB=pokemonSetLanguage(target);
+ const codeA=pokemonSetCode(old),codeB=pokemonSetCode(target);
+ if((langA&&langB&&langA!==langB)||(codeA&&codeB&&codeA!==codeB)){
+   alert('Fusion bloquée : les langues ou codes d’édition sont différents.');return;
+ }
+ const impacted=inventory.filter(i=>i.game==='pokemon'&&i.set===old);
+ if(!confirm('Remplacer « '+old+' » par « '+target+' » ?\\n'+impacted.length+' ligne(s) seront transférées.\\nLes prix, quantités, ventes et photos restent inchangés.\\nUne sauvegarde JSON va être téléchargée avant la modification.'))return;
+ exportData();
+ const beforeSets=pokemonSets.slice(),beforeCustom=customPokemonSets.slice(),beforeInv=inventory.map(i=>({...i}));
+ const oldStoredSets=localStorage.getItem(SK_SETS),oldStoredInv=localStorage.getItem(SK_INV);
+ pokemonSets=pokemonSets.filter(s=>s!==old);
+ customPokemonSets=customPokemonSets.filter(s=>s!==old);
+ inventory.forEach(i=>{if(i.game==='pokemon'&&i.set===old)i.set=target;});
+ if(!saveInventory()||!saveSets()){
+   pokemonSets=beforeSets;customPokemonSets=beforeCustom;inventory=beforeInv;
+   try{if(oldStoredInv===null)localStorage.removeItem(SK_INV);else localStorage.setItem(SK_INV,oldStoredInv);if(oldStoredSets===null)localStorage.removeItem(SK_SETS);else localStorage.setItem(SK_SETS,oldStoredSets);}catch(e){}
+   alert('La sauvegarde a échoué : fusion annulée.');return;
+ }
+ refreshPokemonMergeSelectors();renderSeriesList();updateSetOptions();suggestPokemonDuplicates();
+ showToast('✅ Extension fusionnée : '+impacted.length+' article(s) transféré(s)');
+}
+
 function renderSeriesList(){
   const el = document.getElementById('series-list');
   let sets = pokemonSets, custom = customPokemonSets;
@@ -2162,6 +2263,7 @@ function renderSeriesList(){
     el.appendChild(empty);
     return;
   }
+  if(currentSeriesTab==='pokemon')refreshPokemonMergeSelectors();
   sets.forEach((name,idx)=>{
     const sid = 'sr' + idx;
     const isCustom = custom.includes(name);
