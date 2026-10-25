@@ -2072,7 +2072,7 @@ function canonicalSetLabel(x){return '['+x.lang.toUpperCase()+'] '+x.name+' ('+x
 function cleanSetForMatch(s){return normalizeSetName(s).replace(/^(en|ja|jp|fr) /,'').replace(/\\b(op|eb|st|prb|ogn|sfd|unl)\\s*0*(\\d+)\\b/g,' ').replace(/\\s+/g,' ').trim();}
 function onePieceSetCode(value){
   // Reconnaît OP13, OP-13, OP 013, OP_13 sans confondre OP-13 et ST-13.
-  const match=String(value||'').toUpperCase().match(/(?:^|[^A-Z0-9])(OP|ST|EB|PRB)\\s*[-_ ]?\\s*0*(\\d{1,3})(?!\\d)/);
+  const match=String(value||'').toUpperCase().match(/(?:^|[^A-Z0-9])(OP|ST|EB|PRB)\s*[-_ ]?\s*0*(\d{1,3})(?!\d)/);
   return match?match[1]+'-'+String(Number(match[2])).padStart(2,'0'):'';
 }
 function findCatalogMatches(sets,x,game){
@@ -2261,12 +2261,12 @@ function mergePokemonSets(){
 let bulkSetCleanupPairs=[];
 function bulkSetKey(game,name){
  const code=game==='onepiece'?onePieceSetCode(name):pokemonSetCode(name);
- const lang=game==='pokemon'?pokemonSetLanguage(name):(String(name).match(/^\\[(FR|JA|JP|EN)\\]/i)||[])[1]||'';
+ const lang=game==='pokemon'?pokemonSetLanguage(name):(String(name).match(/^\[(FR|JA|JP|EN)\]/i)||[])[1]||'';
  if(!code)return null;
  return {code,lang:lang.toUpperCase().replace('JP','JA')};
 }
 function bulkSetPreferred(a,b){
- const priority=n=>(/^\\[(FR|JA|EN)\\]/i.test(n)?10:0)+( /\\([^)]*\\)\\s*$/.test(n)?3:0);
+ const priority=n=>(/^\[(FR|JA|EN)\]/i.test(n)?10:0)+( /\([^)]*\)\s*$/.test(n)?3:0);
  return priority(a)>=priority(b)?a:b;
 }
 function previewBulkSetCleanup(){
@@ -2322,7 +2322,7 @@ function applyBulkSetCleanup(){
  const chosen=[...document.querySelectorAll('#bulk-clean-preview input[data-bulk]:checked')].map(x=>bulkSetCleanupPairs[Number(x.dataset.bulk)]).filter(Boolean);
  if(!chosen.length){showToast('Aucune fusion sélectionnée');return;}
  const affected=chosen.reduce((n,p)=>n+inventory.filter(x=>x.game===p.game&&x.set===p.old).length,0);
- if(!confirm('Fusionner '+chosen.length+' doublon(s) Pokémon / One Piece et déplacer '+affected+' ligne(s) d’inventaire ?\\nUne sauvegarde JSON sera téléchargée avant les changements.\\nLes ventes et prix resteront inchangés.'))return;
+ if(!confirm('Fusionner '+chosen.length+' doublon(s) Pokémon / One Piece et déplacer '+affected+' ligne(s) d’inventaire ?\nUne sauvegarde JSON sera téléchargée avant les changements.\nLes ventes et prix resteront inchangés.'))return;
  exportData();
  const snapshot={pokemon:pokemonSets.slice(),onepiece:onepieceSets.slice(),customPokemon:customPokemonSets.slice(),customOnepiece:customOnepieceSets.slice(),inventory:inventory.map(x=>({...x})),sets:localStorage.getItem(SK_SETS),inv:localStorage.getItem(SK_INV)};
  for(const p of chosen){
