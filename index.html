@@ -438,7 +438,7 @@
  <input id="scan-file-input" type="file" accept="image/*" style="display:none" onchange="scanCardImage(event)">
  <div id="scan-status" role="status" style="font-size:12px;color:var(--muted);margin-top:8px"></div>
  <div id="scan-result" style="display:none;margin-top:8px">
-  <img id="scan-preview-image" alt="Carte à analyser" style="max-height:180px;max-width:100%;object-fit:contain;border-radius:8px">
+  <div style="position:relative;display:inline-block;max-width:100%"><img id="scan-preview-image" alt="Carte à analyser" style="display:block;max-height:180px;max-width:100%;object-fit:contain;border-radius:8px"><button type="button" aria-label="Supprimer la photo et recommencer" title="Supprimer la photo" onclick="clearCardScan()" style="position:absolute;right:5px;top:5px;border:0;border-radius:50%;width:30px;height:30px;background:rgba(0,0,0,.78);color:white;font-size:23px;line-height:25px;cursor:pointer">×</button></div>
   <label class="form-label" for="scan-detected-name">Nom de la carte (corrige si nécessaire)</label>
   <input class="form-input" id="scan-detected-name" maxlength="300">
   <label class="form-label" for="scan-detected-set">Extension proposée</label>
@@ -1793,21 +1793,52 @@ function scanBestCardName(top,full){
  return lines.find(x=>/^[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ '\-]{3,35}$/.test(x))||lines[0]||'';
 }
 async function scanTopCardText(file,OCR){
- const img=await createImageBitmap(file),canvas=document.createElement('canvas');
- try{
-  // Région titre approximative, le recadrage fonctionne mieux sur une carte photographiée de face.
-  const sx=Math.floor(img.width*.10),sy=Math.floor(img.height*.43),sw=Math.floor(img.width*.80),sh=Math.floor(img.height*.22);
-  canvas.width=Math.min(1800,Math.max(900,sw*2));canvas.height=Math.round(canvas.width*sh/sw);
-  const ctx=canvas.getContext('2d');ctx.filter='contrast(1.6) grayscale(1)';ctx.drawImage(img,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
-  const out=await OCR.recognize(canvas,'eng');return String(out?.data?.text||'').trim();
- }finally{img.close();}
+ // Lire plusieurs bandes du haut : le nom se trouve en haut de la carte,
+ // pas au milieu de la photo. Garder une compatibilité iOS sans createImageBitmap.
+ const img=await new Promise((resolve,reject)=>{
+  const el=new Image(),url=URL.createObjectURL(file);
+  el.onload=()=>{URL.revokeObjectURL(url);resolve(el);};
+  el.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Photo illisible'));};
+  el.src=url;
+ });
+ const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+ if(!ctx)throw new Error('Canvas indisponible');
+ const results=[];
+ for(const [y,h] of [[.04,.20],[.12,.23],[.20,.22]]){
+  const sx=Math.round(img.naturalWidth*.05),sy=Math.round(img.naturalHeight*y);
+  const sw=Math.round(img.naturalWidth*.90),sh=Math.round(img.naturalHeight*h);
+  canvas.width=Math.min(2200,Math.max(1000,sw*2));
+  canvas.height=Math.max(80,Math.round(canvas.width*sh/sw));
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.filter='grayscale(1) contrast(1.65)';
+  ctx.drawImage(img,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
+  const out=await OCR.recognize(canvas,'eng');
+  const lines=String(out?.data?.text||'').trim();
+  if(lines)results.push(lines);
+ }
+ return results.join('\n');
 }
+function clearCardScan(){
+ scanSequence++;
+ if(scanObjectUrl){URL.revokeObjectURL(scanObjectUrl);scanObjectUrl=null;}
+ const image=document.getElementById('scan-preview-image');
+ image.removeAttribute('src');
+ document.getElementById('scan-result').style.display='none';
+ document.getElementById('scan-detected-name').value='';
+ document.getElementById('scan-detected-set').replaceChildren();
+ document.getElementById('scan-raw-text').textContent='';
+ document.getElementById('scan-file-input').value='';
+ document.getElementById('scan-camera-input').value='';
+ scanStatus('Photo supprimée. Tu peux en choisir une nouvelle.');
+}
+let scanSequence=0;
 
 async function scanCardImage(event){
  const file=event.target.files&&event.target.files[0];event.target.value='';
  if(!file)return;
  if(!file.type.startsWith('image/')){scanStatus('Choisis une image.');return;}
  if(file.size>12*1024*1024){scanStatus('Image trop volumineuse (12 Mo maximum).');return;}
+ const sequence=++scanSequence;
  scanLastGame=document.getElementById('scan-game').value;
  const result=document.getElementById('scan-result');result.style.display='none';
  if(scanObjectUrl)URL.revokeObjectURL(scanObjectUrl);
@@ -1819,6 +1850,7 @@ async function scanCardImage(event){
   let output;
   try{output=await OCR.recognize(file,langs);}catch(err){output=await OCR.recognize(file,'eng');}
   const topText=await scanTopCardText(file,OCR).catch(()=>null);
+  if(sequence!==scanSequence)return;
   const text=String(output?.data?.text||'').trim();
   if(!text&&!topText){scanStatus('Aucun texte lisible. Saisis le nom manuellement ci-dessous.');}
 
@@ -1833,7 +1865,7 @@ async function scanCardImage(event){
   if(ranked.length)select.value=ranked[0].set;
   else for(const set of scanGameSets()){const option=document.createElement('option');option.value=set;option.textContent=set;select.appendChild(option);}
   result.style.display='block';scanStatus('Texte lu. Vérifie le nom et l’extension : la reconnaissance n’est pas garantie.');
- }catch(err){console.error('OCR scan',err);scanStatus('⚠️ Scan impossible : '+(err.message||'erreur de lecture')+'. Tu peux toujours saisir la fiche manuellement.');}
+ }catch(err){if(sequence!==scanSequence)return;console.error('OCR scan',err);scanStatus('⚠️ Scan impossible : '+(err.message||'erreur de lecture')+'. Tu peux toujours saisir la fiche manuellement.');}
 }
 function applyCardScan(){
  const name=document.getElementById('scan-detected-name').value.trim(),set=document.getElementById('scan-detected-set').value;
