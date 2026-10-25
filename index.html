@@ -428,6 +428,8 @@
       <div class="card" style="margin:10px 0;padding:12px;border:1px solid var(--border)">
  <div style="font-weight:700;margin-bottom:5px">📷 Scanner une carte · Tous les jeux</div>
  <div style="font-size:12px;color:var(--muted);margin-bottom:8px">Photo ou caméra : lecture du texte et proposition d'extension. Vérifie les champs avant d'ajouter. Aucune donnée de collection modifiée par le scan.</div>
+ <label class="form-label" for="scan-game">Jeu de la carte à scanner</label>
+ <select class="form-select" id="scan-game"><option value="pokemon">Pokémon</option><option value="onepiece">One Piece</option><option value="riftbound">Riftbound</option><option value="naruto">Naruto</option></select>
  <div style="display:flex;gap:8px;flex-wrap:wrap">
   <button type="button" class="series-add-btn" onclick="document.getElementById('scan-camera-input').click()">📸 Caméra</button>
   <button type="button" class="series-add-btn" onclick="document.getElementById('scan-file-input').click()">🖼️ Galerie / fichier</button>
@@ -437,7 +439,7 @@
  <div id="scan-status" role="status" style="font-size:12px;color:var(--muted);margin-top:8px"></div>
  <div id="scan-result" style="display:none;margin-top:8px">
   <img id="scan-preview-image" alt="Carte à analyser" style="max-height:180px;max-width:100%;object-fit:contain;border-radius:8px">
-  <label class="form-label" for="scan-detected-name">Nom proposé (modifiable)</label>
+  <label class="form-label" for="scan-detected-name">Nom de la carte (corrige si nécessaire)</label>
   <input class="form-input" id="scan-detected-name" maxlength="300">
   <label class="form-label" for="scan-detected-set">Extension proposée</label>
   <select class="form-select" id="scan-detected-set"></select>
@@ -1755,6 +1757,7 @@ function toggleOpt(opt){
 
 
 let scanObjectUrl=null;
+let scanLastGame='pokemon';
 function scanStatus(t){document.getElementById('scan-status').textContent=t;}
 async function loadScannerOCR(){
  if(window.Tesseract&&typeof window.Tesseract.recognize==='function')return window.Tesseract;
@@ -1769,53 +1772,77 @@ async function loadScannerOCR(){
  return window._tcgOcrLoader;
 }
 function scanGameSets(){
- return formGame==='onepiece'?onepieceSets:formGame==='riftbound'?riftboundSets:formGame==='naruto'?narutoSets:pokemonSets;
+ return scanLastGame==='onepiece'?onepieceSets:scanLastGame==='riftbound'?riftboundSets:scanLastGame==='naruto'?narutoSets:pokemonSets;
 }
 function scanTextMatchScore(text,set){
  const full=normalizeSetName(text),label=normalizeSetName(set.replace(/^\[[^\]]+\]\s*/,'').replace(/\([^)]*\)\s*$/,''));
  if(label.length>=5&&full.includes(label))return 90+Math.min(9,label.length/10);
- const code=formGame==='onepiece'?onePieceSetCode(set):formGame==='pokemon'?pokemonSetCode(set):'';
+ const code=scanLastGame==='onepiece'?onePieceSetCode(set):scanLastGame==='pokemon'?pokemonSetCode(set):'';
  if(code){
-  const candidate=formGame==='onepiece'?onePieceSetCode(text):pokemonSetCode(text);
+  const candidate=scanLastGame==='onepiece'?onePieceSetCode(text):pokemonSetCode(text);
   if(candidate===code)return 85;
  }
  const words=label.split(' ').filter(x=>x.length>=4),hits=words.filter(x=>full.includes(x)).length;
  return words.length>=2&&hits>=2?Math.round(60*hits/words.length):0;
 }
-async function scanCardImage(event){
+async 
+function scanBestCardName(top,full){
+ const clean=t=>String(t||'').split(/\r?\n/).map(x=>x.trim()).filter(x=>x.length>=4&&x.length<=55&&/[A-Za-zÀ-ÿ]{3}/.test(x)&&!/(empower|opponent|shield|deflect|ability|rune|unit|trainer|pokemon|illustrat|copyright)/i.test(x));
+ const lines=[...clean(top),...clean(full)];
+ // Les noms de cartes sont généralement courts ; ne pas sélectionner les longs textes de règles.
+ return lines.find(x=>/^[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ '\-]{3,35}$/.test(x))||lines[0]||'';
+}
+async function scanTopCardText(file,OCR){
+ const img=await createImageBitmap(file),canvas=document.createElement('canvas');
+ try{
+  // Région titre approximative, le recadrage fonctionne mieux sur une carte photographiée de face.
+  const sx=Math.floor(img.width*.10),sy=Math.floor(img.height*.43),sw=Math.floor(img.width*.80),sh=Math.floor(img.height*.22);
+  canvas.width=Math.min(1800,Math.max(900,sw*2));canvas.height=Math.round(canvas.width*sh/sw);
+  const ctx=canvas.getContext('2d');ctx.filter='contrast(1.6) grayscale(1)';ctx.drawImage(img,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
+  const out=await OCR.recognize(canvas,'eng');return String(out?.data?.text||'').trim();
+ }finally{img.close();}
+}
+
+function scanCardImage(event){
  const file=event.target.files&&event.target.files[0];event.target.value='';
  if(!file)return;
  if(!file.type.startsWith('image/')){scanStatus('Choisis une image.');return;}
  if(file.size>12*1024*1024){scanStatus('Image trop volumineuse (12 Mo maximum).');return;}
+ scanLastGame=document.getElementById('scan-game').value;
  const result=document.getElementById('scan-result');result.style.display='none';
  if(scanObjectUrl)URL.revokeObjectURL(scanObjectUrl);
  scanObjectUrl=URL.createObjectURL(file);document.getElementById('scan-preview-image').src=scanObjectUrl;
  scanStatus('Lecture de la carte… La première analyse peut prendre quelques secondes.');
  try{
   const OCR=await loadScannerOCR();
-  const langs=formGame==='pokemon'?'eng+fra+jpn':'eng+fra';
+  const langs=scanLastGame==='pokemon'?'eng+fra':'eng';
   let output;
   try{output=await OCR.recognize(file,langs);}catch(err){output=await OCR.recognize(file,'eng');}
+  const topText=await scanTopCardText(file,OCR).catch(()=>null);
   const text=String(output?.data?.text||'').trim();
-  if(!text){scanStatus('Aucun texte lisible. Essaie une photo nette et bien éclairée.');return;}
+  if(!text&&!topText){scanStatus('Aucun texte lisible. Saisis le nom manuellement ci-dessous.');}
+
   const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
-  const name=lines.filter(x=>x.length>=3&&x.length<=90&&!/^\d+[\s\/\-\d]*$/.test(x)).sort((a,b)=>b.length-a.length)[0]||lines[0]||'';
+  const name=scanBestCardName(topText,text);
   document.getElementById('scan-detected-name').value=name.slice(0,300);
-  document.getElementById('scan-raw-text').textContent=text;
+  document.getElementById('scan-raw-text').textContent=(topText?'Zone du titre : '+topText+'\n\n':'')+text;
   const select=document.getElementById('scan-detected-set');select.replaceChildren();
   const blank=document.createElement('option');blank.value='';blank.textContent='Choisir manuellement / extension non reconnue';select.appendChild(blank);
   const ranked=[...new Set(scanGameSets())].map(set=>({set,score:scanTextMatchScore(text,set)})).filter(x=>x.score>=50).sort((a,b)=>b.score-a.score).slice(0,12);
   for(const x of ranked){const option=document.createElement('option');option.value=x.set;option.textContent=x.set+' · correspondance possible';select.appendChild(option);}
   if(ranked.length)select.value=ranked[0].set;
+  else for(const set of scanGameSets()){const option=document.createElement('option');option.value=set;option.textContent=set;select.appendChild(option);}
   result.style.display='block';scanStatus('Texte lu. Vérifie le nom et l’extension : la reconnaissance n’est pas garantie.');
  }catch(err){console.error('OCR scan',err);scanStatus('⚠️ Scan impossible : '+(err.message||'erreur de lecture')+'. Tu peux toujours saisir la fiche manuellement.');}
 }
 function applyCardScan(){
  const name=document.getElementById('scan-detected-name').value.trim(),set=document.getElementById('scan-detected-set').value;
  if(!name){showToast('Renseigne le nom de la carte');return;}
+ setFormGame(scanLastGame);
  document.getElementById('inp-name').value=name;
  const select=document.getElementById('inp-set');
  if(set&&[...select.options].some(x=>x.value===set))select.value=set;
+ setFormGame(scanLastGame);
  scanStatus('✅ Fiche préremplie. Vérifie les informations puis utilise le bouton d’ajout habituel.');
  showToast('📷 Nom et extension proposés');
 }
