@@ -873,11 +873,27 @@ let dashboardChartMode = 'series', searchQuery = '', salesHistory=[], undoStack=
 
 // Stockage centralisé : une erreur de quota ne doit pas casser l'application.
 function safeStorageSet(key, value){
-  try { localStorage.setItem(key, value); return true; }
-  catch(error){ console.error('Échec localStorage pour', key, error); return false; }
+  try {
+    localStorage.setItem(key, value);
+    if(localStorage.getItem(key)!==value) throw new Error('Vérification de sauvegarde échouée');
+    return true;
+  } catch(error) {
+    console.error('Échec localStorage pour', key, error);
+    if(key===SK_INV || key===SK_SALES) setTimeout(()=>alert('⚠️ Les données ne sont pas sauvegardées sur cet appareil. Conserve ton fichier JSON et n’ajoute pas de nouvelles cartes avant résolution.'),0);
+    return false;
+  }
 }
 function saveInventory(){
-  const ok = safeStorageSet(SK_INV, JSON.stringify(inventory));
+  const value=JSON.stringify(inventory);
+  // Copie de secours avant modification, uniquement si l'ancienne valeur existe.
+  try {
+    const previous=localStorage.getItem(SK_INV);
+    if(previous && previous!==value && JSON.parse(previous).length>0){
+      const backupKey='tcgpf_inventory_backup_v1';
+      if(localStorage.getItem(backupKey)!==previous) safeStorageSet(backupKey,previous);
+    }
+  }catch(error){console.warn('Copie de secours indisponible',error);}
+  const ok = safeStorageSet(SK_INV, value);
   if(!ok) showToast('⚠️ Sauvegarde impossible : stockage plein ou indisponible.');
   return ok;
 }
@@ -1007,12 +1023,13 @@ function loadAll(){
       const normalized = normalizeInventory(parsed);
       if(!normalized) throw new Error('Inventaire sauvegardé illisible : format non reconnu');
       inventory = normalized;
-      // Réécrit uniquement après récupération valide; la sauvegarde brute reste dans localStorage si JSON invalide.
-      if(JSON.stringify(parsed) !== JSON.stringify(normalized)) saveInventory();
+      // Ne jamais réécrire automatiquement les données originales pendant le chargement.
+      // La normalisation reste en mémoire et le JSON brut reste récupérable.
     } else {
-      inventory = JSON.parse(JSON.stringify(EMBEDDED_INVENTORY));
-      // Les données intégrées sont conservées pour la première ouverture seulement.
-      saveInventory();
+      // Une clé absente peut signifier que Safari/iOS a supprimé le stockage.
+      // Ne pas écrire de nouvel inventaire vide ou de démonstration par-dessus.
+      inventory = [];
+      console.warn('Aucun inventaire local trouvé : import JSON nécessaire.');
     }
     inventory.forEach(i => {
       if(i.imageUrl === undefined) i.imageUrl = '';
