@@ -1772,7 +1772,7 @@ function scanGameSets(){
  return formGame==='onepiece'?onepieceSets:formGame==='riftbound'?riftboundSets:formGame==='naruto'?narutoSets:pokemonSets;
 }
 function scanTextMatchScore(text,set){
- const full=normalizeSetName(text),label=normalizeSetName(set.replace(/^\\[[^\\]]+\\]\\s*/,'').replace(/\\([^)]*\\)\\s*$/,''));
+ const full=normalizeSetName(text),label=normalizeSetName(set.replace(/^\[[^\]]+\]\s*/,'').replace(/\([^)]*\)\s*$/,''));
  if(label.length>=5&&full.includes(label))return 90+Math.min(9,label.length/10);
  const code=formGame==='onepiece'?onePieceSetCode(set):formGame==='pokemon'?pokemonSetCode(set):'';
  if(code){
@@ -1798,8 +1798,8 @@ async function scanCardImage(event){
   try{output=await OCR.recognize(file,langs);}catch(err){output=await OCR.recognize(file,'eng');}
   const text=String(output?.data?.text||'').trim();
   if(!text){scanStatus('Aucun texte lisible. Essaie une photo nette et bien éclairée.');return;}
-  const lines=text.split(/\\r?\\n/).map(x=>x.trim()).filter(Boolean);
-  const name=lines.filter(x=>x.length>=3&&x.length<=90&&!/^\\d+[\\s\\/\\-\\d]*$/.test(x)).sort((a,b)=>b.length-a.length)[0]||lines[0]||'';
+  const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+  const name=lines.filter(x=>x.length>=3&&x.length<=90&&!/^\d+[\s\/\-\d]*$/.test(x)).sort((a,b)=>b.length-a.length)[0]||lines[0]||'';
   document.getElementById('scan-detected-name').value=name.slice(0,300);
   document.getElementById('scan-raw-text').textContent=text;
   const select=document.getElementById('scan-detected-set');select.replaceChildren();
