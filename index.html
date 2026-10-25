@@ -567,7 +567,15 @@
           <div id="tcgdex-preview" style="max-height:280px;overflow:auto;margin-top:9px"></div>
           <button class="series-add-btn" id="tcgdex-add-btn" style="display:none;margin-top:9px" onclick="importSelectedTCGdexSets()">✓ Ajouter les extensions sélectionnées</button>
         </div>
-        <div class="series-list-wrap" id="series-list"></div>
+        <div id="catalog-sync" style="padding:12px;border:1px solid var(--border);border-radius:12px;margin:12px 0">
+  <div style="font-weight:700">🌐 Actualiser les extensions One Piece / Riftbound</div>
+  <p style="font-size:12px;color:var(--muted)">Prévisualisation, rapprochement des noms et transfert des articles uniquement après validation. Pense à exporter un backup JSON avant de fusionner.</p>
+  <button class="series-add-btn" id="catalog-fetch-btn" onclick="fetchExternalSets()">🔎 Rechercher les extensions</button>
+  <div id="catalog-status" role="status" style="font-size:12px;color:var(--muted);margin-top:8px"></div>
+  <div id="catalog-preview" style="max-height:330px;overflow:auto;margin-top:8px"></div>
+  <button class="series-add-btn" id="catalog-apply-btn" style="display:none;margin-top:8px" onclick="applyExternalSets()">✓ Confirmer les modifications</button>
+</div>
+<div class="series-list-wrap" id="series-list"></div>
         <div class="series-add-row">
           <input class="series-add-inp" id="series-new-inp" type="text" placeholder="Nom du nouveau set&#x2026;">
           <button class="series-add-btn" onclick="addSeries()">+ Ajouter</button>
@@ -585,7 +593,7 @@
       <div class="settings-row"><span>Tout effacer</span><button class="settings-btn danger" onclick="clearAll()">Effacer</button></div>
     </div>
     <div class="card" style="font-size:12px;color:var(--muted);line-height:1.8;">
-      <strong style="color:var(--text);">TCG Portfolio v2.9.0 Pro</strong><br>
+      <strong style="color:var(--text);">TCG Portfolio v3.0.0 Pro</strong><br>
       Pok&#xe9;mon, One Piece, Riftbound &amp; Naruto Bandai &#xB7; Cartes + Scell&#xe9;s<br>
       Calculs financiers stricts (Cadeaux/Dons) &#xB7; Liens Cardmarket / eBay directs.<br>
       Donn&#xe9;es sauvegard&#xe9;es localement sur cet appareil.
@@ -1951,6 +1959,8 @@ function setSeriesTab(g){
   document.getElementById('stab-rift').className = 'series-tab-btn' + (g==='riftbound' ? ' active-rift' : '');
   document.getElementById('stab-naruto').className = 'series-tab-btn' + (g==='naruto' ? ' active-naruto' : '');
   renderSeriesList();
+  document.getElementById('catalog-preview').replaceChildren();
+  document.getElementById('catalog-apply-btn').style.display='none';
 }
 
 // Les identifiants TCGdex sont préservés pour distinguer les éditions et langues.
@@ -2031,6 +2041,97 @@ function importSelectedTCGdexSets(){
   setTCGdexStatus('✅ '+count+' extension(s) ajoutée(s). Les articles et les ventes sont inchangés.');
   updateSetOptions();renderSeriesList();showToast('✅ '+count+' extensions Pokémon importées');
 }
+
+// Catalogues publics : One Piece (données JSON Punk Records), Riftbound (RiftHunt).
+const SK_CATALOG_META='tcgpf_catalog_meta_v1';
+let externalCandidates=[];
+function externalStatus(t){document.getElementById('catalog-status').textContent=t;}
+function gameSetArrays(game){return game==='onepiece'?[onepieceSets,customOnepieceSets]:[riftboundSets,customRiftboundSets];}
+function canonicalSetLabel(x){return '['+x.lang.toUpperCase()+'] '+x.name+' ('+x.code+')';}
+function cleanSetForMatch(s){return normalizeSetName(s).replace(/^(en|ja|jp|fr) /,'').replace(/ (op|eb|st|prb|ogn|sfd|unl) ?\d+$/,'').trim();}
+function getCatalogMeta(){try{return JSON.parse(localStorage.getItem(SK_CATALOG_META)||'{}')||{};}catch(e){return {};}}
+async function fetchCatalogJSON(url){
+ const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),16000);
+ try{const r=await fetch(url,{signal:ctl.signal,headers:{Accept:'application/json'}});if(!r.ok)throw new Error('HTTP '+r.status);return await r.json();}
+ finally{clearTimeout(timer);}
+}
+async function fetchExternalSets(){
+ const game=currentSeriesTab;
+ if(!['onepiece','riftbound'].includes(game)){externalStatus('Sélectionne One Piece ou Riftbound dans les onglets.');return;}
+ const btn=document.getElementById('catalog-fetch-btn'),box=document.getElementById('catalog-preview'),apply=document.getElementById('catalog-apply-btn');
+ btn.disabled=true;box.replaceChildren();apply.style.display='none';externalCandidates=[];
+ externalStatus('Recherche du catalogue '+(game==='onepiece'?'One Piece':'Riftbound')+'…');
+ try{
+  let raw=[];
+  if(game==='riftbound'){
+    const payload=await fetchCatalogJSON('https://api.rifthunt.com/sets');
+    const data=Array.isArray(payload)?payload:payload.data;
+    if(!Array.isArray(data))throw Error('Format RiftHunt non reconnu');
+    raw=data.map(x=>({code:String(x.code||x.id||'').trim(),name:String(x.name||x.set_name||'').trim(),lang:'en'}));
+  }else{
+    const payload=await fetchCatalogJSON('https://raw.githubusercontent.com/Kuroro1990/OPTCG/main/english/packs.json');
+    if(!payload||typeof payload!=='object')throw Error('Format One Piece non reconnu');
+    raw=Object.values(payload).map(x=>{
+      const p=x.title_parts||{},code=String(p.label||'').trim();
+      return {code,name:String(p.title||x.raw_title||'').trim(),lang:'en'};
+    });
+  }
+  const [sets]=gameSetArrays(game),meta=getCatalogMeta(),seen=new Set();
+  const known=new Set(sets.map(normalizeSetName));
+  externalCandidates=raw.filter(x=>x.code&&x.name&&x.code.length<50&&x.name.length<250)
+    .filter(x=>{const key=game+':'+x.lang+':'+x.code;if(seen.has(key)||meta[key])return false;seen.add(key);return true;})
+    .map(x=>{
+      const label=canonicalSetLabel(x),norm=cleanSetForMatch(x.name);
+      const matches=sets.filter(s=>cleanSetForMatch(s)===norm || (x.code.length>=4&&s.toLowerCase().includes(x.code.toLowerCase())));
+      const already=known.has(normalizeSetName(label));
+      return {...x,game,label,key:game+':'+x.lang+':'+x.code,matches,already};
+    }).filter(x=>!x.already).sort((a,b)=>a.code.localeCompare(b.code));
+  externalStatus(raw.length+' extensions trouvées · '+externalCandidates.length+' proposition(s). Choisis « Remplacer » seulement pour la même édition et la même langue.');
+  for(let i=0;i<externalCandidates.length;i++){
+    const x=externalCandidates[i],line=document.createElement('div');
+    line.style.cssText='padding:9px 0;border-bottom:1px solid var(--border);font-size:12px;';
+    const title=document.createElement('div');title.textContent=x.name+' · '+x.code+' · '+x.lang.toUpperCase();title.style.fontWeight='600';
+    const select=document.createElement('select');select.dataset.catalog=String(i);select.className='series-add-inp';select.style.cssText='width:100%;margin-top:5px;';
+    const opts=[['skip','Ignorer'],['add','Ajouter comme nouvelle extension'],...x.matches.map(v=>['replace:'+v,'Remplacer « '+v+' » et transférer ses articles'])];
+    for(const [v,label] of opts){const o=document.createElement('option');o.value=v;o.textContent=label;select.appendChild(o);}
+    // Aucune fusion automatique, même si la similarité est élevée.
+    select.value=x.matches.length?'skip':'add';
+    line.append(title,select);box.appendChild(line);
+  }
+  apply.style.display=externalCandidates.length?'':'none';
+ }catch(e){console.error(e);externalStatus('⚠️ Catalogue inaccessible ou format modifié : '+e.message);}
+ finally{btn.disabled=false;}
+}
+function applyExternalSets(){
+ const selects=[...document.querySelectorAll('#catalog-preview select[data-catalog]')];
+ const operations=selects.map(sel=>({x:externalCandidates[Number(sel.dataset.catalog)],action:sel.value})).filter(op=>op.x&&op.action!=='skip');
+ if(!operations.length){showToast('Aucune modification sélectionnée');return;}
+ const replacements=operations.filter(op=>op.action.startsWith('replace:'));
+ const details=replacements.map(op=>{const old=op.action.slice(8);return old+' → '+op.x.label+' ('+inventory.filter(i=>i.game===op.x.game&&i.set===old).length+' article(s))';});
+ if(!confirm('Confirmer '+operations.length+' modification(s) ?'+(details.length?'\n\nTransferts :\n'+details.join('\n'):'')+'\n\nLes prix, quantités et ventes ne seront pas modifiés.'))return;
+ const previous={onepiece:onepieceSets.slice(),riftbound:riftboundSets.slice(),customOnepiece:customOnepieceSets.slice(),customRiftbound:customRiftboundSets.slice(),inventory:inventory.map(i=>({...i})),meta:localStorage.getItem(SK_CATALOG_META)};
+ const nextMeta=getCatalogMeta();
+ for(const op of operations){
+   const x=op.x,old=op.action.startsWith('replace:')?op.action.slice(8):null;
+   const [sets,custom]=gameSetArrays(x.game);
+   if(old){
+     const idx=sets.indexOf(old);if(idx<0){showToast('Ancienne extension introuvable, opération annulée');return;}
+     sets.splice(idx,1);const ci=custom.indexOf(old);if(ci>=0)custom.splice(ci,1);
+     inventory.forEach(item=>{if(item.game===x.game&&item.set===old)item.set=x.label;});
+   }
+   if(!sets.includes(x.label)){sets.push(x.label);custom.push(x.label);}
+   nextMeta[x.key]={code:x.code,name:x.name,lang:x.lang,label:x.label};
+ }
+ if(!saveSets()||!saveInventory()||!safeStorageSet(SK_CATALOG_META,JSON.stringify(nextMeta))){
+   onepieceSets=previous.onepiece;riftboundSets=previous.riftbound;customOnepieceSets=previous.customOnepiece;customRiftboundSets=previous.customRiftbound;inventory=previous.inventory;
+   saveSets();saveInventory();try{if(previous.meta===null)localStorage.removeItem(SK_CATALOG_META);else localStorage.setItem(SK_CATALOG_META,previous.meta);}catch(e){}
+   showToast('⚠️ Sauvegarde impossible, modifications annulées');return;
+ }
+ externalCandidates=[];document.getElementById('catalog-preview').replaceChildren();document.getElementById('catalog-apply-btn').style.display='none';
+ externalStatus('✅ '+operations.length+' modification(s) appliquée(s), dont '+replacements.length+' fusion(s).');
+ renderSeriesList();updateSetOptions();showToast('✅ Catalogue actualisé');
+}
+
 function renderSeriesList(){
   const el = document.getElementById('series-list');
   let sets = pokemonSets, custom = customPokemonSets;
@@ -2257,7 +2358,7 @@ function clearAll(){
   try {
     // Garder une clé d’inventaire vide empêche le rechargement des données de démonstration intégrées.
     localStorage.setItem(SK_INV, '[]');
-    [SK_SETS, SK_HIST, SK_SYNC, SK_SALES, SK_UNDO, SK_TCGDEX_META].forEach(key => localStorage.removeItem(key));
+    [SK_SETS, SK_HIST, SK_SYNC, SK_SALES, SK_UNDO, SK_TCGDEX_META, SK_CATALOG_META].forEach(key => localStorage.removeItem(key));
     location.reload();
   } catch(error){
     console.error('Suppression impossible', error);
